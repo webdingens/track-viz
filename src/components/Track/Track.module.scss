@@ -1,0 +1,39 @@
+$c-wftda: #f3a5c9;
+.svg {
+  max-height: 100vh;
+  width: 100%;
+  display: block;
+
+  > circle {
+    fill: #fff;
+    stroke: #000;
+    stroke-width: .07;
+
+    &.current {
+      stroke: $c-wftda;
+    }
+  }
+
+  > line {
+    stroke: #000;
+    stroke-width: .07;
+
+    &.current {
+      stroke: $c-wftda;
+    }
+  }
+
+  > path {
+    fill: none;
+    stroke-width: .07;
+    stroke: #000;
+
+    &.current {
+      stroke: $c-wftda;
+    }
+  }
+
+  .outsideOfficiatingBoundary {
+    stroke: #f5f5f5;
+  }
+}

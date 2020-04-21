@@ -1,0 +1,68 @@
+{
+  "defaultSkaters": [
+    {
+      "x": 0,
+      "y": 5,
+      "rotation": 180,
+      "team": "A"
+    },
+    {
+      "x": 0,
+      "y": 6,
+      "rotation": 180,
+      "team": "A"
+    },
+    {
+      "x": 0,
+      "y": 7,
+      "rotation": 180,
+      "team": "A"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "rotation": 180,
+      "team": "A",
+      "isPivot": true
+    },
+    {
+      "x": -4.5,
+      "y": 5,
+      "rotation": 0,
+      "team": "A",
+      "isJammer": true
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "rotation": 180,
+      "team": "B"
+    },
+    {
+      "x": 2,
+      "y": 6,
+      "rotation": 180,
+      "team": "B"
+    },
+    {
+      "x": 2,
+      "y": 7,
+      "rotation": 180,
+      "team": "B"
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "rotation": 180,
+      "team": "B",
+      "isPivot": true
+    },
+    {
+      "x": -4.5,
+      "y": 7,
+      "rotation": 0,
+      "team": "B",
+      "isJammer": true
+    }
+  ]
+}

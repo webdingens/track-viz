@@ -1,0 +1,58 @@
+.skater-A {
+  .skaterBackground {
+    fill: red;
+    stroke: #000;
+    stroke-width: .05;
+  }
+}
+
+.skater-B {
+  .skaterBackground {
+    fill: green;
+    stroke: #000;
+    stroke-width: .05;
+  }
+}
+
+.blockerNumber {
+  font-size: .2;
+}
+
+.pivotStripe {
+  stroke-width: .15;
+  stroke: #fff;
+}
+
+.pivotOutline {
+  stroke: #000;
+  stroke-width: .05;
+  fill: none;
+}
+
+.jammerStar {
+}
+
+.skater {
+  .rotationHandle {
+    display: none;
+    cursor: pointer;
+  }
+
+  &--has-focus {
+    .skaterBackground,
+    .jammerOutline,
+    .pivotOutline,
+    .shield {
+      stroke: blueviolet;
+    }
+    .rotationHandle {
+      display: initial;
+    }
+  }
+}
+
+.shield {
+  fill: none;
+  stroke: #000;
+  stroke-width: .04;
+}
