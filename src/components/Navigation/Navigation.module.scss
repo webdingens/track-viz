@@ -1,0 +1,28 @@
+.navigation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  padding: .8rem;
+  background: #444;
+  color: #fff;
+  
+  font-size: 1.2rem;
+  line-height: 1.5;
+
+  a {
+    color: #fff;
+    text-decoration: none;
+
+    &:hover,
+    &:focus {
+      text-decoration: underline;
+    }
+  }
+
+  ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+  }
+}

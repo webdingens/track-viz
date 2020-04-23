@@ -19,6 +19,8 @@ class TrackDragging extends React.Component {
     super(props);
 
     this.trackContainer = createRef();
+
+    this.onClickBody = this.onClickBody.bind(this);
   }
 
   componentDidMount() {
@@ -64,11 +66,37 @@ class TrackDragging extends React.Component {
       });
     });
 
-    document.body.addEventListener('click', this.onClickBody.bind(this));
+    document.body.addEventListener('click', this.onClickBody);
   }
 
   componentDidUpdate() {
 
+    this.draggables.forEach((draggable, idx) => {
+      let skater = this.props.skaters[idx];
+      if (skater.x !== draggable.moveDraggable.x || skater.y !== draggable.moveDraggable.y) {
+        gsap.set(draggable.moveDraggable.target, {
+          x: skater.x,
+          y: skater.y
+        });
+        draggable.moveDraggable.update();
+      }
+      
+      if (skater.rotation !== draggable.rotateDraggable.rotation ) {
+        gsap.set(draggable.rotateDraggable.target, {
+          rotation: skater.rotation
+        });
+        draggable.rotateDraggable.update();
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    document.body.removeEventListener('click', this.onClickBody);
+
+    this.draggables.forEach((draggable, idx) => {
+      draggable.moveDraggable.kill();
+      draggable.rotateDraggable.kill();
+    });
   }
 
   onClick(instance) {

@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import { defaultSkaters } from '../../data/defaultSkaters.json';
+import { loadSlice } from '../storePersistence';
 
 export const TRACK_ORIENTATIONS = {
   ORIENTATION_0_DEG: 0,
@@ -9,13 +10,15 @@ export const TRACK_ORIENTATIONS = {
   ORIENTATION_270_DEG: 270
 }
 
+const defaultTrack = {
+  skaters: defaultSkaters,
+  orientation: TRACK_ORIENTATIONS.ORIENTATION_0_DEG,
+  refs: []
+};
+
 export const currentTrackSlice = createSlice({
   name: 'currentTrack',
-  initialState: {
-    skaters: defaultSkaters,
-    orientation: TRACK_ORIENTATIONS.ORIENTATION_0_DEG,
-    refs: []
-  },
+  initialState: loadSlice('currentTrack') || defaultTrack,
   reducers: {
     setSkaters: (state, action) => {
       state.skaters = action.payload;
@@ -27,10 +30,14 @@ export const currentTrackSlice = createSlice({
     setRefs: (state, action) => {
       state.refs = action.payload;
     },
+    reset: (state) => {
+      state.refs = [];
+      state.skaters = defaultSkaters;
+    }
   },
 });
 
-export const { setSkaters, setOrientation, setRefs } = currentTrackSlice.actions;
+export const { setSkaters, setOrientation, setRefs, reset } = currentTrackSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
