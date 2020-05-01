@@ -1,0 +1,40 @@
+.splitView {
+  display: flex;
+  align-items: stretch;
+  min-height: 100vh;
+
+  .column {
+    flex: 1 0 auto;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    &:not(:last-child) {
+      position: relative;
+
+      &:after {
+        content: '';
+        background: #ddd;
+        position: absolute;
+        right: -2px;
+        width: 4px;
+        height: 100vh;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+    }
+  }
+
+  &--2 {
+    .column {
+      width: 50%;
+      flex: 1 0 auto;
+    }
+  }
+
+  &.active {
+    font-size: 200%;
+  }
+}

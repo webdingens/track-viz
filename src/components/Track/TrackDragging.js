@@ -20,7 +20,12 @@ class TrackDragging extends React.Component {
 
     this.trackContainer = createRef();
 
+    this.state = {
+      dragging: 0
+    };
+
     this.onClickBody = this.onClickBody.bind(this);
+    this.decreaseDragging = this.decreaseDragging.bind(this);
   }
 
   componentDidMount() {
@@ -28,9 +33,11 @@ class TrackDragging extends React.Component {
     this.draggables = [];
     this.skaterNodes.forEach((el) => {
       let moveDraggable = Draggable.create(el, {
-        bounds: window,
+        bounds: this.trackContainer.current,
         minimumMovement: .01,
         target: el.querySelectorAll('.js-skater-body-wrapper')[0],
+        onDragStart: this.onDragStart,
+        onDragStartParams: [this],
         onDrag: this.onDrag,
         onDragParams: [this],
         onDragEnd: this.onDragEnd,
@@ -127,22 +134,34 @@ class TrackDragging extends React.Component {
     instance.props.setSkaters(skaters)
   }
 
+  onDragStart(instance) {
+    instance.setState({
+      dragging: instance.state.dragging + 1
+    });
+  }
+
   onDrag(instance) {
     let draggable = this;
     let target = draggable.target;
     let idx = target.dataset.idx;
 
     instance.collisionDetection(+idx, draggable.x, draggable.y);
+    instance.storeDragPosition(instance);
   }
 
   onDragEnd(instance) {
+    instance.decreaseDragging();
+    instance.storeDragPosition(instance);
+  }
+
+  storeDragPosition(instance) {
     let skaters = _.cloneDeep(instance.props.skaters);
     instance.draggables.forEach((draggable, i) => {
       skaters[i].x = draggable.moveDraggable.x;
       skaters[i].y = draggable.moveDraggable.y;
     });
 
-    instance.props.setSkaters(skaters)
+    instance.props.setSkaters(skaters);
   }
 
   onDragRotateStart(instance) {
@@ -151,6 +170,9 @@ class TrackDragging extends React.Component {
     let idx = target.dataset.idx;
 
     instance.draggables[idx].isRotating = true;
+    instance.setState({
+      dragging: instance.state.dragging + 1
+    });
   }
 
   onDragRotate(instance) {
@@ -166,9 +188,16 @@ class TrackDragging extends React.Component {
         rotate: -draggable.rotation
       });
     }
+
+    instance.storeDragRotation(instance);
   }
 
   onDragRotateEnd(instance) {
+    instance.decreaseDragging();
+    instance.storeDragRotation(instance);
+  }
+
+  storeDragRotation(instance) {
     let skaters = _.cloneDeep(instance.props.skaters);
     instance.draggables.forEach((draggable, i) => {
       skaters[i].rotation = draggable.rotateDraggable.rotation
@@ -181,7 +210,16 @@ class TrackDragging extends React.Component {
     })
     if (!isRotating) instance.lastRotation = +(new Date());
 
-    instance.props.setSkaters(skaters)
+    instance.props.setSkaters(skaters);
+  }
+
+  decreaseDragging() {
+    let stillDragging = this.state.dragging - 1;
+    if (stillDragging < 0) throw Error('stillDragging was negative, should be at least 0');
+
+    this.setState({
+      dragging: stillDragging
+    });
   }
 
   onClickBody(evt) {
@@ -252,12 +290,14 @@ class TrackDragging extends React.Component {
 
   render() {
     return (
-      <Track trackContainerRef={this.trackContainer} skaters={this.props.skaters} />
+      <Track
+        trackContainerRef={this.trackContainer}
+        skaters={this.props.skaters}
+        skaterIsBeingDragged={this.state.dragging > 0}
+      />
     );
   }
 }
-
-
 
 //
 //  React Redux Connection

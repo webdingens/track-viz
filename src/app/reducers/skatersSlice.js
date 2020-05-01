@@ -1,6 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
+import PropTypes from 'prop-types';
 
 import { defaultSkaters } from '../../data/defaultSkaters.json';
+
+export const skaterPropTypes = PropTypes.exact({
+  x: PropTypes.number.isRequired,
+  y: PropTypes.number.isRequired,
+  rotation: PropTypes.number.isRequired,
+  team: PropTypes.oneOf(['A', 'B']).isRequired,
+  hasFocus: PropTypes.bool,
+  isPivot: PropTypes.bool,
+  isJammer: PropTypes.bool
+});
 
 export const skatersSlice = createSlice({
   name: 'skaters',
