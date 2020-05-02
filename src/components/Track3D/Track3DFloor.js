@@ -17,7 +17,7 @@ class Track3DMarkings extends React.PureComponent {
 
     this.floor = this.getFloor();
     this.floor.rotateX(-Math.PI / 2);
-    this.floor.position.y = -.001;
+    this.floor.position.y = -.003;
 
     this.props.scene.add(this.floor);
   }

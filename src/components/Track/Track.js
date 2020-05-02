@@ -9,9 +9,9 @@ import styles from './Track.module.scss';
 const Track = (props) => (
   <svg ref={props.trackContainerRef} className={styles.svg} viewBox="-17,-12 34,24" preserveAspectRatio="xMidYMid meet">
 
-    <TrackMarkings />
-
     <TrackPackMarkings skaters={props.skaters} />
+
+    <TrackMarkings />
 
     <TrackSkaters {...props} />
 

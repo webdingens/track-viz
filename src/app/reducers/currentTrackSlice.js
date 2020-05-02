@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-
 import { defaultSkaters } from '../../data/defaultSkaters.json';
 import { loadSlice } from '../storePersistence';
+import { getSortedPackBoundaries } from '../../utils/packFunctions';
 
 export const TRACK_ORIENTATIONS = {
   ORIENTATION_0_DEG: 0,
@@ -45,5 +45,8 @@ export const { setSkaters, setOrientation, setRefs, reset } = currentTrackSlice.
 
 export const selectCurrentTrack = state => state.currentTrack;
 export const selectCurrentSkaters = state => state.currentTrack.skaters;
+export const selectSortedPackBoundaries = state => {
+  return getSortedPackBoundaries(selectCurrentSkaters(state))
+}
 
 export default currentTrackSlice.reducer;

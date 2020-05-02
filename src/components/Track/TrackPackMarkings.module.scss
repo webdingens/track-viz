@@ -1,4 +1,13 @@
-path.pack {
-  // stroke: red;
-  fill: rgba(255,0,0,.2);
+$color: #ffa489;
+
+.pack path {
+  stroke: transparentize($color, .2);
+  stroke-width: .05;
+  fill: transparentize($color, .5);
+}
+
+.engagementZone path {
+  stroke: transparentize($color, .4);
+  stroke-width: .05;
+  fill: transparentize($color, .7);
 }

@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { WEBGL } from 'three/examples/jsm/WebGL';
 
 import Track3DMarkings from './Track3DMarkings';
+import Track3DPackMarkings from './Track3DPackMarkings';
 import Track3DSkaters from './Track3DSkaters';
 import Track3DFloor from './Track3DFloor';
 
@@ -33,7 +34,7 @@ class Track3D extends React.Component {
     this.animate = this.animate.bind(this);
     this.animateWithDamping = this.animateWithDamping.bind(this);
     this.onResize = this.onResize.bind(this);
-    this.onSkaterUpdated = this.onSkaterUpdated.bind(this);
+    this.onSubcomponentUpdated = this.onSubcomponentUpdated.bind(this);
   }
 
   componentDidMount() {
@@ -220,7 +221,7 @@ class Track3D extends React.Component {
     this.requestAnimateThrottled();
   }
 
-  onSkaterUpdated() {
+  onSubcomponentUpdated() {
     this.requestAnimateThrottled();
   }
 
@@ -250,9 +251,10 @@ class Track3D extends React.Component {
           <>
             <Track3DFloor scene={this.scene} />
             <Track3DMarkings scene={this.scene} />
+            <Track3DPackMarkings scene={this.scene} onUpdate={this.onSubcomponentUpdated} />
             <Track3DSkaters
               scene={this.scene}
-              onSkaterUpdated={this.onSkaterUpdated}
+              onSkaterUpdated={this.onSubcomponentUpdated}
             />
           </>
         ) : null }
