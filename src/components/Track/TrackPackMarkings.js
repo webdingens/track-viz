@@ -154,14 +154,22 @@ const groupBlockers = (blockers) => {
   }
 
   let toGroup = closeSkaters;
+
+  // console.log(_.cloneDeep(toGroup));
+
   while (toGroup.length > 0) {
+    // console.log('outer while loop');
     let tuple = toGroup[0];
     let newGroup = [tuple[0]];
     let checkedIdx = -1;
+    // console.log(_.cloneDeep(toGroup));
+    // console.log(_.cloneDeep(newGroup));
 
-    let hasChanged = true;
-    while (hasChanged && checkedIdx < newGroup.length -1) {
-      hasChanged = false;
+    while (checkedIdx < newGroup.length -1) {
+
+      // console.log('inner while loop');
+      // console.log(_.cloneDeep(newGroup));
+      // console.log(checkedIdx)
 
       let checking = newGroup[checkedIdx + 1];
 
@@ -169,16 +177,20 @@ const groupBlockers = (blockers) => {
         let t = toGroup[i];
         if (t[0] === checking || t[1] === checking) {
           let idxNew = t[0] === checking ? t[1] : t[0];
+          // console.log('idxNew: ', idxNew);
           if (newGroup.indexOf(idxNew) !== -1)  continue;
+          // console.log('pushing idxNew: ', idxNew);
           newGroup.push(idxNew);
-          hasChanged = true;
         }
       }
       checkedIdx++;
     }
+    // console.log('endwhile');
+    // console.log(_.cloneDeep(newGroup));
     toGroup = toGroup.filter((el) => {
       return newGroup.indexOf(el[0]) === -1 && newGroup.indexOf(el[1]) === -1 
     });
+    // console.log(_.cloneDeep(toGroup));
     ret.push(newGroup.map((skaterIdx) => skaters[skaterIdx]));
   }
 
@@ -269,13 +281,13 @@ const getDistanceOfTwoSkaters = (skaterA, skaterB) => {
 
 const getOutermostSkatersOfPack = (blockers) => {
   let possiblePack = getInBoundSkaters(blockers);
-  possiblePack = getSkatersWithPivotLineDistance(blockers);
+  possiblePack = getSkatersWithPivotLineDistance(possiblePack);
   possiblePack = groupBlockers(possiblePack);
-  // console.dir(possiblePack)
+  console.dir(possiblePack)
   possiblePack = filterOutGroupsWithOnlyOneTeam(possiblePack);
-  // console.dir(possiblePack)
+  console.dir(possiblePack)
   let pack = getLargestGroup(possiblePack);
-  // console.dir(pack)
+  console.dir(pack)
 
   if (!pack) return [];
 
@@ -292,7 +304,7 @@ const getSortedClosestPointsOnLine = (furthestSkaters = []) => {
 
   // set starting point of pack marking
   if ((distances[1] - distances[0]) >= (distances[0] - (distances[1] - MEASUREMENT_LENGTH))) {
-    return [distances[1], distances[0]];  // switch
+    return [distances[1] - MEASUREMENT_LENGTH, distances[0]];  // switch
   }
   // return switched for smaller arc
   return [distances[0], distances[1]];
@@ -310,6 +322,8 @@ const computePartialTrackShape = (p1, p2) => {
   // console.log('computePartialTrackShape');
 
   let data = '';
+  // console.log('p1: ', p1);
+  // console.log('p2: ', p2);
 
   let start = p1;
   let end = p2;
@@ -318,20 +332,20 @@ const computePartialTrackShape = (p1, p2) => {
     end += MEASUREMENT_LENGTH
   }
 
-  console.log('start: ', start);
-  console.log('end: ', end);
+  // console.log('start: ', start);
+  // console.log('end: ', end);
 
   let drawLength = 0;
   let currentIdx = 0;
 
-  while (drawLength < 2 * MEASUREMENT_LENGTH) {
+  while (drawLength < 4 * MEASUREMENT_LENGTH) {
     let newDrawLength = drawLength + drawShapes[currentIdx].length;
     let startBeforeEndOfSection = start < newDrawLength;
     let endBeforeEndOfSection = end < newDrawLength;
 
-    console.log('draw loop')
-    console.log('newDrawLength: ', newDrawLength)
-    console.log('start before end of section ', startBeforeEndOfSection);
+    // console.log('draw loop')
+    // console.log('newDrawLength: ', newDrawLength)
+    // console.log('start before end of section ', startBeforeEndOfSection);
     // console.log('end before end of section ', endBeforeEndOfSection);
     
     // console.log('draw Outer Line')
@@ -362,27 +376,33 @@ const computePartialTrackShape = (p1, p2) => {
   start = end;
   end = tmp;
 
+  // console.log('start: ', start);
+  // console.log('end: ', end);
+
   // draw the inside lines (drat, counterclockwise)
   while (drawLength > 0) {
     let newDrawLength = drawLength - drawShapes[currentIdx].length;
-    let endBeforeStartOfSection = end >= newDrawLength;
-    let startBeforeEndOfSection = start >= newDrawLength;
+    let stillNeedsDrawing = drawLength >= end;
+    let startBeforeEndOfSection = start >= drawLength;
+    let endBeforeStartOfSection = end < newDrawLength;
 
-    // console.log(endBeforeStartOfSection)
+    // console.log('newDrawLength: ', newDrawLength);
 
-    if (endBeforeStartOfSection) {
+    // console.log(stillNeedsDrawing)
+    // console.log(currentIdx)
+
+    if (stillNeedsDrawing) {
       data += ' ' + drawShapes[currentIdx].drawInnerLine({
-        start: startBeforeEndOfSection ? start - drawLength : false,
-        end: end - drawLength,
-        endNeedsDrawing: end < drawLength && endBeforeStartOfSection,
+        start: startBeforeEndOfSection ? drawLength : start - newDrawLength,
+        end: endBeforeStartOfSection ? 0 : end - newDrawLength
       });
     }
     drawLength = newDrawLength;
 
-    currentIdx = (currentIdx + 1) % drawShapes.length;
+    currentIdx = ((currentIdx - 1) + drawShapes.length) % drawShapes.length;
   }
 
-  // console.log(data);
+  data += 'Z';
 
   return (
     <path className={styles.pack} d={data} />
@@ -439,6 +459,56 @@ const angleToLineFirstHalfCircle = (angle) => {
   return ret;
 }
 
+const angleToLineSecondHalfCircle = (angle) => {
+  let ret;
+  let direction = new Vector2(Math.cos(angle), Math.sin(angle));
+  let pInner = C2.clone().add(direction.multiplyScalar(RADIUS_INNER));
+  /*
+  *   CIRCLE LINE INTERSECTION
+  *   https://mathworld.wolfram.com/Circle-LineIntersection.html
+  */
+  let p1 = C2.clone().add(direction).clone().sub(C2_OUTER);
+  let p2 = C2.clone().sub(C2_OUTER);
+  let d = p2.clone().sub(p1);
+  let dr = d.length();
+  let D = p1.x * p2.y - p2.x * p1.y;
+
+  let determinant = RADIUS_OUTER*RADIUS_OUTER * dr * dr - D * D;
+
+  // console.log('startNeedsDrawing: ', startNeedsDrawing);
+  // console.log('angle: ', angle * 180 / Math.PI + 'deg');
+  // console.log('pInner: ', pInner);
+  // console.log('p1: ', p1);
+  // console.log('p2: ', p2);
+  // console.log('d: ', d);
+  // console.log('dr: ', dr);
+  // console.log('D: ', D);
+
+  if (determinant !== 0) {
+    const sgn = (x) => x < 0 ? -1 : 1;
+
+    let x1 = (D * d.y + sgn(d.y) * d.x * Math.sqrt(determinant)) / (dr * dr);
+    let x2 = (D * d.y - sgn(d.y) * d.x * Math.sqrt(determinant)) / (dr * dr);
+
+    let y1 = (-D * d.x + Math.abs(d.y) * Math.sqrt(determinant)) / (dr * dr);
+    let y2 = (-D * d.x - Math.abs(d.y) * Math.sqrt(determinant)) / (dr * dr);
+
+    let pOuter1 = (new Vector2(x1, y1)).add(C2_OUTER);
+    let pOuter2 = (new Vector2(x2, y2)).add(C2_OUTER);
+
+    // console.log('pOuter1: ', pOuter1)
+    // console.log('pOuter2: ', pOuter2)
+
+    let pOuter = pOuter1.x < pOuter2.x ? pOuter1 : pOuter2;
+    // console.log('pOuter: ', pOuter)
+    // console.log(C1_OUTER)
+
+    ret = [pInner, pOuter];
+  }
+
+  return ret;
+}
+
 const drawShapes = [
   {
     part: 'First Half Circle',
@@ -478,7 +548,9 @@ const drawShapes = [
       return data;
     },
     drawInnerLine({ start, end }) {
-      // console.log('drawInnerLine')
+      // console.log('drawInnerLine First Apex')
+      // console.log('start: ', start);
+      // console.log('end: ', end);
       let data = '';
       let startAngle;
       let endAngle;
@@ -495,7 +567,7 @@ const drawShapes = [
         endAngle = 0;
       }
 
-      let endAngleRad = -(endAngle * Math.PI / 180) - Math.PI / 2;
+      let endAngleRad = -(endAngle * Math.PI / 180) + Math.PI / 2;
       // console.log(startAngle)
       // console.log(endAngle)
       // console.log(endAngleRad)
@@ -514,32 +586,145 @@ const drawShapes = [
   {
     part: 'First Straightaway',
     length: LINE_DIST,
-    drawOuterLine(p) {
-      return '';
+    drawOuterLine({ start, startNeedsDrawing, end }) {
+      // console.log('drawOuterLine')
+      let data = '';
+      let xEnd = end ? end : LINE_DIST;
+      let pEnd = new Vector2(C1_OUTER.x - xEnd, F_OUTER_TOP(C1_OUTER.x  - xEnd));
+
+      if (startNeedsDrawing) {
+        let pStart = new Vector2(C1_OUTER.x - start, F_OUTER_TOP(C1_OUTER.x - start));
+        let pStartInner = new Vector2(C1.x - start, -RADIUS_INNER);
+        data = `M${pStartInner.x},${pStartInner.y}L${pStart.x},${pStart.y}`;
+      }
+
+      data += ` L${pEnd.x},${pEnd.y}`;
+
+      if (end) {
+        let pEndInner = new Vector2(C1_OUTER.x - xEnd, -RADIUS_INNER);
+        data += ` L${pEndInner.x},${pEndInner.y}`;
+      }
+
+      return data;
     },
-    drawInnerLine(p) {
-      return '';
-    }
+    drawInnerLine({ start, end }) {
+      // console.log('drawInnerLine First Straightaway')
+      // console.log('start: ', start)
+      // console.log('end: ', end)
+      let pEnd = new Vector2(C1.x - end, -RADIUS_INNER);
+
+      return ` L${pEnd.x},${pEnd.y}`;
+    },
   },
   {
     part: 'Second Half Circle',
     length: CIRCUMFERENCE_HALF_CIRCLE,
-    drawOuterLine(p) {
-      return '';
+    drawOuterLine({ start, startNeedsDrawing, end }) {
+      let angle = start / MEASUREMENT_RADIUS;
+      angle = -angle + Math.PI / 2 + Math.PI;  // correct orientiation
+      let data = '';
+
+      if (startNeedsDrawing) {
+        let [pInner, pOuter] = angleToLineSecondHalfCircle(angle);
+
+        if (pOuter && pOuter.x < C2_OUTER.x) {
+          data = `M${pInner.x},${pInner.y}L${pOuter.x},${pOuter.y}`;
+        } else {
+          console.log('didn\'t find an intersection');
+        }
+      }
+
+      if (end) {
+        let endAngle = ((end / MEASUREMENT_RADIUS)) * (180 / Math.PI);
+        let startAngle = ((start / MEASUREMENT_RADIUS)) * (180 / Math.PI);
+        let [pInner, pOuter] = angleToLineSecondHalfCircle(-(end / MEASUREMENT_RADIUS) + Math.PI / 2  + Math.PI);
+
+        data += ` A ${RADIUS_OUTER} ${RADIUS_OUTER} ${endAngle - startAngle} 0 0 ${pOuter.x},${pOuter.y}`;
+
+        // draw inward line
+        data += ` L${pInner.x},${pInner.y}`;
+      } else {
+        let endAngle = ((start / MEASUREMENT_RADIUS)) * (180 / Math.PI);
+        // draw remaining arc
+        data += ` A ${RADIUS_OUTER} ${RADIUS_OUTER} ${180 - endAngle} 0 0 -5.33,8.385`;
+      }
+
+      // console.log(data)
+
+      return data;
     },
-    drawInnerLine(p) {
-      return '';
-    }
+    drawInnerLine({ start, end }) {
+      // console.log('drawInnerLine First Apex')
+      // console.log('start: ', start);
+      // console.log('end: ', end);
+      let data = '';
+      let startAngle;
+      let endAngle;
+
+      if (start) {
+        startAngle = ((start / MEASUREMENT_RADIUS)) * (180 / Math.PI);
+      } else {
+        startAngle = 180;
+      }
+
+      if (end) {
+        endAngle = ((end / MEASUREMENT_RADIUS)) * (180 / Math.PI);
+      } else {
+        endAngle = 0;
+      }
+
+      let endAngleRad = -(endAngle * Math.PI / 180) + Math.PI / 2 + Math.PI;
+      // console.log(startAngle)
+      // console.log(endAngle)
+      // console.log(endAngleRad)
+      let direction = new Vector2(Math.cos(endAngleRad), Math.sin(endAngleRad));
+      let pInner = C2.clone().add(direction.multiplyScalar(RADIUS_INNER));
+
+      // console.dir(pInner)
+
+      data += ` A ${RADIUS_INNER} ${RADIUS_INNER} ${endAngle - startAngle} 0 1 ${pInner.x},${pInner.y}`;
+
+      // console.log(data);
+
+      return data;
+    },
   },
   {
     part: 'Second Straightaway',
     length: LINE_DIST,
-    drawOuterLine(p) {
-      return '';
+    drawOuterLine({ start, startNeedsDrawing, end }) {
+      // console.log('drawOuterLine Second Straightaway')
+      let data = '';
+      let xEnd = end ? end : LINE_DIST;
+      let pEnd = new Vector2(C2_OUTER.x + xEnd, F_OUTER_BOTTOM(C2_OUTER.x  + xEnd));
+
+      if (startNeedsDrawing) {
+        let pStart = new Vector2(C2_OUTER.x + start, F_OUTER_BOTTOM(C2_OUTER.x + start));
+        let pStartInner = new Vector2(C2.x + start, RADIUS_INNER);
+        data = `M${pStartInner.x},${pStartInner.y}L${pStart.x},${pStart.y}`;
+      }
+
+      data += ` L${pEnd.x},${pEnd.y}`;
+
+      // console.log('start: ', start);
+      // console.log('end: ', end);
+      if (end) {
+        let pEndInner = new Vector2(C2_OUTER.x + xEnd, RADIUS_INNER);
+        // console.log('pEndInner', pEndInner);
+        data += ` L${pEndInner.x},${pEndInner.y}`;
+      }
+
+
+      return data;
     },
-    drawInnerLine(p) {
-      return '';
-    }
+    drawInnerLine({ start, end }) {
+      // console.log('drawInnerLine Second Straightaway')
+      // console.log('start: ', start)
+      // console.log('end: ', end)
+      let pEnd = new Vector2(C2.x + end, RADIUS_INNER);
+
+      return ` L${pEnd.x},${pEnd.y}`;
+    },
   }
 ];
 
@@ -559,6 +744,7 @@ const renderPackShape = (skaters) => {
   return (
     <>
     {packPresent ? computePartialTrackShape(...packBounds) : null}
+    {packPresent ? computePartialTrackShape(...engangementZoneBounds) : null}
     </>
   )
 }

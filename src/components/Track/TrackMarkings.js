@@ -20,7 +20,6 @@ export default () => (
     <path d="M-5.33,-3.81 A 3.81 3.81 180 1 0 -5.33,3.81" />
     <path d="M5.33,3.81 A 3.81 3.81 180 1 0 5.33,-3.81" />
 
-
     {/* Outer Track Boundary */}
 
     {/* Figure 4 */}
