@@ -1,7 +1,6 @@
 import { Vector2 } from 'three';
 import _ from 'lodash';
 import * as THREE from 'three';
-import { ConvexGeometry } from 'three/examples/jsm/geometries/ConvexGeometry';
 
 export const C1 = new Vector2(5.33, 0);
 export const C2 = new Vector2(-5.33, 0);
@@ -12,6 +11,7 @@ export const RADIUS_OUTER = 8.08;
 export const MEASUREMENT_RADIUS = 3.81 + 1.6;
 export const CIRCUMFERENCE_HALF_CIRCLE = Math.PI * MEASUREMENT_RADIUS;
 export const ENGAGEMENT_ZONE_DISTANCE_TO_PACK = 6.10;
+export const SKATER_RADIUS = .3;
 
 export const F_OUTER_TOP = (x) => {
   let m = -.61/10.66;
@@ -36,47 +36,61 @@ export const LINE_DIST = LINE1.p1.distanceTo(LINE1.p2);
 
 export const MEASUREMENT_LENGTH = 2 * CIRCUMFERENCE_HALF_CIRCLE + 2 * LINE_DIST;
 
-
-const getInBoundSkaters = (blockers) => {
-  return blockers.filter((blocker) => {
-    let pos = new Vector2(blocker.x, blocker.y);  // blocker position
+/**
+ * Get Skaters with Derived Property inBounds
+ * @param {object} skaters 
+ */
+export const getSkatersWDPInBounds = (skaters) => {
+  return skaters.map((skater) => {
+    let pos = new Vector2(skater.x, skater.y);  // blocker position
+    let ret = _.cloneDeep(skater);
 
     // first half circle
     if (pos.x > C1.x) {
       // not inside the track nor outside
-      if (C1.distanceTo(pos) < RADIUS_INNER || C1_OUTER.distanceTo(pos) > RADIUS_OUTER) return false;
+      if (C1.distanceTo(pos) < RADIUS_INNER + SKATER_RADIUS || C1_OUTER.distanceTo(pos) > RADIUS_OUTER - SKATER_RADIUS) {
+        ret.inBounds = false;
+        return ret;
+      }
     }
 
     // straightaway -y
     if (pos.x <= C1.x && pos.x >= C2.x && pos.y <= 0) {
       // not inside the track nor outside
-      if (pos.y > -RADIUS_INNER || F_OUTER_TOP(pos.x) > pos.y) {
-        return false;
+      if (pos.y > -RADIUS_INNER - SKATER_RADIUS || F_OUTER_TOP(pos.x) + SKATER_RADIUS > pos.y) {
+        ret.inBounds = false;
+        return ret;
       }
     }
 
     // second half circle
     if (pos.x < C2.x) {
       // not inside the track nor outside
-      if (C2.distanceTo(pos) < RADIUS_INNER || C2_OUTER.distanceTo(pos) > RADIUS_OUTER) return false;
+      if (C2.distanceTo(pos) < RADIUS_INNER + SKATER_RADIUS || C2_OUTER.distanceTo(pos) > RADIUS_OUTER - SKATER_RADIUS) {
+        ret.inBounds = false;
+        return ret;
+      }
     }
 
     // straightaway y
     if (pos.x <= C1.x && pos.x >= C2.x && pos.y > 0) {
       // not inside the track nor outside
-      if (pos.y < RADIUS_INNER || F_OUTER_BOTTOM(pos.x) < pos.y)
-        return false;
+      if (pos.y < RADIUS_INNER + SKATER_RADIUS || F_OUTER_BOTTOM(pos.x) - SKATER_RADIUS < pos.y) {
+        ret.inBounds = false;
+        return ret;
+      }
     }
 
-    return true;
+    ret.inBounds = true;
+    return ret;
   });
 }
 
-const getSkatersWithPivotLineDistance = (blockers) => {
-  let ret = _.cloneDeep(blockers);
-  ret.forEach((blocker, idx, array) => {
+export const getSkatersWDPPivotLineDistance = (skaters) => {
+  let ret = _.cloneDeep(skaters);
+  ret.forEach((skater, idx, array) => {
     let dist = 0; // distance to pivot line (+y)
-    let pos = new Vector2(blocker.x, blocker.y);  // blocker position
+    let pos = new Vector2(skater.x, skater.y);  // blocker position
 
     // first half circle
     if (pos.x > C1.x) {
@@ -278,9 +292,10 @@ const filterOutGroupsWithOnlyOneTeam = (groupedBlockers) => {
   })
 }
 
-const getOutermostSkatersOfPack = (blockers) => {
-  let possiblePack = getInBoundSkaters(blockers);
-  possiblePack = getSkatersWithPivotLineDistance(possiblePack);
+export const getPack = (skaters) => {
+  let blockers = skaters.filter((skater) => !skater.isJammer);
+  // only in bounds blockers
+  let possiblePack = blockers.filter((blocker) => blocker.inBounds);
   possiblePack = groupBlockers(possiblePack);
   // console.dir(possiblePack)
   possiblePack = filterOutGroupsWithOnlyOneTeam(possiblePack);
@@ -289,8 +304,7 @@ const getOutermostSkatersOfPack = (blockers) => {
   // console.dir(pack)
 
   if (!pack) return [];
-
-  return getSkatersFurthestApart(pack);
+  return pack;
 }
 
 const getSortedClosestPointsOnLine = (furthestSkaters = []) => {
@@ -309,17 +323,38 @@ const getSortedClosestPointsOnLine = (furthestSkaters = []) => {
   return [distances[0], distances[1]];
 }
 
-export const getSortedPackBoundaries = (skaters) => {
-  let blockers = skaters.filter((skater) => !skater.isJammer);
-  let outermostSkaters = getOutermostSkatersOfPack(blockers);
+export const getSortedPackBoundaries = (pack) => {
+  if (pack.length < 2) return false;
 
-  let packExists = outermostSkaters.length === 2;
-  if (!packExists) {
-    return false;
-  }
+  let outermostSkaters = getSkatersFurthestApart(pack);
   return getSortedClosestPointsOnLine(outermostSkaters);
 }
 
+const isSkaterInZoneBounds = (skater, packBoundaries) => {
+  let p = skater.pivotLineDist;
+  let ret = false;
+  if ((p >= packBoundaries[0] && p <= packBoundaries[1])
+  || (p < packBoundaries[0] && (p + MEASUREMENT_LENGTH) <= packBoundaries[1])
+  || (p > packBoundaries[1] && (p - MEASUREMENT_LENGTH) >= packBoundaries[0])) {
+    ret = true;
+  }
+  return ret;
+}
+
+export const getSkatersWDPInPlayPackSkater = (skaters, packBoundaries) => {
+  return skaters.map((skater) => {
+    let ret = _.cloneDeep(skater);
+
+    if (skater.isJammer) {
+      ret.inPlay = skater.inBounds;
+    } else {
+      ret.inPlay = skater.inBounds && isSkaterInZoneBounds(skater, [packBoundaries[0] - ENGAGEMENT_ZONE_DISTANCE_TO_PACK, packBoundaries[1] + ENGAGEMENT_ZONE_DISTANCE_TO_PACK]);
+
+      ret.packSkater = skater.inBounds && isSkaterInZoneBounds(skater,packBoundaries);
+    }
+    return ret;
+  })
+}
 
 
 /*

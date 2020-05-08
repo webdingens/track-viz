@@ -1,7 +1,7 @@
 .splitView {
   display: flex;
   align-items: stretch;
-  min-height: 100vh;
+  height: 100%;
 
   .column {
     flex: 1 0 auto;
@@ -11,8 +11,9 @@
     flex-direction: column;
     justify-content: center;
 
+    position: relative;
+
     &:not(:last-child) {
-      position: relative;
 
       &:after {
         content: '';

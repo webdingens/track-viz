@@ -1,0 +1,20 @@
+.PointerLockInstructions {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  padding: 2em;
+
+  background: transparentize(#fff,.5);
+
+  button {
+    margin-bottom: 2em;
+    color: #fff;
+    background: #000;
+    border: 0;
+    padding: .75em 2em;
+
+    text-transform: uppercase;
+  }
+}

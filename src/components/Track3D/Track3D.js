@@ -3,38 +3,35 @@ import { connect } from 'react-redux';
 import * as THREE from 'three';
 import { WEBGL } from 'three/examples/jsm/WebGL';
 
-import Track3DMarkings from './Track3DMarkings';
-import Track3DPackMarkings from './Track3DPackMarkings';
-import Track3DSkaters from './Track3DSkaters';
-import Track3DFloor from './Track3DFloor';
-
-import { MapControls } from 'three/examples/jsm/controls/OrbitControls';
-
+import { selectGeneralSettings } from '../../app/reducers/settingsGeneralSlice';
 import {
-  selectSettings
-} from '../../app/reducers/settingsSlice';
+  selectTrack3DCamera,
+  selectTrack3DVRSupport,
+} from '../../app/reducers/settingsTrack3DSlice';
 
 import styles from './Track3D.module.scss';
+import Track3DDynamic from './Track3DDynamic';
+
 
 const GRAPHICS_QUALITY = 1;
-const CONTROLS_WITH_DAMPING = false;
 
 class Track3D extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      rendererInitialized: false
+      rendererInitialized: false,
+      contextType: '',
     }
 
+    // ref to attach our render canvas to
     this.rendererContainer = createRef();
+
+    // store availability because of DOM manipulation
     this.webglAvailable = WEBGL.isWebGLAvailable();
     this.webgl2Available = WEBGL.isWebGL2Available();
 
-    this.animate = this.animate.bind(this);
-    this.animateWithDamping = this.animateWithDamping.bind(this);
     this.onResize = this.onResize.bind(this);
-    this.onSubcomponentUpdated = this.onSubcomponentUpdated.bind(this);
   }
 
   componentDidMount() {
@@ -43,38 +40,108 @@ class Track3D extends React.Component {
     this.initRenderer();
     this.initScene();
     this.initCamera();
+    this.initWebXR(); // TODO: only init if necessary
 
-    // this.setupCubeScene();
-    // this.setupLineScene();
-    this.setupTrackScene();
-
-    // start animation loop
-    this.animate();
+    this.setupTrackLights();
 
     // add event listeners
     window.addEventListener('resize', this.onResize);
   }
 
+  /*
+  * Don't update if unnecessary things from setting.general changed
+  * Still needed?
+  */
+  shouldComponentUpdate(nextProps, nextState) {
+    if (!this.state.rendererInitialized && nextState.rendererInitialized) return true;
+    return false;
+  }
+
+  componentWillUnmount() {
+    // Cleanup
+
+    // cancel the loop before unmounting
+    if (this.animationRequest) cancelAnimationFrame(this.animationRequest);
+    if (this.controls) this.controls.dispose();
+    if (this.renderer) this.renderer.dispose();
+
+    // remove event listeners
+    window.removeEventListener('resize', this.onResize);
+  }
+
+  //
+  //  Sync props for the renderer
+  //
+  syncWithNextProps(nextProps) {
+    // Split View has changed
+    if (this.didEditorVisibilitiesChange(nextProps)) {
+      this.onResize();
+    }
+  }
+
+
+  //
+  //
+  //        PROPERTY UPDATES
+  //
+  //
+
+  /**
+   *  Check if user changed the split view settings
+   *
+   * @param {object} props
+   * @returns {boolean}
+   */
+  didEditorVisibilitiesChange(props) {
+    return this.props.settings.general.trackEditorVisible !== props.settings.general.trackEditorVisible || this.props.settings.general.track3DVisible !== props.settings.general.track3DVisible;
+  }
+
+  /**
+   *  Initialize the renderer with either webgl2 or webgl1 context
+   */
   initRenderer() {
-    // Select WebGL 1 or 2
-    if ( this.webgl2Available ) {
-      let canvas = document.createElement( 'canvas' );
-      let context = canvas.getContext( 'webgl2', { alpha: false } );  // TODO: why alpha false?
-      this.renderer = new THREE.WebGLRenderer({
-        canvas: canvas,
-        context: context
-      });
-    } else {
-      // use Web GL 1
-      this.renderer = new THREE.WebGLRenderer();
+    let container = this.rendererContainer.current;   // ref
+
+    // remove canvas in case we need to reinitialize the renderer
+    if (this.state.rendererInitialized) {
+      container.removeChild( this.renderer.domElement );
     }
 
-    let container = this.rendererContainer.current;
+    // Select WebGL context with Webgl 1 or 2
+    if ( this.webgl2Available ) {
 
-    this.renderer.setPixelRatio( window.devicePixelRatio );
-    this.updateRendererSize();
+      let canvas = document.createElement( 'canvas' );
+      let context = canvas.getContext('webgl2', {
+        alpha: false, // no alpha channel, no see through
+        xrCompatible: true,
+        // powerPreference: 'low-power' || 'high-power' || 'default'  // maybe power options as a setting?
+      });
+      this.renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        context: context,
+        antialias: true
+      });
+      this.setState({
+        contextType: 'webgl2'
+      });
 
-    this.renderer.domElement.classList.add(styles.renderer)  // add styling
+    } else {
+
+      // use Web GL 1 if no webgl2 is available
+      this.renderer = new THREE.WebGLRenderer({
+        antialias: true
+      });
+      this.setState({
+        contextType: 'webgl1'
+      });
+
+    }
+
+    this.renderer.setPixelRatio( window.devicePixelRatio ); // retina or not?
+    this.updateRendererSize();  // set size of canvas
+
+    // add a class to the canvas dom element
+    this.renderer.domElement.classList.add(styles.renderer)  
 
     container.appendChild( this.renderer.domElement );
 
@@ -92,13 +159,33 @@ class Track3D extends React.Component {
     let container = this.rendererContainer.current;
     let bbox = container.getBoundingClientRect();
     this.camera = new THREE.PerspectiveCamera( 75, bbox.width / bbox.height, 0.1, 1000 );
-    // this.camera = new THREE.OrthographicCamera( bbox.width / - 2, bbox.width / 2, bbox.height / 2, bbox.height / - 2, -2000, 2000 );
+
+    // copy from properties
+    this.camera.position.fromArray(this.props.camera.position);
+    this.camera.rotation.fromArray(this.props.camera.rotation);
   }
 
-  setupTrackScene() {
+  initWebXR() {
+    // Web XR
+    this.renderer.xr.enabled = true;
+    this.renderer.xr.setReferenceSpaceType( 'local' );
+    this.currentXRSession = null;
 
-    let light;
+    this.viewerXR = new THREE.Group();  // Viewer, aka. skater, aka. person
+
+    // TODO: setup with XR device dimensions ? yes/no?
+    this.xrCamera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000 );
+    this.viewerXR.add(this.xrCamera);
     
+    this.scene.add(this.viewerXR);
+  }
+
+  /**
+   *  Add some light sources to the track for shading
+   */
+  setupTrackLights() {
+    let light;
+
     light = new THREE.PointLight( 0xffffff, 1, 100 );
     light.position.set( -5, 10, 7 );
     this.scene.add( light );
@@ -115,77 +202,8 @@ class Track3D extends React.Component {
     light.position.set( -5, 10, -7 );
     this.scene.add( light );
 
-
     light = new THREE.AmbientLight( 0xffffff, .4 );
     this.scene.add( light );
-
-    // move camera back so we can see the lines
-    this.camera.position.set( 0, 1.7, 11 );
-    this.camera.lookAt( 0, 0, 0 );
-
-
-    this.controls = new MapControls( this.camera, this.renderer.domElement );
-    this.controls.screenSpacePanning = false;
-    this.controls.minDistance = 3;
-    this.controls.maxDistance = 50;
-    this.controls.maxPolarAngle = Math.PI / 2;
-
-    if (CONTROLS_WITH_DAMPING) {
-      this.controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
-      this.controls.dampingFactor = 0.05;
-      const controlsEventHandler = () => {
-        if (!this.animationRequest) this.animationRequest = requestAnimationFrame( this.animateWithDamping );
-      }
-      this.controls.addEventListener('start', controlsEventHandler);
-      this.controls.addEventListener('change', controlsEventHandler);
-    } else {
-      this.controls.addEventListener('change', () => {
-        this.requestAnimateThrottled();
-      });
-    }
-  }
-
-  /*
-  *   Animation Loop
-  */
-  animate() {
-    // this.animationRequest = requestAnimationFrame( this.animate );
-
-    this.controls.update();
-    this.renderer.render( this.scene, this.camera );
-
-    this.animationRequest = null;
-  }
-
-
-  /**
-   * Checks whether we have an animation request already
-   * going before requesting another
-   *
-   * @returns void
-   */
-  requestAnimateThrottled() {
-    if (!this.animationRequest) this.animationRequest = requestAnimationFrame( this.animate );
-  }
-
-  animateWithDamping() {
-    this.animationRequest = requestAnimationFrame( this.animateWithDamping );
-
-    let updated = this.controls.update();
-    this.renderer.render( this.scene, this.camera );
-
-    if (!updated) {
-      cancelAnimationFrame(this.animationRequest);
-      this.animationRequest = null;
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.settings.trackEditorVisible !== prevProps.settings.trackEditorVisible || this.props.settings.track3DVisible !== prevProps.settings.track3DVisible) {
-      this.onResize();
-    } else {
-      this.requestAnimateThrottled(); // already called with this.onResize
-    }
   }
 
   updateCamera() {
@@ -193,10 +211,6 @@ class Track3D extends React.Component {
       let container = this.rendererContainer.current;
       let bbox = container.getBoundingClientRect();
       this.camera.aspect = bbox.width / bbox.height;
-      // this.camera.left = bbox.width / - 2;
-      // this.camera.right = bbox.width / 2;
-      // this.camera.top = bbox.height / 2;
-      // this.camera.bottom = bbox.height / - 2;
       this.camera.updateProjectionMatrix();
     }
   }
@@ -217,24 +231,6 @@ class Track3D extends React.Component {
   onResize() {
     this.updateCamera();
     this.updateRendererSize();
-    
-    this.requestAnimateThrottled();
-  }
-
-  onSubcomponentUpdated() {
-    this.requestAnimateThrottled();
-  }
-
-  componentWillUnmount() {
-    // Cleanup
-
-    // cancel the loop before unmounting
-    if (this.animationRequest) cancelAnimationFrame(this.animationRequest);
-    if (this.controls) this.controls.dispose();
-    if (this.gui) this.gui.destroy();
-
-    // remove event listeners
-    window.removeEventListener('resize', this.onResize);
   }
 
   render() {
@@ -244,19 +240,16 @@ class Track3D extends React.Component {
         className={styles.rendererContainer}
       >
         { !this.webglAvailable ? (
-          <div>{ WEBGL.getWebGLErrorMessage() }</div>
+          <div dangerouslySetInnerHTML={{ __html: WEBGL.getWebGLErrorMessage().innerHTML }}></div>
         ) : null }
 
         { this.state.rendererInitialized ? (
-          <>
-            <Track3DFloor scene={this.scene} />
-            <Track3DMarkings scene={this.scene} />
-            <Track3DPackMarkings scene={this.scene} onUpdate={this.onSubcomponentUpdated} />
-            <Track3DSkaters
-              scene={this.scene}
-              onSkaterUpdated={this.onSubcomponentUpdated}
-            />
-          </>
+          <Track3DDynamic
+            renderer={this.renderer}
+            camera={this.camera}
+            scene={this.scene}
+            rendererContainer={this.rendererContainer}
+          />
         ) : null }
       </div>
     )
@@ -265,7 +258,11 @@ class Track3D extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    settings: selectSettings(state)
+    settings: {
+      general: selectGeneralSettings(state),
+    },
+    camera: selectTrack3DCamera(state),
+    vrSupport: selectTrack3DVRSupport(state),
   }
 }
 

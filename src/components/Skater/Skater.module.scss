@@ -49,6 +49,23 @@
       display: initial;
     }
   }
+
+  &--pack-skater {
+    .skaterBackground,
+    .pivotOutline {
+      stroke: purple;
+    }
+  }
+
+  $root: &;
+
+  &:not(#{$root}--in-play),
+  &:not(#{$root}--in-bounds) {
+    .skaterBackground,
+    .pivotOutline {
+      stroke: red;
+    }
+  }
 }
 
 .shield {

@@ -1,31 +1,31 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createSelector } from '@reduxjs/toolkit';
 import { defaultSkaters } from '../../data/defaultSkaters.json';
-import { loadSlice } from '../storePersistence';
-import { getSortedPackBoundaries } from '../../utils/packFunctions';
+import { loadSlice, cleanupSlice } from '../storePersistence';
+import {
+  getSortedPackBoundaries,
+  getPack,
+  getSkatersWDPInBounds,
+  getSkatersWDPInPlayPackSkater,
+  getSkatersWDPPivotLineDistance,
+} from '../../utils/packFunctions';
 
-export const TRACK_ORIENTATIONS = {
-  ORIENTATION_0_DEG: 0,
-  ORIENTATION_90_DEG: 90,
-  ORIENTATION_180_DEG: 180,
-  ORIENTATION_270_DEG: 270
-}
 
 const defaultTrack = {
   skaters: defaultSkaters,
-  orientation: TRACK_ORIENTATIONS.ORIENTATION_0_DEG,
-  refs: []
+  refs: [],
 };
+
+let initialState = cleanupSlice(
+  loadSlice('currentTrack'),
+  defaultTrack
+);
 
 export const currentTrackSlice = createSlice({
   name: 'currentTrack',
-  initialState: loadSlice('currentTrack') || defaultTrack,
+  initialState: initialState || defaultTrack,
   reducers: {
     setSkaters: (state, action) => {
       state.skaters = action.payload;
-    },
-    setOrientation: (state, action) => {
-      if (TRACK_ORIENTATIONS.keys().indexOf(action.payload) !== -1)
-        state.orientation = action.payload;
     },
     setRefs: (state, action) => {
       state.refs = action.payload;
@@ -33,11 +33,11 @@ export const currentTrackSlice = createSlice({
     reset: (state) => {
       state.refs = [];
       state.skaters = defaultSkaters;
-    }
+    },
   },
 });
 
-export const { setSkaters, setOrientation, setRefs, reset } = currentTrackSlice.actions;
+export const { setSkaters, setOrientation, setRefs, reset, resetCamera } = currentTrackSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
@@ -45,8 +45,36 @@ export const { setSkaters, setOrientation, setRefs, reset } = currentTrackSlice.
 
 export const selectCurrentTrack = state => state.currentTrack;
 export const selectCurrentSkaters = state => state.currentTrack.skaters;
-export const selectSortedPackBoundaries = state => {
-  return getSortedPackBoundaries(selectCurrentSkaters(state))
-}
+
+/**
+ * Current Skaters Reselection with InBounds
+ */
+export const selectCurrentSkatersWDPInBounds = createSelector(
+  selectCurrentSkaters,
+  getSkatersWDPInBounds
+);
+
+/**
+ * Current Skaters Reselection with InBounds
+ */
+export const selectCurrentSkatersWDPPivotLineDistance = createSelector(
+  selectCurrentSkatersWDPInBounds,
+  getSkatersWDPPivotLineDistance
+);
+
+export const selectSortedPackBoundaries = createSelector(
+  selectCurrentSkatersWDPPivotLineDistance,
+  skaters => getSortedPackBoundaries(getPack(skaters))
+);
+
+/**
+ * Current Skaters Reselection with derived properties
+ * such as inBounds, packSkater, outOfPlay
+ */
+export const selectCurrentSkatersWDP = createSelector(
+  selectCurrentSkatersWDPPivotLineDistance,
+  selectSortedPackBoundaries,
+  getSkatersWDPInPlayPackSkater
+);
 
 export default currentTrackSlice.reducer;

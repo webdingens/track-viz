@@ -1,5 +1,4 @@
 import React from 'react';
-import * as THREE from 'three';
 import { connect } from 'react-redux';
 
 import { selectSortedPackBoundaries } from '../../app/reducers/currentTrackSlice';

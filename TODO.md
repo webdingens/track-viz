@@ -14,19 +14,16 @@
 - add option for camera height for smaller/taller skaters (benefits?)
 - add side by side 3D option / split screen, with camera as an entity on the track editor so we can move it around (having a still image from a stream/game, what is it that we see? this? maybe not -> move skaters around a bit -> yes more like this)
 - add feature description (or make the GUI self explanatory)
+- mobile view
 
 ### Track Editor
 
-- add inPlay derived property for Skaters
-- add partOfPack derived property for Skaters
-- add Overlay for Engagement Zone
-- add history of track editor (good thing we only update after drag)
+- add history of track editor (dispatch new history entry after drag not during)
 - reorder skaters so that skaters with focus are rendered before others, so the handle is visible during overlap
 - choose better colors
 - change font for blocker label
 - add buttons for changing the orientation (+90, 180, 270 degree)
 - add possibility to make a brace if skaters are near enough (auto brace? little wiggly arms?)
-- add reset option to load default skater data
 - add Option to move Skaters 180 degrees around the track (mirroring around the center)
 - add Option to move Scene by any degree around the track (which we could then animate)
   - needs collision detection
@@ -40,7 +37,6 @@
 
 ### 3D View
 
-- save camera to the state
 - create models for skaters in 3D
   - spheres, cylinders or sth.
   - create small sphere with face in Blender
@@ -48,6 +44,7 @@
     - partial spheres with Jammer and Pivot texture
   - realistic skater models maybe later (use make human and modify ice skating boots asset in documents folder)
 - create a skating hall (flat geometry, frontside rendering, with textures)
+  - floor with different scenarios: plastic tiles (ice rink overlay), linoleum, concrete
 - replace lines with shape + fill so we have lines with thickness
 - click skaters to switch camera into skater position and rotation (camera switch like google street view?)
 - compare drag controls from the three examples to MapControls
@@ -56,11 +53,12 @@
 - load skater data/models/positions into the scene
 - add VR option, so you can move camera / skater around the track
 - add collision detection of 3D models (cylinder first, realistic skater model later) -> for what movement?
-- compare loadable component and React.lazy, choose one, then start code splitting so we only load threejs in 3D View route
+- compare loadable component and React.lazy, choose one, then start code splitting so we only load threejs when SplitView shows Track3D
 - Setting: WebGL or alternative threejs renderers for devices without webgl
 - Setting: Resolution: Full, 75%, 50%, 25% for performance. Try different values
 - Setting: perspective camera FOV (Perspektivische Verzerrung [20 - 75])
 - Setting: Orthographic Camera (just perspective camera should be fine)
+- Setting: FPS controls
 - add first person camera / movement
   - pointer lock controls (three.js)
   - look at skaters (click then look at skater)
@@ -68,7 +66,8 @@
 
 ### VR View
 
-- add VR Option so we can run around in the scene
+- copy over current camera state to vr scene
+- add Controls so we can run around in the scene
 
 ### Timeline
 
@@ -99,6 +98,9 @@ X Add collision handling for circles
 X add possibility to rotate skaters (click focus, show handles for turning)
 X show direction indicators on skaters (don't use arrows or anything pointy, but fov cone) -> Shield (helm shield)
 X Update Drag Position/Rotation while dragging so it's displayed on the Track3D
+X compute Pack / Engagement Zone
+X display Pack / Engagement Zone
+X add inPlay derived property for Skaters
 
 ### Done: 3D View
 
@@ -107,3 +109,14 @@ X create track in three js
 X add Resize Updates for Renderer
 X add camera option for desktop
   X move around
+X add reset option to load default skater data
+X display Pack / Engagement Zone in 3D
+X save camera to the state
+
+### Done: VR View
+
+X Finish making the VRButton a React Component
+X connect the vrSessionRunning variable to the button component
+X connect vrModeEnabled to Track3D
+X switch rendering loops when vrModeEnabled changed
+X add VR Option so we can look around the scene

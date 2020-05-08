@@ -4,6 +4,7 @@
 */
 
 import throttle from 'lodash/throttle';
+import _ from 'lodash';
 
 export const loadState = () => {
   try {
@@ -19,11 +20,21 @@ export const loadState = () => {
 
 export const loadSlice = (slice = 'sliceSkaters') => {
   let state = loadState();
-  if (state && state.hasOwnProperty(slice)) {
-    return state[slice];
-  }
-  return undefined;
+  return _.get(state, slice, {});
 }
+
+/*
+* Removes old properties and adds new default properties
+* to the loaded state
+*/
+export const cleanupSlice = (state, defaultState) => {
+  if (state) {
+    state = _.pick(state, _.keys(defaultState));
+    state = Object.assign({}, defaultState, state);
+  }
+  return state;
+}
+
 
 export const saveState = (state) => {
   try {

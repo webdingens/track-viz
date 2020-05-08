@@ -1,0 +1,41 @@
+%guiElement {
+  position: absolute;
+  bottom: 20px;
+  padding: 12px 6px;
+  border: 1px solid #fff;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.1);
+  color: #fff;
+  font: normal 13px sans-serif;
+  text-align: center;
+  opacity: 0.5;
+  outline: none;
+  z-index: 999;
+}
+
+.VRButton {
+  @extend %guiElement;
+
+  &--sess-not-supported {
+    cursor: auto;
+    left: calc(50% - 75px);
+    width: 150px;
+  }
+
+  &--sess-supported {
+    cursor: pointer;
+    left: calc(50% - 50px);
+    width: 100px;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.NotSupportedMessage {
+  @extend %guiElement;
+  left: calc(50% - 90px);
+  width: 180px;
+  text-decoration: none;
+}

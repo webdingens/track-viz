@@ -14,7 +14,7 @@ class TrackOverlay extends React.PureComponent {
       <div className={styles.trackOverlay}>
         <TrackDragging />
 
-        <button className={styles.resetButton} onClick={this.props.resetTrack}>Reset</button>
+        <button className={styles.resetButton} onClick={this.props.resetTrack}>Reset Positions</button>
       </div>
     )
   }

@@ -6,8 +6,8 @@ import TrackOverlay from '../Track/TrackOverlay';
 import Track3D from '../Track3D/Track3D';
 
 import {
-  selectSettings
-} from '../../app/reducers/settingsSlice';
+  selectGeneralSettings
+} from '../../app/reducers/settingsGeneralSlice';
 
 import styles from './SplitView.module.scss';
 
@@ -45,7 +45,7 @@ class SplitView extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    settings: selectSettings(state)
+    settings: selectGeneralSettings(state)
   }
 }
 

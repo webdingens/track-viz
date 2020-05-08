@@ -9,7 +9,7 @@ import Track from './Track';
 
 import {
   setSkaters,
-  selectCurrentSkaters
+  selectCurrentSkatersWDP
 } from '../../app/reducers/currentTrackSlice';
 
 gsap.registerPlugin(Draggable);
@@ -73,7 +73,7 @@ class TrackDragging extends React.Component {
       });
     });
 
-    document.body.addEventListener('click', this.onClickBody);
+    this.trackContainer.current.addEventListener('click', this.onClickBody);
   }
 
   componentDidUpdate() {
@@ -293,7 +293,7 @@ class TrackDragging extends React.Component {
       <Track
         trackContainerRef={this.trackContainer}
         skaters={this.props.skaters}
-        skaterIsBeingDragged={this.state.dragging > 0}
+        preventDragUpdate={this.state.dragging > 0}
       />
     );
   }
@@ -304,7 +304,7 @@ class TrackDragging extends React.Component {
 //
 const mapStateToProps = state => {
   return {
-    skaters: selectCurrentSkaters(state)
+    skaters: selectCurrentSkatersWDP(state)
   }
 }
 
