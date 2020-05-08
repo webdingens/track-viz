@@ -12,6 +12,8 @@ import {
   selectCurrentSkatersWDP
 } from '../../app/reducers/currentTrackSlice';
 
+require('../../utils/composedPathPolyfill');
+
 gsap.registerPlugin(Draggable);
 
 class TrackDragging extends React.Component {
@@ -223,7 +225,7 @@ class TrackDragging extends React.Component {
   }
 
   onClickBody(evt) {
-    let path = evt.path;
+    let path = evt.path || (evt.composedPath && evt.composedPath());
 
     let isRotating = false;
     this.draggables.forEach((draggable) => {

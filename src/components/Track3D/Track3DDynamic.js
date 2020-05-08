@@ -1,7 +1,6 @@
-import React, { createRef } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import * as THREE from 'three';
-import { WEBGL } from 'three/examples/jsm/WebGL';
 import _ from 'lodash';
 
 import Track3DMarkings from './Track3DMarkings';
@@ -12,7 +11,7 @@ import PointerLockInstructions from '../PointerLockInstructions/PointerLockInstr
 import VRButton from '../VRButton/VRButton';
 
 import { MapControls } from 'three/examples/jsm/controls/OrbitControls';
-import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
+import { PointerLockControls } from './PointerLockControls';
 
 import { selectGeneralSettings } from '../../app/reducers/settingsGeneralSlice';
 import {
@@ -22,33 +21,27 @@ import {
   selectTrack3DCamera,
   selectTrack3DControls,
   selectTrack3DVRModeEnabled,
-  selectTrack3DVRSupport,
   selectTrack3DControlMode,
   CONTROL_MODES,
   selectTrack3DMapControlsDampingEnabled
 } from '../../app/reducers/settingsTrack3DSlice';
 
-import styles from './Track3D.module.scss';
-
-
 const GRAPHICS_QUALITY = 1;
+const EYE_HEIGHT = 1.7;
 
-class Track3D extends React.Component {
+class Track3DDynamic extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      rendererInitialized: false,
-      contextType: '',
       firstPersonControlsActive: false
     }
 
-    // ref to attach our render canvas to
-    this.rendererContainer = createRef();
-
-    // store availability because of DOM manipulation
-    this.webglAvailable = WEBGL.isWebGLAvailable();
-    this.webgl2Available = WEBGL.isWebGL2Available();
+    // TODO: rename props from parent and connect
+    // to not use underscore from parent
+    this.scene = props._scene;
+    this.camera = props._camera;
+    this.renderer= props.renderer;
 
     // bind callbacks to instance
     this.animateFirstPerson = this.animateFirstPerson.bind(this);
@@ -63,25 +56,18 @@ class Track3D extends React.Component {
     this.onSubcomponentUpdated = this.onSubcomponentUpdated.bind(this);
     this.onXRSessionEnded = this.onXRSessionEnded.bind(this);
     this.onXRSessionStarted = this.onXRSessionStarted.bind(this);
+    this.onMapInteractionEnd = this.onMapInteractionEnd.bind(this);
 
     window.track3d = this;  // For debugging purposes, make this available to window
   }
 
   componentDidMount() {
-    if ( !this.webglAvailable ) return;
 
-    this.initRenderer();
-    this.initScene();
-    this.initCamera();
-    this.initWebXR(); // TODO: only init if necessary
-
-    this.setupTrackLights();
     this.updateCameraProps(this.props);
     this.setupControls(this.props.controlMode);
 
     // render first frame, no loop start
     this.requestAnimateThrottled();
-    // this.renderer.render(this.scene, this.camera);
 
     // add event listeners
     window.addEventListener('resize', this.onResize);
@@ -92,14 +78,10 @@ class Track3D extends React.Component {
   * Still needed?
   */
   shouldComponentUpdate(nextProps, nextState) {
-    if (!this.state.rendererInitialized && nextState.rendererInitialized) return true;
-
-    if (this.didControlModeChange(nextProps)) return true;
-
     if (this.state.firstPersonControlsActive !== nextState.firstPersonControlsActive) return true;
 
     this.syncWithNextProps(nextProps);
-
+    if (this.didControlModeChange(nextProps)) return true;
 
     return false;
   }
@@ -109,8 +91,7 @@ class Track3D extends React.Component {
 
     // cancel the loop before unmounting
     if (this.animationRequest) cancelAnimationFrame(this.animationRequest);
-    if (this.controls) this.controls.dispose();
-    if (this.renderer) this.renderer.dispose();
+    this.destroyControls(this.props.controlMode);
 
     // remove event listeners
     window.removeEventListener('resize', this.onResize);
@@ -136,6 +117,9 @@ class Track3D extends React.Component {
     }
 
     if (this.didControlModeChange(nextProps)) {
+      console.log('didControlModeChange')
+      console.log('destroy: ',this.props.controlMode)
+      console.log('then setup: ',nextProps.controlMode)
       this.destroyControls(this.props.controlMode);
       this.setupControls(nextProps.controlMode);
     }
@@ -198,13 +182,14 @@ class Track3D extends React.Component {
   }
 
   /**
-   *  Check if current controls values are different to props.controls
-   * but only if map controls are 
+   * Check if current controls values are different to props.controls
+   * but only for map controls
    *
    * @param {object} props
    * @returns {boolean}
    */
   didControlsChange(props) {
+    // only check map controls
     if (!this.controls
       || (this.controls && !this.controls.target)
       || (this.controls && !(this.controls instanceof MapControls)))
@@ -242,117 +227,6 @@ class Track3D extends React.Component {
     return this.props.vrModeEnabled !== props.vrModeEnabled;
   }
 
-  /**
-   *  Initialize the renderer with either webgl2 or webgl1 context
-   */
-  initRenderer() {
-    let container = this.rendererContainer.current;   // ref
-
-    // remove canvas in case we need to reinitialize the renderer
-    if (this.state.rendererInitialized) {
-      container.removeChild( this.renderer.domElement );
-    }
-
-    // Select WebGL context with Webgl 1 or 2
-    if ( this.webgl2Available ) {
-
-      let canvas = document.createElement( 'canvas' );
-      let context = canvas.getContext('webgl2', {
-        alpha: false, // no alpha channel, no see through
-        xrCompatible: true,
-        // powerPreference: 'low-power' || 'high-power' || 'default'  // maybe power options as a setting?
-      });
-      this.renderer = new THREE.WebGLRenderer({
-        canvas: canvas,
-        context: context,
-        antialias: true
-      });
-      this.setState({
-        contextType: 'webgl2'
-      });
-
-    } else {
-
-      // use Web GL 1 if no webgl2 is available
-      this.renderer = new THREE.WebGLRenderer({
-        antialias: true
-      });
-      this.setState({
-        contextType: 'webgl1'
-      });
-
-    }
-
-    this.renderer.setPixelRatio( window.devicePixelRatio ); // retina or not?
-    this.updateRendererSize();  // set size of canvas
-
-    // add a class to the canvas dom element
-    this.renderer.domElement.classList.add(styles.renderer)  
-
-    container.appendChild( this.renderer.domElement );
-
-    this.setState({
-      rendererInitialized: true
-    });
-  }
-
-  initScene() {
-    this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color( 0xffffff );
-  }
-
-  initCamera() {
-    let container = this.rendererContainer.current;
-    let bbox = container.getBoundingClientRect();
-    this.camera = new THREE.PerspectiveCamera( 75, bbox.width / bbox.height, 0.1, 1000 );
-    // this.camera = new THREE.OrthographicCamera( bbox.width / - 2, bbox.width / 2, bbox.height / 2, bbox.height / - 2, -2000, 2000 );
-  }
-
-  initWebXR() {
-    // Web XR
-    this.renderer.xr.enabled = true;
-    this.renderer.xr.setReferenceSpaceType( 'local' );
-    this.currentXRSession = null;
-
-    this.viewerXR = new THREE.Group();  // Viewer, aka. skater, aka. person
-
-    // TODO: setup with XR device dimensions ? yes/no?
-    this.xrCamera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000 );
-    this.viewerXR.add(this.xrCamera);
-    
-    this.scene.add(this.viewerXR);
-  }
-
-
-  /**
-   *  Add some light sources to the track for shading
-   *
-   * @memberof Track3D
-   */
-  setupTrackLights() {
-    let light;
-
-    light = new THREE.PointLight( 0xffffff, 1, 100 );
-    light.position.set( -5, 10, 7 );
-    this.scene.add( light );
-
-    light = new THREE.PointLight( 0xffffff, 1, 100 );
-    light.position.set( 5, 10, 7 );
-    this.scene.add( light );
-
-    light = new THREE.PointLight( 0xffffff, 1, 100 );
-    light.position.set( -5, 10, -7 );
-    this.scene.add( light );
-
-    light = new THREE.PointLight( 0xffffff, 1, 100 );
-    light.position.set( -5, 10, -7 );
-    this.scene.add( light );
-
-    light = new THREE.AmbientLight( 0xffffff, .4 );
-    this.scene.add( light );
-  }
-
-
   setupControls(controlMode) {
     switch(controlMode) {
       case CONTROL_MODES.MAP:
@@ -382,7 +256,7 @@ class Track3D extends React.Component {
 
 
   /**
-   * Map Controls Setup
+   * Map Controls Setup (from the three.js examples)
    */
   setupMapControls() {
     this.controls = new MapControls( this.camera, this.renderer.domElement );
@@ -392,18 +266,7 @@ class Track3D extends React.Component {
     this.controls.maxPolarAngle = Math.PI / 2;
     this.controls.target = new THREE.Vector3(...this.props.controls.target);
 
-    this.controls.addEventListener('end', () => {
-      if (this.props.vrModeEnabled) return;
-
-      // persist camera/controls changes to the store
-      this.props.setCamera({
-        position: this.camera.position.toArray(),
-        rotation: this.camera.rotation.toArray()
-      });
-      this.props.setControls({
-        target: this.controls.target.toArray()
-      });
-    })
+    this.controls.addEventListener('end', this.onMapInteractionEnd);
 
     if (this.props.mapControlsDampingEnabled) {
       this.controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
@@ -416,11 +279,31 @@ class Track3D extends React.Component {
     this.controls.update();
   }
 
+  onMapInteractionEnd() {
+    if (this.props.vrModeEnabled) return;
+
+    // persist camera/controls changes to the store
+    this.props.setCamera({
+      position: this.camera.position.toArray(),
+      rotation: this.camera.rotation.toArray()
+    });
+    this.props.setControls({
+      target: this.controls.target.toArray()
+    });
+  }
+
   /**
    * Map Controls Destruction
    */
   destroyMapControls() {
     if (this.controls && this.controls instanceof MapControls) {
+      if (this.props.mapControlsDampingEnabled) {
+        this.controls.removeEventListener('start', this.requestAnimateThrottled);
+        this.controls.removeEventListener('change', this.requestAnimateThrottled);
+      } else {
+        this.controls.removeEventListener('change', this.requestAnimateThrottled);
+      }
+      this.controls.removeEventListener('end', this.onMapInteractionEnd);
       this.controls.dispose();
     }
   }
@@ -429,15 +312,17 @@ class Track3D extends React.Component {
    * Setup First Person Controls using Three.js Pointer Lock Controls
    */
   setupFirstPersonControls() {
-    this.controls = new PointerLockControls( this.camera, this.rendererContainer.current );
+    // set to ground level
+    // TODO: maybe set ground position in direction person is looking?
+    let newCameraPosition = this.camera.position.toArray();
+    newCameraPosition[1] = EYE_HEIGHT; // TODO: set to eyeheight setting
+    this.camera.position.fromArray(newCameraPosition);
 
-    this.controls.addEventListener('lock', () => this.setState({
-      firstPersonControlsActive: true
-    }))
+    this.controls = new PointerLockControls( this.camera, this.renderer.domElement.parentNode );
 
-    this.controls.addEventListener('unlock', () => this.setState({
-      firstPersonControlsActive: false
-    }))
+    this.controls.addEventListener('lock', this.onFirstPersonLock)
+
+    this.controls.addEventListener('unlock', this.onFirstPersonUnlock)
 
     this.controls.addEventListener('change', this.requestAnimateThrottled)
 
@@ -456,9 +341,24 @@ class Track3D extends React.Component {
       color: new THREE.Color(),
       keysDown: 0,
     }
+  }
 
-    this.rendererContainer.current.addEventListener( 'keydown', this.onKeyDownFP, false );
-    this.rendererContainer.current.addEventListener( 'keyup', this.onKeyUpFP, false );
+  onFirstPersonLock = () => {
+    document.addEventListener( 'keydown', this.onKeyDownFP, false );
+    document.addEventListener( 'keyup', this.onKeyUpFP, false );
+
+    this.setState({
+      firstPersonControlsActive: true
+    })
+  }
+
+  onFirstPersonUnlock = () => {
+    document.removeEventListener( 'keydown', this.onKeyDownFP, false );
+    document.removeEventListener( 'keyup', this.onKeyUpFP, false );
+
+    this.setState({
+      firstPersonControlsActive: false
+    })
   }
 
   onKeyDownFP(evt) {
@@ -488,7 +388,7 @@ class Track3D extends React.Component {
         break;
 
       case 32: // space
-        if ( this.controlsFP.canJump === true ) this.controlsFP.velocity.y += 350;
+        if ( this.controlsFP.canJump === true ) this.controlsFP.velocity.y += 20;
         this.controlsFP.canJump = false;
         break;
       default:
@@ -528,11 +428,13 @@ class Track3D extends React.Component {
   }
 
   destroyFirstPersonControls() {
-    this.scene.remove( this.controls.getObject() );
-    if (this.controls && this.controls instanceof PointerLockControls) this.controls.dispose();
+    if (this.controls && this.controls instanceof PointerLockControls) {
+      this.scene.remove( this.controls.getObject() );
+      this.controls.dispose();
+    }
 
-    this.rendererContainer.current.removeEventListener( 'keydown', this.onKeyDownFP );
-    this.rendererContainer.current.removeEventListener( 'keyup', this.onKeyUpFP );
+    this.renderer.domElement.removeEventListener( 'keydown', this.onKeyDownFP );
+    this.renderer.domElement.removeEventListener( 'keyup', this.onKeyUpFP );
   }
 
   enterFirstPersonControls() {
@@ -540,33 +442,42 @@ class Track3D extends React.Component {
   }
 
   updateFirstPersonControlsBasedOnKeys() {
+    let cfp = this.controlsFP;
+
+    let keysDown = cfp.moveForward || cfp.moveBackward || cfp.moveLeft || cfp.moveRight;
+
     if ( this.controls.isLocked === true ) {
-      let cfp = this.controlsFP;
 
       var time = performance.now();
       var delta = ( time - cfp.prevTime ) / 1000; // t in seconds
 
-      cfp.velocity.x -= cfp.velocity.x * 10.0 * delta;
-      cfp.velocity.z -= cfp.velocity.z * 10.0 * delta;
+      delta = Math.min(.1, delta);
 
-      cfp.velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
+      let counterForce = Math.min(10.0 * delta, 1);
 
-      cfp.direction.z = Number( cfp.moveForward ) - Number( cfp.moveBackward );
-      cfp.direction.x = Number( cfp.moveRight ) - Number( cfp.moveLeft );
-      cfp.direction.normalize(); // this ensures consistent movements in all directions
+      cfp.velocity.x -= cfp.velocity.x * counterForce;
+      cfp.velocity.z -= cfp.velocity.z * counterForce;
 
-      if ( cfp.moveForward || cfp.moveBackward ) cfp.velocity.z -= cfp.direction.z * 400.0 * delta;
-      if ( cfp.moveLeft || cfp.moveRight ) cfp.velocity.x -= cfp.direction.x * 400.0 * delta;
+      cfp.velocity.y -= 9.8 * 10.0 * delta; // 100.0 = mass
+
+      if (keysDown) {
+        cfp.direction.z = Number( cfp.moveForward ) - Number( cfp.moveBackward );
+        cfp.direction.x = Number( cfp.moveRight ) - Number( cfp.moveLeft );
+        cfp.direction.normalize(); // this ensures consistent movements in all directions
+      }
+
+      if ( cfp.moveForward || cfp.moveBackward ) cfp.velocity.z -= cfp.direction.z * 200.0 * delta;
+      if ( cfp.moveLeft || cfp.moveRight ) cfp.velocity.x -= cfp.direction.x * 200.0 * delta;
 
       this.controls.moveRight( - cfp.velocity.x * delta );
       this.controls.moveForward( - cfp.velocity.z * delta );
 
       this.controls.getObject().position.y += ( cfp.velocity.y * delta ); // new behavior
 
-      if ( this.controls.getObject().position.y < 10 ) {
+      if ( this.controls.getObject().position.y < EYE_HEIGHT ) {
 
         cfp.velocity.y = 0;
-        this.controls.getObject().position.y = 10;
+        this.controls.getObject().position.y = EYE_HEIGHT;
 
         cfp.canJump = true;
       }
@@ -612,7 +523,6 @@ class Track3D extends React.Component {
    *   Animation Loop (needs requestAnimateThrottled)
    */
   animateMap() {
-
     this.controls.update();
 
     this.renderer.render( this.scene, this.camera );
@@ -732,7 +642,7 @@ class Track3D extends React.Component {
 
   updateCamera() {
     if (this.camera && this.renderer) {
-      let container = this.rendererContainer.current;
+      let container = this.renderer.domElement;
       let bbox = container.getBoundingClientRect();
       this.camera.aspect = bbox.width / bbox.height;
       this.camera.updateProjectionMatrix();
@@ -741,7 +651,7 @@ class Track3D extends React.Component {
 
   updateRendererSize() {
     if (this.renderer) {
-      let container = this.rendererContainer.current;
+      let container = this.renderer.domElement;
       let bbox = container.getBoundingClientRect();
 
       this.renderer.setSize(
@@ -765,35 +675,24 @@ class Track3D extends React.Component {
 
   render() {
     return (
-      <div
-        ref={this.rendererContainer}
-        className={styles.rendererContainer}
-      >
-        { !this.webglAvailable ? (
-          <div dangerouslySetInnerHTML={{ __html: WEBGL.getWebGLErrorMessage().innerHTML }}></div>
-        ) : null }
-
-        { this.state.rendererInitialized ? (
-          <>
-            <Track3DFloor scene={this.scene} />
-            <Track3DMarkings scene={this.scene} />
-            <Track3DPackMarkings
-              scene={this.scene}
-              onUpdate={this.onSubcomponentUpdated}
-            />
-            <Track3DSkaters
-              scene={this.scene}
-              onSkaterUpdated={this.onSubcomponentUpdated}
-            />
-            <VRButton renderer={this.renderer} />
-          </>
-        ) : null }
+      <>
+        <Track3DFloor scene={this.scene} />
+        <Track3DMarkings scene={this.scene} />
+        <Track3DPackMarkings
+          scene={this.scene}
+          onUpdate={this.onSubcomponentUpdated}
+        />
+        <Track3DSkaters
+          scene={this.scene}
+          onSkaterUpdated={this.onSubcomponentUpdated}
+        />
+        <VRButton renderer={this.renderer} />
 
         { this.props.controlMode === CONTROL_MODES.FIRST_PERSON &&
           !this.state.firstPersonControlsActive ? (
           <PointerLockInstructions onClick={this.enterFirstPersonControls.bind(this)} />
         ) : null }
-      </div>
+      </>
     )
   }
 }
@@ -807,7 +706,6 @@ const mapStateToProps = (state) => {
     controls: selectTrack3DControls(state),
     controlMode: selectTrack3DControlMode(state),
     vrModeEnabled: selectTrack3DVRModeEnabled(state),
-    vrSupport: selectTrack3DVRSupport(state),
     mapControlsDampingEnabled: selectTrack3DMapControlsDampingEnabled(state),
   }
 }
@@ -820,4 +718,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Track3D);
+export default connect(mapStateToProps, mapDispatchToProps)(Track3DDynamic);

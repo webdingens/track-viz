@@ -5,7 +5,9 @@ import styles from './PointerLockInstructions.module.scss';
 const PointerLockInstructions = (props) => (
   <div className={styles.PointerLockInstructions}>
     <button onClick={props.onClick}>Click to control</button>
-    <p>(Catches your mouse/pointer.<br/>Press Esc to exit afterwards.)</p>
+    <p>(Catches your mouse/pointer.<br/>
+      Press Esc to exit afterwards.)<br/>
+      Also needs a mouse</p>
     <p>
       Move: WASD<br/>
       Jump: SPACE<br/>
