@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import * as THREE from 'three';
 import _ from 'lodash';
 
 import Track3DMarkings from './Track3DMarkings';
@@ -25,9 +24,9 @@ import {
 
 import ControlsMap from './controls/ControlsMap';
 import ControlsFirstPerson from './controls/ControlsFirstPerson';
+import ControlsXR from './controls/ControlsXR';
 
 const GRAPHICS_QUALITY = 1;
-const EYE_HEIGHT = 1.7;
 
 class Track3DDynamic extends React.Component {
   constructor(props) {
@@ -45,7 +44,6 @@ class Track3DDynamic extends React.Component {
     this.renderer= props.renderer;
 
     this.requestAnimate = this.requestAnimate.bind(this);
-    this.animateXR = this.animateXR.bind(this);
     this.onResize = this.onResize.bind(this);
     this.onSubcomponentUpdated = this.onSubcomponentUpdated.bind(this);
     this.onXRSessionEnded = this.onXRSessionEnded.bind(this);
@@ -59,6 +57,7 @@ class Track3DDynamic extends React.Component {
 
     this.updateCameraProps(this.props);
     this.setupControls(this.props.controlMode);
+    this.initWebXR();
 
     // render first frame, no loop start
     this.requestAnimate();
@@ -112,7 +111,7 @@ class Track3DDynamic extends React.Component {
       this.destroyControls(this.props.controlMode);
 
       // next two run a state and props change at the same time
-      this.switchToControls(nextProps.controlMode, nextProps);
+      this.switchToControls(nextProps.controlMode);
       this.setupControls(nextProps.controlMode);
 
       this.requestAnimate();
@@ -197,10 +196,16 @@ class Track3DDynamic extends React.Component {
     return this.props.vrModeEnabled !== props.vrModeEnabled;
   }
 
-  switchToControls(controlMode, nextProps) {
+
+  //
+  //
+  //      CONTROLS
+  //
+  //
+  switchToControls(controlMode) {
     switch(controlMode) {
       case CONTROL_MODES.MAP:
-        ControlsMap.switchTo({ props: nextProps });
+        ControlsMap.switchTo({ props: this.props });
         break;
       default:
         break;
@@ -270,96 +275,53 @@ class Track3DDynamic extends React.Component {
 
 
   requestAnimate() {
-    this.controls.requestAnimate();
+    if (this.controls) this.controls.requestAnimate();
   }
 
+
+  initWebXR() {
+    // Web XR
+    this.renderer.xr.enabled = true;
+    this.renderer.xr.setReferenceSpaceType( 'local' );
+    this.currentXRSession = null;
+  }
 
   /**
    * Animation for when we started a VR Session
    */
-  animateXR(t, xrFrame) {
-    this.currentXRPose = xrFrame.getViewerPose( this.renderer.xr.getReferenceSpace() );
-
-    this.renderer.render( this.scene, this.xrCamera );
-  }
-
-  initXRAnimationLoop() {
-    this.renderer.setAnimationLoop(this.animateXR);
-  }
-
-  destroyXRAnimationLoop() {
-    this.renderer.setAnimationLoop(null);
-  }
-
   onXRSessionStarted(session) {
-    session.addEventListener( 'end', this.onXRSessionEnded );
-
-    this.initXRAnimationLoop();
-    this.renderer.xr.setSession( session );
-
-    // set our viewer (head) position to that of the camera
-    let currCamRot = this.camera.rotation.clone().reorder('YXZ');
-
-    // this.xrCamera.rotation.fromArray(this.props.camera.rotation);
-    this.viewerXR.position.fromArray(this.camera.position.toArray());
-    this.viewerXR.rotation.fromArray([0, currCamRot.y, 0, 'YXZ']); // starting view of our VR session (just the Y rotation)
-
+    this.destroyControls();
+    this.controlsXR = new ControlsXR({
+      renderer: this.renderer,
+      camera: this.camera,
+      context: this,
+      session,
+      onSessionEnded: this.onXRSessionEnded
+    });
     this.currentXRSession = session;
+    this.xrSessionRequested = false;
   }
 
   onXRSessionEnded() {
-    this.currentXRSession.removeEventListener( 'end', this.onXRSessionEnded );
-
-    let poseRotation = new THREE.Euler();
-    let {x, y, z, w} = this.currentXRPose.transform.orientation;
-    poseRotation.setFromQuaternion(new THREE.Quaternion(x, y, z, w));
-    poseRotation.reorder('YXZ');
-
-    // Attention: poseRotation.y is inverted
-
-    let currCamRot = this.camera.rotation.clone().reorder('YXZ');
-
-    let newRotation = [
-      poseRotation.x,
-      currCamRot.y + poseRotation.y,  // starting yRot + what we rotated during xr session
-      0,  // no roll
-      'YXZ'
-    ];
-
-    let newPosition = this.viewerXR.position; // we will probably move viewer later so we can walk through the XR-scape
-
-    // look ahead onto the floor with m=1.7/10
-    let m = EYE_HEIGHT/10;
-    let aheadDist = newPosition.y / m;
-
-    let toNewTarget = (new THREE.Vector3(0, 0, -aheadDist)).applyEuler(new THREE.Euler(0, newRotation[1], 0, 'YXZ')); // rotate around center, yes?
-    let newTarget = toNewTarget.add(new THREE.Vector3(newPosition.x, 0, newPosition.z)); // add to new position
-
-    this.destroyXRAnimationLoop();
+    this.controlsXR = null;
     this.currentXRSession = null;
-
-    // don't set before animation loop got destroyed
-    this.props.setCamera({
-      position: newPosition.toArray(),
-      rotation: newRotation,
-    });
-
-    this.props.setControls({
-      target: newTarget.toArray()
-    });
-
-    // exited the vr mode
     this.props.setVRModeEnabled(false);
+
+    // reset camera
+    this.switchToControls(this.props.controlMode);
+    this.setupControls(this.props.controlMode);
+    this.requestAnimate();
   }
 
   startXRSession() {
-    if ( this.currentXRSession === null ) {
+    if ( this.currentXRSession === null && !this.xrSessionRequested) {
       // features need to be requested on session start
       // var sessionInit = {
       //   optionalFeatures: [ 'local-floor', 'bounded-floor' ]
       // };
       // navigator.xr.requestSession( 'immersive-vr', sessionInit ).then( this.onXRSessionStarted );
       navigator.xr.requestSession( 'immersive-vr' ).then( this.onXRSessionStarted );
+      this.xrSessionRequested = true;
     }
   }
 

@@ -12,6 +12,11 @@ class ControlsBase {
 
   destroy() {}
 
+  requestAnimate() {
+    if (this.animationRequest) return;
+    this.animationRequest = requestAnimationFrame( this.animate );
+  }
+
   syncProps(prevProps, nextProps) {}
 
   update() {}

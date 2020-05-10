@@ -35,7 +35,6 @@ class Track3D extends React.Component {
     this.initRenderer();
     this.initScene();
     this.initCamera();
-    this.initWebXR(); // TODO: only init if necessary
 
     this.setupTrackLights();
 
@@ -120,21 +119,6 @@ class Track3D extends React.Component {
     let bbox = container.getBoundingClientRect();
     this.camera = new THREE.PerspectiveCamera( 75, bbox.width / bbox.height, 0.1, 1000 );
     this.scene.add(this.camera);
-  }
-
-  initWebXR() {
-    // Web XR
-    this.renderer.xr.enabled = true;
-    this.renderer.xr.setReferenceSpaceType( 'local' );
-    this.currentXRSession = null;
-
-    this.viewerXR = new THREE.Group();  // Viewer, aka. skater, aka. person
-
-    // TODO: setup with XR device dimensions ? yes/no?
-    this.xrCamera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000 );
-    this.viewerXR.add(this.xrCamera);
-    
-    this.scene.add(this.viewerXR);
   }
 
   /**

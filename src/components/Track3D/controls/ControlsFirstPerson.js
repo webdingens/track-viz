@@ -54,8 +54,6 @@ class ControlsFirstPerson extends ControlsBase {
       prevTime: performance.now(),
       velocity: new THREE.Vector3(),
       direction: new THREE.Vector3(),
-      vertex: new THREE.Vector3(),
-      color: new THREE.Color(),
       keysDown: 0,
     }
   }
@@ -100,11 +98,6 @@ class ControlsFirstPerson extends ControlsBase {
     }
 
     this.renderer.render( this.context.scene, this.camera );
-  }
-
-  requestAnimate() {
-    if (this.animationRequest) return;
-    this.animationRequest = requestAnimationFrame( this.animate );
   }
 
   updateFirstPersonControlsBasedOnKeys() {

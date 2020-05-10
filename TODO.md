@@ -81,7 +81,7 @@ X add POV camera / movement
 ### VR View
 
 - copy over current camera state to vr scene
-- add Controls so we can run around in the scene
+- add controller controls?
 
 ### Timeline
 
@@ -135,3 +135,4 @@ X connect the vrSessionRunning variable to the button component
 X connect vrModeEnabled to Track3D
 X switch rendering loops when vrModeEnabled changed
 X add VR Option so we can look around the scene
+X add Controls so we can run around in the scene

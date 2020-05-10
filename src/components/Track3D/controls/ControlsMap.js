@@ -86,11 +86,6 @@ class ControlsMap extends ControlsBase {
     }
   }
 
-  requestAnimate() {
-    if (this.animationRequest) return;
-    this.animationRequest = requestAnimationFrame( this.animate );
-  }
-
   update() {
     this.controls.update();
   }
