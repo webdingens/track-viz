@@ -10,9 +10,6 @@ import Track3DFloor from './Track3DFloor';
 import PointerLockInstructions from '../PointerLockInstructions/PointerLockInstructions';
 import VRButton from '../VRButton/VRButton';
 
-import { MapControls } from 'three/examples/jsm/controls/OrbitControls';
-import { PointerLockControls } from './controls/threejs/PointerLockControls';
-
 import { selectGeneralSettings } from '../../app/reducers/settingsGeneralSlice';
 import {
   setCamera,
@@ -26,6 +23,9 @@ import {
   selectTrack3DMapControlsDampingEnabled
 } from '../../app/reducers/settingsTrack3DSlice';
 
+import ControlsMap from './controls/ControlsMap';
+import ControlsFirstPerson from './controls/ControlsFirstPerson';
+
 const GRAPHICS_QUALITY = 1;
 const EYE_HEIGHT = 1.7;
 
@@ -34,7 +34,8 @@ class Track3DDynamic extends React.Component {
     super(props)
 
     this.state = {
-      firstPersonControlsActive: false
+      firstPersonControlsActive: false,
+      controlsInitialized: false
     }
 
     // TODO: rename props from parent and connect
@@ -43,22 +44,15 @@ class Track3DDynamic extends React.Component {
     this.camera = props._camera;
     this.renderer= props.renderer;
 
-    // bind callbacks to instance
-    this.animateFirstPerson = this.animateFirstPerson.bind(this);
-    this.onKeyDownFP = this.onKeyDownFP.bind(this);
-    this.onKeyUpFP = this.onKeyUpFP.bind(this);
-
-    this.animateMap = this.animateMap.bind(this);
-    this.animateMapWithDamping = this.animateMapWithDamping.bind(this);
-    this.requestAnimateThrottled = this.requestAnimateThrottled.bind(this);
+    this.requestAnimate = this.requestAnimate.bind(this);
     this.animateXR = this.animateXR.bind(this);
     this.onResize = this.onResize.bind(this);
     this.onSubcomponentUpdated = this.onSubcomponentUpdated.bind(this);
     this.onXRSessionEnded = this.onXRSessionEnded.bind(this);
     this.onXRSessionStarted = this.onXRSessionStarted.bind(this);
-    this.onMapInteractionEnd = this.onMapInteractionEnd.bind(this);
 
     window.track3d = this;  // For debugging purposes, make this available to window
+
   }
 
   componentDidMount() {
@@ -67,7 +61,7 @@ class Track3DDynamic extends React.Component {
     this.setupControls(this.props.controlMode);
 
     // render first frame, no loop start
-    this.requestAnimateThrottled();
+    this.requestAnimate();
 
     // add event listeners
     window.addEventListener('resize', this.onResize);
@@ -78,9 +72,10 @@ class Track3DDynamic extends React.Component {
   * Still needed?
   */
   shouldComponentUpdate(nextProps, nextState) {
-    if (this.state.firstPersonControlsActive !== nextState.firstPersonControlsActive) return true;
-
     this.syncWithNextProps(nextProps);
+
+    if (this.state.firstPersonControlsActive !== nextState.firstPersonControlsActive) return true;
+    if (this.state.controlsInitialized !== nextState.controlsInitialized) return true;
     if (this.didControlModeChange(nextProps)) return true;
 
     return false;
@@ -108,20 +103,18 @@ class Track3DDynamic extends React.Component {
 
     if (this.didCameraChange(nextProps)) {
       this.updateCameraProps(nextProps);
-      this.requestAnimateThrottled();
+      this.requestAnimate();
     }
 
-    if (this.didControlsChange(nextProps)) {
-      this.updateControlsTarget(nextProps);
-      this.requestAnimateThrottled();
-    }
+    if (this.controls) this.controls.syncProps(this.props, nextProps);
 
     if (this.didControlModeChange(nextProps)) {
       this.destroyControls(this.props.controlMode);
-      this.switchToControls(nextProps.controlMode);
+      this.switchToControls(nextProps.controlMode, nextProps);
       this.setupControls(nextProps.controlMode);
-      this.requestAnimateThrottled(null, nextProps);
+      this.requestAnimate();
     }
+
 
     // start/stop xr session if toggled
     if (this.didVRModeEnabledChange(nextProps)) {
@@ -181,26 +174,6 @@ class Track3DDynamic extends React.Component {
   }
 
   /**
-   * Check if current controls values are different to props.controls
-   * but only for map controls
-   *
-   * @param {object} props
-   * @returns {boolean}
-   */
-  didControlsChange(props) {
-    // only check map controls
-    if (!this.controls
-      || (this.controls && !this.controls.target)
-      || (this.controls && !(this.controls instanceof MapControls)))
-      return false;
-  
-    let val = _.difference(
-      this.props.controls.target,
-      props.controls.target).length > 0;
-    return val;
-  }
-
-  /**
    *  Check if our Control Mode Changed
    *
    * @param {object} props
@@ -210,11 +183,6 @@ class Track3DDynamic extends React.Component {
     return this.props.controlMode !== props.controlMode;
   }
 
-  updateControlsTarget(props) {
-    if (this.controls && this.controls instanceof MapControls) {
-      this.controls.target.fromArray(props.controls.target);
-    }
-  }
 
   /**
    *  Check if vrModeEnabled is different in props
@@ -226,10 +194,10 @@ class Track3DDynamic extends React.Component {
     return this.props.vrModeEnabled !== props.vrModeEnabled;
   }
 
-  switchToControls(controlMode) {
+  switchToControls(controlMode, nextProps) {
     switch(controlMode) {
       case CONTROL_MODES.MAP:
-        this.switchToMapControls();
+        ControlsMap.switchTo({ props: nextProps });
         break;
       default:
         break;
@@ -247,45 +215,15 @@ class Track3DDynamic extends React.Component {
       default:
         break;
     }
-  }
 
-  destroyControls(controlMode) {
-    switch(controlMode) {
-      case CONTROL_MODES.MAP:
-        this.destroyMapControls();
-        break;
-      case CONTROL_MODES.FIRST_PERSON:
-        this.destroyFirstPersonControls();
-        break;
-      default:
-        break;
-    }
-
-    if (this.animationRequest) {
-      cancelAnimationFrame(this.animationRequest);
-      this.animationRequest = null;
-    }
-  }
-
-  switchToMapControls() {
-    // update target based on the current camera and
-    // make camera look ahead onto the floor with a falloff of 1/5
-
-    let camRot = new THREE.Euler(...this.props.camera.rotation).reorder('YXZ');
-
-    let camPos = new THREE.Vector3(...this.props.camera.position); // we will probably move viewer later so we can walk through the XR-scape
-
-    // look ahead onto the floor with m=1.7/6
-    let m = 1.7/6;
-    let aheadDist = camPos.y / m;
-
-    let toNewTarget = (new THREE.Vector3(0, 0, -aheadDist)).applyEuler(new THREE.Euler(0, camRot.y, 0, 'YXZ')); // rotate around center, yes?
-    let newTarget = toNewTarget.add(new THREE.Vector3(camPos.x, 0, camPos.z)); // add to new position
-
-    // setting new Controls
-    this.props.setControls({
-      target: newTarget.toArray()
+    this.setState({
+      controlsInitialized: controlMode
     });
+  }
+
+  destroyControls() {
+    if (this.controls) this.controls.destroy();
+    this.controls = null;
   }
 
 
@@ -294,314 +232,44 @@ class Track3DDynamic extends React.Component {
    */
   setupMapControls() {
     // redux dev double render debug
-    if (this.controls && this.controls instanceof MapControls) {
+    if (this.controls && this.controls instanceof ControlsMap) {
       return;
     }
     if (this.controls) {
       throw new Error('Controls still initialized');
     }
 
-    this.controls = new MapControls( this.camera, this.renderer.domElement );
-    this.controls.screenSpacePanning = false;
-    this.controls.minDistance = 3;
-    this.controls.maxDistance = 50;
-    this.controls.maxPolarAngle = Math.PI / 2;
-    this.controls.target = new THREE.Vector3(...this.props.controls.target);
-
-    this.controls.addEventListener('end', this.onMapInteractionEnd);
-
-    if (this.props.mapControlsDampingEnabled) {
-      this.controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
-      this.controls.dampingFactor = 0.05;
-      this.controls.addEventListener('start', this.requestAnimateThrottled);
-      this.controls.addEventListener('change', this.requestAnimateThrottled);
-    } else {
-      this.controls.addEventListener('change', this.requestAnimateThrottled);
-    }
+    this.controls = new ControlsMap({
+      renderer: this.renderer,
+      camera: this.camera,
+      context: this,
+    })
     this.controls.update();
   }
 
-  onMapInteractionEnd() {
-    if (this.props.vrModeEnabled) return;
-
-    // persist camera/controls changes to the store
-    this.props.setCamera({
-      position: this.camera.position.toArray(),
-      rotation: this.camera.rotation.toArray()
-    });
-    this.props.setControls({
-      target: this.controls.target.toArray()
-    });
-  }
-
-  /**
-   * Map Controls Destruction
-   */
-  destroyMapControls() {
-    if (this.controls && this.controls instanceof MapControls) {
-      if (this.props.mapControlsDampingEnabled) {
-        this.controls.removeEventListener('start', this.requestAnimateThrottled);
-        this.controls.removeEventListener('change', this.requestAnimateThrottled);
-      } else {
-        this.controls.removeEventListener('change', this.requestAnimateThrottled);
-      }
-      this.controls.removeEventListener('end', this.onMapInteractionEnd);
-      this.controls.dispose();
-      this.controls = null;
-    }
-  }
 
   /**
    * Setup First Person Controls using Three.js Pointer Lock Controls
    */
   setupFirstPersonControls() {
     // redux dev double render
-    if (this.controls && this.controls instanceof PointerLockControls) return;
-
-    // set to ground level
-    // TODO: maybe set ground position in direction person is looking?
-    let newCameraPosition = this.camera.position.toArray();
-    newCameraPosition[1] = EYE_HEIGHT; // TODO: set to eyeheight setting
-    this.camera.position.fromArray(newCameraPosition);
-
-    this.controls = new PointerLockControls( this.camera, this.renderer.domElement.parentNode );
-
-    this.controls.addEventListener('lock', this.onFirstPersonLock)
-
-    this.controls.addEventListener('unlock', this.onFirstPersonUnlock)
-
-    this.controls.addEventListener('change', this.requestAnimateThrottled)
-
-    // this.scene.add( this.controls.getObject() ); // Camera already added
-
-    this.controlsFP = {
-      moveForward: false,
-      moveBackward: false,
-      moveLeft: false,
-      moveRight: false,
-      canJump: false,
-      prevTime: performance.now(),
-      velocity: new THREE.Vector3(),
-      direction: new THREE.Vector3(),
-      vertex: new THREE.Vector3(),
-      color: new THREE.Color(),
-      keysDown: 0,
-    }
-  }
-
-  onFirstPersonLock = () => {
-    document.addEventListener( 'keydown', this.onKeyDownFP, false );
-    document.addEventListener( 'keyup', this.onKeyUpFP, false );
-
-    this.setState({
-      firstPersonControlsActive: true
-    })
-  }
-
-  onFirstPersonUnlock = () => {
-    document.removeEventListener( 'keydown', this.onKeyDownFP, false );
-    document.removeEventListener( 'keyup', this.onKeyUpFP, false );
-
-    this.setState({
-      firstPersonControlsActive: false
-    })
-  }
-
-  onKeyDownFP(evt) {
-    this.controlsFP.keysDown++;
-    this.controlsFP.prevTime = performance.now();
-
-    switch ( evt.keyCode ) {
-
-      case 38: // up
-      case 87: // w
-        this.controlsFP.moveForward = true;
-        break;
-
-      case 37: // left
-      case 65: // a
-      this.controlsFP.moveLeft = true;
-        break;
-
-      case 40: // down
-      case 83: // s
-      this.controlsFP.moveBackward = true;
-        break;
-
-      case 39: // right
-      case 68: // d
-      this.controlsFP.moveRight = true;
-        break;
-
-      case 32: // space
-        if ( this.controlsFP.canJump === true ) this.controlsFP.velocity.y += 20;
-        this.controlsFP.canJump = false;
-        break;
-      default:
-        break;
+    if (this.controls && this.controls instanceof ControlsFirstPerson) return;
+    if (this.controls) {
+      throw new Error('Controls still initialized');
     }
 
-    this.requestAnimateThrottled();
+    this.controls = new ControlsFirstPerson({
+      renderer: this.renderer,
+      camera: this.camera,
+      context: this,
+    });
   }
 
-  onKeyUpFP(evt) {
-    this.controlsFP.keysDown--;
 
-    switch ( evt.keyCode ) {
-      case 38: // up
-      case 87: // w
-      this.controlsFP.moveForward = false;
-        break;
-
-      case 37: // left
-      case 65: // a
-      this.controlsFP.moveLeft = false;
-        break;
-
-      case 40: // down
-      case 83: // s
-      this.controlsFP.moveBackward = false;
-        break;
-
-      case 39: // right
-      case 68: // d
-      this.controlsFP.moveRight = false;
-        break;
-
-      default:
-        break;
-    }
+  requestAnimate() {
+    this.controls.requestAnimate();
   }
 
-  destroyFirstPersonControls() {
-    if (this.controls && this.controls instanceof PointerLockControls) {
-
-      this.controls.dispose();
-      this.controls = null;
-    }
-
-    this.renderer.domElement.removeEventListener( 'keydown', this.onKeyDownFP );
-    this.renderer.domElement.removeEventListener( 'keyup', this.onKeyUpFP );
-  }
-
-  enterFirstPersonControls() {
-    this.controls.lock();
-  }
-
-  updateFirstPersonControlsBasedOnKeys() {
-    let cfp = this.controlsFP;
-
-    let keysDown = cfp.moveForward || cfp.moveBackward || cfp.moveLeft || cfp.moveRight;
-
-    if ( this.controls.isLocked === true ) {
-
-      var time = performance.now();
-      var delta = ( time - cfp.prevTime ) / 1000; // t in seconds
-
-      delta = Math.min(.1, delta);
-
-      let counterForce = Math.min(10.0 * delta, 1);
-
-      cfp.velocity.x -= cfp.velocity.x * counterForce;
-      cfp.velocity.z -= cfp.velocity.z * counterForce;
-
-      cfp.velocity.y -= 9.8 * 10.0 * delta; // 100.0 = mass
-
-      if (keysDown) {
-        cfp.direction.z = Number( cfp.moveForward ) - Number( cfp.moveBackward );
-        cfp.direction.x = Number( cfp.moveRight ) - Number( cfp.moveLeft );
-        cfp.direction.normalize(); // this ensures consistent movements in all directions
-      }
-
-      if ( cfp.moveForward || cfp.moveBackward ) cfp.velocity.z -= cfp.direction.z * 200.0 * delta;
-      if ( cfp.moveLeft || cfp.moveRight ) cfp.velocity.x -= cfp.direction.x * 200.0 * delta;
-
-      this.controls.moveRight( - cfp.velocity.x * delta );
-      this.controls.moveForward( - cfp.velocity.z * delta );
-
-      this.controls.getObject().position.y += ( cfp.velocity.y * delta ); // new behavior
-
-      if ( this.controls.getObject().position.y < EYE_HEIGHT ) {
-
-        cfp.velocity.y = 0;
-        this.controls.getObject().position.y = EYE_HEIGHT;
-
-        cfp.canJump = true;
-      }
-
-      cfp.prevTime = time;
-    }
-  }
-
-  // optional props attribute in case we need to
-  // consider next controlMode not current
-  requestAnimateThrottled(evt, props) {
-    if (this.animationRequest) return;
-
-    let controlMode = props ? props.controlMode : this.props.controlMode;
-
-    switch (controlMode) {
-      case CONTROL_MODES.MAP:
-        if (this.props.mapControlsDampingEnabled) {
-          this.animationRequest = requestAnimationFrame( this.animateMapWithDamping );
-        } else {
-          this.animationRequest = requestAnimationFrame( this.animateMap );
-        }
-        break;
-      case CONTROL_MODES.FIRST_PERSON:
-        this.animationRequest = requestAnimationFrame( this.animateFirstPerson );
-        break;
-      default:
-        break;
-    }
-  }
-
-  animateFirstPerson() {
-    this.updateFirstPersonControlsBasedOnKeys();
-
-    if (this.controls.isLocked && (this.controlsFP.keysDown > 0 || !this.controlsFP.canJump)) {
-      // if we are pressing buttons or we can't jump yet (haven't landed)
-      // we request another animation frame
-      this.animationRequest = requestAnimationFrame( this.animateFirstPerson );
-    } else {
-      this.animationRequest = null;
-
-      // persist camera/controls changes to the store
-      this.props.setCamera({
-        position: this.camera.position.toArray(),
-        rotation: this.camera.rotation.toArray()
-      });
-    }
-
-    this.renderer.render( this.scene, this.camera );
-  }
-
-  /**
-   *   Animation Loop (needs requestAnimateThrottled)
-   */
-  animateMap() {
-    this.controls.update();
-
-    this.renderer.render( this.scene, this.camera );
-
-    this.animationRequest = null;
-  }
-
-  /**
-   * Animation with momentum and damping after drag
-   */
-  animateMapWithDamping() {
-
-    let updated = this.controls.update();
-    this.renderer.render( this.scene, this.camera );
-
-    if (!updated) {
-      // stop animating if nothing happens to save energy
-      this.animationRequest = null;
-    } else {
-      this.animationRequest = requestAnimationFrame( this.animateMapWithDamping );
-    }
-  }
 
   /**
    * Animation for when we started a VR Session
@@ -658,7 +326,7 @@ class Track3DDynamic extends React.Component {
     let newPosition = this.viewerXR.position; // we will probably move viewer later so we can walk through the XR-scape
 
     // look ahead onto the floor with m=1.7/10
-    let m = 1.7/10;
+    let m = EYE_HEIGHT/10;
     let aheadDist = newPosition.y / m;
 
     let toNewTarget = (new THREE.Vector3(0, 0, -aheadDist)).applyEuler(new THREE.Euler(0, newRotation[1], 0, 'YXZ')); // rotate around center, yes?
@@ -723,11 +391,11 @@ class Track3DDynamic extends React.Component {
     this.updateCamera();
     this.updateRendererSize();
     
-    this.requestAnimateThrottled();
+    this.requestAnimate();
   }
 
   onSubcomponentUpdated() {
-    this.requestAnimateThrottled();
+    this.requestAnimate();
   }
 
   render() {
@@ -745,9 +413,9 @@ class Track3DDynamic extends React.Component {
         />
         <VRButton renderer={this.renderer} />
 
-        { this.props.controlMode === CONTROL_MODES.FIRST_PERSON &&
-          !this.state.firstPersonControlsActive ? (
-          <PointerLockInstructions onClick={this.enterFirstPersonControls.bind(this)} />
+        { (this.state.controlsInitialized === CONTROL_MODES.FIRST_PERSON &&
+          !this.state.firstPersonControlsActive) ? (
+          <PointerLockInstructions onClick={this.controls.enterFirstPersonControls} />
         ) : null }
       </>
     )

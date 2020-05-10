@@ -8,9 +8,15 @@ class ControlsBase {
     this.options = options;
   }
 
-  setupControls() {}
+  animate() {}
 
-  
+  destroy() {}
+
+  syncProps(prevProps, nextProps) {}
+
+  update() {}
+
+  static switchTo() {}
 }
 
 export default ControlsBase;
