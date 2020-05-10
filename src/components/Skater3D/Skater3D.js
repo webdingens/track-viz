@@ -61,7 +61,7 @@ class Skater3D extends React.PureComponent {
     geometry = new THREE.CircleGeometry( .3, 32 );
     material = new THREE.MeshBasicMaterial( { color: 0x222222, opacity: .2, transparent: true } );
     this.shadow = new THREE.Mesh( geometry, material );
-    this.shadow.position.set(x, Math.random() * .00001, y);
+    this.shadow.position.set(x, Math.random() * .001, y);
     this.shadow.rotateX(-90 * Math.PI / 180);
     this.props.scene.add( this.shadow );
   }

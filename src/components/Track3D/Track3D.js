@@ -119,6 +119,7 @@ class Track3D extends React.Component {
     let container = this.rendererContainer.current;
     let bbox = container.getBoundingClientRect();
     this.camera = new THREE.PerspectiveCamera( 75, bbox.width / bbox.height, 0.1, 1000 );
+    this.scene.add(this.camera);
   }
 
   initWebXR() {

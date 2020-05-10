@@ -37,6 +37,38 @@
 
 ### 3D View
 
+- Setting: perspective camera FOV (Perspektivische Verzerrung [20 - 75])
+- Setting: Resolution: Full, 75%, 50%, 25% for performance. Try different values
+- replace lines with shape + fill so we have lines with thickness
+- add collision detection of 3D models (cylinder first, realistic skater model later)
+  -> which controlsMode?
+- compare loadable component and React.lazy, choose one, then start code splitting so we only load threejs when SplitView shows Track3D
+- Setting: WebGL or alternative threejs renderers for devices without webgl
+- Setting: Orthographic Camera (just perspective camera should be fine)
+- add Buttons for predefined camera positions: view on start, corner views, WFTDA standard camera position
+  - for which controls?
+
+#### Controls
+
+- Persist Camera Position for Pointer Lock Controls
+- Create controls base class
+- Change PointerLock to use Median instead of cutoff value for outliers
+  - or something smart ... maybe look at unity control handlers
+X add POV camera / movement
+  X pointer lock controls (three.js)
+  - first person controls
+- compare drag controls from the three examples to MapControls
+  - maybe we can drag skater models? both controls possible?
+- click skaters to switch camera into skater position and rotation (camera switch like google street view?)
+- add interaction to look at skaters
+  - click then look at skater
+  - for which controls? POV with cursor?
+- add a bobbing controls with skate physics
+
+#### Models
+
+- add poses to 3d skater models (could use a different view for the 2d editor, or make edit possible in 3d, maybe tab cycle or mouse click, or maybe add little icon on the top right of the skater to depict what stance they have)
+- load skater data/models/positions into the scene
 - create models for skaters in 3D
   - spheres, cylinders or sth.
   - create small sphere with face in Blender
@@ -45,24 +77,6 @@
   - realistic skater models maybe later (use make human and modify ice skating boots asset in documents folder)
 - create a skating hall (flat geometry, frontside rendering, with textures)
   - floor with different scenarios: plastic tiles (ice rink overlay), linoleum, concrete
-- replace lines with shape + fill so we have lines with thickness
-- click skaters to switch camera into skater position and rotation (camera switch like google street view?)
-- compare drag controls from the three examples to MapControls
-  - maybe we can drag skater models? both controls possible?
-- add poses to 3d skater models (could use a different view for the 2d editor, or make edit possible in 3d, maybe tab cycle or mouse click, or maybe add little icon on the top right of the skater to depict what stance they have)
-- load skater data/models/positions into the scene
-- add VR option, so you can move camera / skater around the track
-- add collision detection of 3D models (cylinder first, realistic skater model later) -> for what movement?
-- compare loadable component and React.lazy, choose one, then start code splitting so we only load threejs when SplitView shows Track3D
-- Setting: WebGL or alternative threejs renderers for devices without webgl
-- Setting: Resolution: Full, 75%, 50%, 25% for performance. Try different values
-- Setting: perspective camera FOV (Perspektivische Verzerrung [20 - 75])
-- Setting: Orthographic Camera (just perspective camera should be fine)
-- Setting: FPS controls
-- add first person camera / movement
-  - pointer lock controls (three.js)
-  - look at skaters (click then look at skater)
-- add Buttons for predefined camera positions: view on start, corner views, WFTDA standard camera position
 
 ### VR View
 
@@ -112,6 +126,7 @@ X add camera option for desktop
 X add reset option to load default skater data
 X display Pack / Engagement Zone in 3D
 X save camera to the state
+X Setting: First Person controls
 
 ### Done: VR View
 

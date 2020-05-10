@@ -31,8 +31,6 @@ let initialState = cleanupSlice(
   defaultSettings
 );
 initialState.vrModeEnabled = false; // don't start in VR Mode
-initialState.camera = defaultCamera;
-initialState.controls = defaultControls;
 
 export const settingsTrack3DSlice = createSlice({
   name: 'settingsTrack3D',

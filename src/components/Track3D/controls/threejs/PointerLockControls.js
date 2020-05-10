@@ -37,6 +37,7 @@ var PointerLockControls = function ( camera, domElement ) {
 
 	var vec = new Vector3();
 
+
 	function onMouseMove( event ) {
 
 
@@ -47,22 +48,13 @@ var PointerLockControls = function ( camera, domElement ) {
 
 		euler.setFromQuaternion( camera.quaternion );
 
-		if (Math.abs(movementX) > 400) {
-			console.log(event.clientX, ' ', event.movementX);
-			console.dir(event);
-			console.dir(this.previousEvent)
-		}
-
 		this.previousEvent = event;
 
-		// Chrome Windows 10 Bug has large spikes
-		if (Math.abs(movementX) > 600) {
-			console.log(movementX)
-			movementX = Math.sign(movementX) * 1;
-		}
-		if (Math.abs(movementY) > 600) {
-			movementY = Math.sign(movementY) * 1;
-		}
+		if (Math.abs(movementX) > 200) movementX = 0;		// nah
+		if (Math.abs(movementY) > 200) movementY = 0;
+
+		// movementX = Math.sign(movementX) * Math.min(200, Math.abs(movementX));
+		// movementY = Math.sign(movementY) * Math.min(200, Math.abs(movementY));
 		euler.y -= movementX * 0.002;
 		euler.x -= movementY * 0.002;
 
@@ -72,7 +64,6 @@ var PointerLockControls = function ( camera, domElement ) {
 		camera.quaternion.setFromEuler( euler );
 
 		scope.dispatchEvent( changeEvent );
-
 	}
 
 	function onPointerlockChange() {

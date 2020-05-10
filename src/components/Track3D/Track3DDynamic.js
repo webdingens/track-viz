@@ -11,7 +11,7 @@ import PointerLockInstructions from '../PointerLockInstructions/PointerLockInstr
 import VRButton from '../VRButton/VRButton';
 
 import { MapControls } from 'three/examples/jsm/controls/OrbitControls';
-import { PointerLockControls } from './PointerLockControls';
+import { PointerLockControls } from './controls/threejs/PointerLockControls';
 
 import { selectGeneralSettings } from '../../app/reducers/settingsGeneralSlice';
 import {
@@ -117,11 +117,10 @@ class Track3DDynamic extends React.Component {
     }
 
     if (this.didControlModeChange(nextProps)) {
-      console.log('didControlModeChange')
-      console.log('destroy: ',this.props.controlMode)
-      console.log('then setup: ',nextProps.controlMode)
       this.destroyControls(this.props.controlMode);
+      this.switchToControls(nextProps.controlMode);
       this.setupControls(nextProps.controlMode);
+      this.requestAnimateThrottled(null, nextProps);
     }
 
     // start/stop xr session if toggled
@@ -212,7 +211,7 @@ class Track3DDynamic extends React.Component {
   }
 
   updateControlsTarget(props) {
-    if (this.controls) {
+    if (this.controls && this.controls instanceof MapControls) {
       this.controls.target.fromArray(props.controls.target);
     }
   }
@@ -225,6 +224,16 @@ class Track3DDynamic extends React.Component {
    */
   didVRModeEnabledChange(props) {
     return this.props.vrModeEnabled !== props.vrModeEnabled;
+  }
+
+  switchToControls(controlMode) {
+    switch(controlMode) {
+      case CONTROL_MODES.MAP:
+        this.switchToMapControls();
+        break;
+      default:
+        break;
+    }
   }
 
   setupControls(controlMode) {
@@ -251,7 +260,32 @@ class Track3DDynamic extends React.Component {
       default:
         break;
     }
-    if (this.animationRequest) cancelAnimationFrame(this.animationRequest);
+
+    if (this.animationRequest) {
+      cancelAnimationFrame(this.animationRequest);
+      this.animationRequest = null;
+    }
+  }
+
+  switchToMapControls() {
+    // update target based on the current camera and
+    // make camera look ahead onto the floor with a falloff of 1/5
+
+    let camRot = new THREE.Euler(...this.props.camera.rotation).reorder('YXZ');
+
+    let camPos = new THREE.Vector3(...this.props.camera.position); // we will probably move viewer later so we can walk through the XR-scape
+
+    // look ahead onto the floor with m=1.7/6
+    let m = 1.7/6;
+    let aheadDist = camPos.y / m;
+
+    let toNewTarget = (new THREE.Vector3(0, 0, -aheadDist)).applyEuler(new THREE.Euler(0, camRot.y, 0, 'YXZ')); // rotate around center, yes?
+    let newTarget = toNewTarget.add(new THREE.Vector3(camPos.x, 0, camPos.z)); // add to new position
+
+    // setting new Controls
+    this.props.setControls({
+      target: newTarget.toArray()
+    });
   }
 
 
@@ -259,6 +293,14 @@ class Track3DDynamic extends React.Component {
    * Map Controls Setup (from the three.js examples)
    */
   setupMapControls() {
+    // redux dev double render debug
+    if (this.controls && this.controls instanceof MapControls) {
+      return;
+    }
+    if (this.controls) {
+      throw new Error('Controls still initialized');
+    }
+
     this.controls = new MapControls( this.camera, this.renderer.domElement );
     this.controls.screenSpacePanning = false;
     this.controls.minDistance = 3;
@@ -305,6 +347,7 @@ class Track3DDynamic extends React.Component {
       }
       this.controls.removeEventListener('end', this.onMapInteractionEnd);
       this.controls.dispose();
+      this.controls = null;
     }
   }
 
@@ -312,6 +355,9 @@ class Track3DDynamic extends React.Component {
    * Setup First Person Controls using Three.js Pointer Lock Controls
    */
   setupFirstPersonControls() {
+    // redux dev double render
+    if (this.controls && this.controls instanceof PointerLockControls) return;
+
     // set to ground level
     // TODO: maybe set ground position in direction person is looking?
     let newCameraPosition = this.camera.position.toArray();
@@ -326,7 +372,7 @@ class Track3DDynamic extends React.Component {
 
     this.controls.addEventListener('change', this.requestAnimateThrottled)
 
-    this.scene.add( this.controls.getObject() );
+    // this.scene.add( this.controls.getObject() ); // Camera already added
 
     this.controlsFP = {
       moveForward: false,
@@ -429,8 +475,9 @@ class Track3DDynamic extends React.Component {
 
   destroyFirstPersonControls() {
     if (this.controls && this.controls instanceof PointerLockControls) {
-      this.scene.remove( this.controls.getObject() );
+
       this.controls.dispose();
+      this.controls = null;
     }
 
     this.renderer.domElement.removeEventListener( 'keydown', this.onKeyDownFP );
@@ -486,10 +533,14 @@ class Track3DDynamic extends React.Component {
     }
   }
 
-  requestAnimateThrottled() {
+  // optional props attribute in case we need to
+  // consider next controlMode not current
+  requestAnimateThrottled(evt, props) {
     if (this.animationRequest) return;
 
-    switch (this.props.controlMode) {
+    let controlMode = props ? props.controlMode : this.props.controlMode;
+
+    switch (controlMode) {
       case CONTROL_MODES.MAP:
         if (this.props.mapControlsDampingEnabled) {
           this.animationRequest = requestAnimationFrame( this.animateMapWithDamping );
@@ -514,6 +565,12 @@ class Track3DDynamic extends React.Component {
       this.animationRequest = requestAnimationFrame( this.animateFirstPerson );
     } else {
       this.animationRequest = null;
+
+      // persist camera/controls changes to the store
+      this.props.setCamera({
+        position: this.camera.position.toArray(),
+        rotation: this.camera.rotation.toArray()
+      });
     }
 
     this.renderer.render( this.scene, this.camera );

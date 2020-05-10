@@ -26,7 +26,7 @@ class Track3DMarkings extends React.PureComponent {
       }
     });
     this.packShape.rotateX(-Math.PI / 2);
-    this.packShape.position.y = -.002;
+    this.packShape.position.y = -.001;
     this.props.scene.add(this.packShape);
 
     // create engagement zone shape and add to scene
@@ -46,7 +46,7 @@ class Track3DMarkings extends React.PureComponent {
       }
     });
     this.engagementZoneShape.rotateX(-Math.PI / 2);
-    this.engagementZoneShape.position.y = -.001;
+    this.engagementZoneShape.position.y = -.002;
     this.props.scene.add(this.engagementZoneShape);
   }
 
