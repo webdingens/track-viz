@@ -110,8 +110,11 @@ class Track3DDynamic extends React.Component {
 
     if (this.didControlModeChange(nextProps)) {
       this.destroyControls(this.props.controlMode);
+
+      // next two run a state and props change at the same time
       this.switchToControls(nextProps.controlMode, nextProps);
       this.setupControls(nextProps.controlMode);
+
       this.requestAnimate();
     }
 
