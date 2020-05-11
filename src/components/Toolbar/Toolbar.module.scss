@@ -8,27 +8,21 @@
   color: #fff;
   
   font-size: 1.2rem;
-  line-height: 1.5;
-
+  line-height: 1.25;
 
   > ul {
     > li {
-      text-transform: uppercase;
-      @media (max-width: 767.9px) {
-        font-size: 14px;
-
-        &:not(:last-of-type) {
-          margin-bottom: .5em;
-        }
+      &:not(:last-of-type) {
+        margin-bottom: .75em;
       }
     }
 
     ul {
-      margin-top: .25em;
-      text-transform: none;
+      margin-top: .1em;
     }
 
     ul li {
+      line-height: 1;
       @media (max-width: 767.9px) {
         font-size: 12px;
       }
@@ -40,9 +34,16 @@
     margin: 0;
     list-style-type: none;
   }
+
+  transition: all .2s ease-in-out;
+  transform: translateX(-100%);
+  &.toolbarOpen {
+    transform: translateX(0%);
+  }
 }
 
 .button {
+  font-family: 'Roboto', sans-serif;
   background: transparent;
   border: 0;
   color: #fff;
@@ -52,6 +53,156 @@
     &:before {
       content: '> ';
       color: red;
+    }
+  }
+}
+
+.toggleButton {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+
+  position: absolute;
+  top: 10px;
+  right: -50px;
+  overflow: hidden;
+
+  width: 40px;
+  height: 40px;
+  padding: 5px;
+
+  span:not(.label) {
+    height: 2px;
+    width: 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -15px;
+    background: #000;
+
+    @keyframes bar-1-close {
+      0% {
+        transform: translateY(-8px);
+      }
+
+      50% {
+        transform: translateY(0px);
+      }
+
+      100% {
+        transform: rotate(45deg) translateY(0px);
+      }
+    }
+
+    @keyframes bar-2-close {
+      0% {
+        transform: scaleX(1);
+      }
+
+      40% {
+        transform: scaleX(0);
+      }
+
+      100% {
+        transform: scaleX(0);
+      }
+    }
+
+    @keyframes bar-3-close {
+      0% {
+        transform: translateY(8px);
+      }
+
+      50% {
+        transform: translateY(0px);
+      }
+
+      100% {
+        transform: rotate(-45deg) translateY(0px);
+      }
+    }
+
+    @keyframes bar-1-open {
+      0% {
+        transform: rotate(45deg) translateY(0px);
+      }
+
+      50% {
+        transform: translateY(0px);
+      }
+
+      100% {
+        transform: translateY(-8px);
+      }
+    }
+
+    @keyframes bar-2-open {
+      0% {
+        transform: scaleX(0);
+      }
+
+      40% {
+        transform: scaleX(1);
+      }
+
+      100% {
+        transform: scaleX(1);
+      }
+    }
+
+    @keyframes bar-3-open {
+      0% {
+        transform: rotate(-45deg) translateY(0px);
+      }
+
+      50% {
+        transform: translateY(0px);
+      }
+
+      100% {
+        transform: translateY(8px);
+      }
+    }
+
+    &:nth-of-type(1) {
+      transform: translateY(-8px);
+      animation: bar-1-open .2s ease-in-out both;
+
+      .toolbarOpen & {
+        animation: bar-1-close .2s ease-in-out both;
+      }
+    }
+    &:nth-of-type(2) {
+      transform: scaleX(1);
+      animation: bar-2-open .2s ease-in-out both;
+
+      .toolbarOpen & {
+        animation: bar-2-close .2s ease-in-out both;
+      }
+    }
+    &:nth-of-type(3) {
+      transform: translateY(8px);
+      animation: bar-3-open .2s ease-in-out both;
+
+      .toolbarOpen & {
+        animation: bar-3-close .2s ease-in-out both;
+      }
+    }
+  }
+
+  .label {
+    position: absolute;
+    left: -9999px;
+  }
+}
+
+.headline {
+  font-family: 'Work Sans', sans-serif;
+  @media (max-width: 767.9px) {
+    font-size: 14px;
+
+    &:not(:last-of-type) {
+      margin-bottom: .5em;
     }
   }
 }

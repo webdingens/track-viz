@@ -15,14 +15,20 @@
 - add side by side 3D option / split screen, with camera as an entity on the track editor so we can move it around (having a still image from a stream/game, what is it that we see? this? maybe not -> move skaters around a bit -> yes more like this)
 - add feature description (or make the GUI self explanatory)
 - mobile view
+- add testing options
+  - engagement zone markings moving around the track, with or without skaters
+  - random scenarios/loaded scenarios with question: where is the pack? then reveal
 
 ### Track Editor
 
+- add buttons for changing the orientation (+90, 180, 270 degree)
+- add mobile considerations
+  - portrait/landscape on mobile -> allow only 180 degree changes, use full space
+  - off canvas menu for settings
 - add history of track editor (dispatch new history entry after drag not during)
 - reorder skaters so that skaters with focus are rendered before others, so the handle is visible during overlap
 - choose better colors
 - change font for blocker label
-- add buttons for changing the orientation (+90, 180, 270 degree)
 - add possibility to make a brace if skaters are near enough (auto brace? little wiggly arms?)
 - add Option to move Skaters 180 degrees around the track (mirroring around the center)
 - add Option to move Scene by any degree around the track (which we could then animate)
@@ -34,12 +40,12 @@
 - replace helmet star with a star that has no copyright issues (current one is copy paste from google image search)
 - add Toogle for: center view around skaters (with some padding) / Show whole track
 - auto rotate player based on the drag vector (probably should use last movements and a threshold or falloff)
+- align with 3d camera position (like with gps navigation and look ahead, makes editing easier during split view)
 
 ### 3D View
 
 - Setting: perspective camera FOV (Perspektivische Verzerrung [20 - 75])
 - Setting: Resolution: Full, 75%, 50%, 25% for performance. Try different values
-- replace lines with shape + fill so we have lines with thickness
 - add collision detection of 3D models (cylinder first, realistic skater model later)
   -> which controlsMode?
 - compare loadable component and React.lazy, choose one, then start code splitting so we only load threejs when SplitView shows Track3D
@@ -50,10 +56,7 @@
 
 #### Controls
 
-- Persist Camera Position for Pointer Lock Controls
-- Create controls base class
-- Change PointerLock to use Median instead of cutoff value for outliers
-  - or something smart ... maybe look at unity control handlers
+- Change PointerLock to use something smart for Chrome Bug detection ... maybe look at unity control handlers
 X add POV camera / movement
   X pointer lock controls (three.js)
   - first person controls
@@ -77,11 +80,11 @@ X add POV camera / movement
   - realistic skater models maybe later (use make human and modify ice skating boots asset in documents folder)
 - create a skating hall (flat geometry, frontside rendering, with textures)
   - floor with different scenarios: plastic tiles (ice rink overlay), linoleum, concrete
+- replace lines with shape + fill so we have lines with thickness
 
-### VR View
+#### VR View
 
-- copy over current camera state to vr scene
-- add controller controls?
+- add controller controls? Don't have any :(
 
 ### Timeline
 
@@ -105,6 +108,7 @@ X add POV camera / movement
 
 X add state handling
 X store current state to local storage
+X add new fonts
 
 ### Done: Track Editor
 
@@ -128,7 +132,13 @@ X display Pack / Engagement Zone in 3D
 X save camera to the state
 X Setting: First Person controls
 
-### Done: VR View
+#### Done: Controls
+
+X Persist Camera Position for Pointer Lock Controls
+X Create controls base class
+X Change PointerLock to use Median instead of cutoff value for outliers -> Didn't work
+
+#### Done: VR View
 
 X Finish making the VRButton a React Component
 X connect the vrSessionRunning variable to the button component
@@ -136,3 +146,4 @@ X connect vrModeEnabled to Track3D
 X switch rendering loops when vrModeEnabled changed
 X add VR Option so we can look around the scene
 X add Controls so we can run around in the scene
+X copy over current camera state to vr scene

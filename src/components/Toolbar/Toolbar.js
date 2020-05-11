@@ -17,12 +17,21 @@ import {
 import styles from './Toolbar.module.scss';
 
 class Toolbar extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false
+    }
+  }
   render() {
     return (
-      <div className={styles.toolbar}>
+      <div className={classNames({
+        [styles.toolbar]: true,
+        [styles.toolbarOpen]: this.state.open
+      })}>
         <ul>
           <li>
-            Editor Layout
+            <span className={styles.headline}>Editor Layout</span>
             <ul>
               <li>
                 <button
@@ -63,23 +72,35 @@ class Toolbar extends React.PureComponent {
             </ul>
           </li>
 
-          <li>
-            Track3D Controls
-            <ul>
-              {Object.keys(CONTROL_MODES).map((mode, idx) => (
-                <li key={idx}>
-                  <button
-                    className={classNames({
-                      [styles.button]: true,
-                      [styles['button--active']]: this.props.controlMode === CONTROL_MODES[mode]
-                    })}
-                    onClick={() => this.props.setControlMode(CONTROL_MODES[mode])}
-                  >{CONTROL_MODES[mode]}</button>
-                </li>
-              ))}
-            </ul>
-          </li>
+          {this.props.settings.track3DVisible ? (
+            <li>
+              <span className={styles.headline}>Track3D Controls</span>
+              <ul>
+                {Object.keys(CONTROL_MODES).map((mode, idx) => (
+                  <li key={idx}>
+                    <button
+                      className={classNames({
+                        [styles.button]: true,
+                        [styles['button--active']]: this.props.controlMode === CONTROL_MODES[mode]
+                      })}
+                      onClick={() => this.props.setControlMode(CONTROL_MODES[mode])}
+                    >{CONTROL_MODES[mode]}</button>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ) : null}
         </ul>
+
+        <button
+          className={styles.toggleButton}
+          onClick={() => this.setState({ open: !this.state.open })}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+          <span className={styles.label}>{this.state.open ? 'Close Menu' : 'Open Menu'}</span>
+        </button>
       </div>
     )
   }
