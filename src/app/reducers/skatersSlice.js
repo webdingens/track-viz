@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { defaultSkaters } from '../../data/defaultSkaters.json';
 
 export const skaterPropTypes = PropTypes.exact({
+  id: PropTypes.number.isRequired,
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired,
   rotation: PropTypes.number.isRequired,

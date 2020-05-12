@@ -11,7 +11,7 @@ const TrackSkaters = (props) => {
     if (el.team === 'A') labelIdx = ++idxA;
     else labelIdx = ++idxB;
     skaters.push(<Skater
-      key={i}
+      key={el.id}
       idx={i}
       label={!(el.isJammer || el.isPivot) ? labelIdx : ''}
       preventDragUpdate={props.preventDragUpdate}

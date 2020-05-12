@@ -34,7 +34,6 @@ const TrackPackMarkings = ({sortedPackBoundaries}) => {
 
   return (
     <>
-      <text fontSize="1" textAnchor="middle">Where is the pack?</text>
       {packBounds ? (
         <PartialTrackShape
           className={styles.pack}

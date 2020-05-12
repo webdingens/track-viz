@@ -1,0 +1,109 @@
+.overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  label {
+    white-space: nowrap;
+    span {
+      margin-right: .5em;
+    }
+  }
+}
+
+/*
+*   Taken from http://danielstern.ca/range.css/#/
+*/
+.rangeSlider {
+  & {
+    -webkit-appearance: none;
+    width: 150px;
+    margin: 9.05px 0;
+  }
+  &:focus {
+    outline: none;
+  }
+  &::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 5.9px;
+    cursor: pointer;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    background: #24d1d6;
+    border-radius: 1.3px;
+    border: 0.2px solid #010101;
+  }
+  &::-webkit-slider-thumb {
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    border: 1px solid #000000;
+    height: 24px;
+    width: 10px;
+    border-radius: 8px;
+    background: #ff9dd6;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -9.25px;
+  }
+  &:focus::-webkit-slider-runnable-track {
+    background: #36d9dd;
+  }
+  &::-moz-range-track {
+    width: 100%;
+    height: 5.9px;
+    cursor: pointer;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    background: #24d1d6;
+    border-radius: 1.3px;
+    border: 0.2px solid #010101;
+  }
+  &::-moz-range-thumb {
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    border: 1px solid #000000;
+    height: 24px;
+    width: 10px;
+    border-radius: 8px;
+    background: #ff9dd6;
+    cursor: pointer;
+  }
+  &::-ms-track {
+    width: 100%;
+    height: 5.9px;
+    cursor: pointer;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+  }
+  &::-ms-fill-lower {
+    background: #20bcc0;
+    border: 0.2px solid #010101;
+    border-radius: 2.6px;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  }
+  &::-ms-fill-upper {
+    background: #24d1d6;
+    border: 0.2px solid #010101;
+    border-radius: 2.6px;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  }
+  &::-ms-thumb {
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    border: 1px solid #000000;
+    height: 24px;
+    width: 10px;
+    border-radius: 8px;
+    background: #ff9dd6;
+    cursor: pointer;
+    height: 5.9px;
+  }
+  &:focus::-ms-fill-lower {
+    background: #24d1d6;
+  }
+  &:focus::-ms-fill-upper {
+    background: #36d9dd;
+  }
+}

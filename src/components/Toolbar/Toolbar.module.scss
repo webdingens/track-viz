@@ -8,7 +8,7 @@
   color: #fff;
   
   font-size: 1.2rem;
-  line-height: 1.25;
+  line-height: 1.5;
 
   > ul {
     > li {
@@ -17,12 +17,8 @@
       }
     }
 
-    ul {
-      margin-top: .1em;
-    }
-
     ul li {
-      line-height: 1;
+      line-height: 1.25;
       @media (max-width: 767.9px) {
         font-size: 12px;
       }
@@ -39,6 +35,20 @@
   transform: translateX(-100%);
   &.toolbarOpen {
     transform: translateX(0%);
+  }
+
+  button, label, a {
+    font-size: 12px;
+  }
+}
+
+.headline {
+  display: inline-block;
+  font-family: 'Work Sans', sans-serif;
+  margin-bottom: .15em;
+
+  @media (max-width: 767.9px) {
+    font-size: 14px;
   }
 }
 
@@ -71,22 +81,22 @@
   height: 40px;
   padding: 5px;
 
-  span:not(.label) {
-    height: 2px;
+  span:not(.buttonLabel) {
+    border-top: 2px solid #000;
     width: 30px;
     position: absolute;
     top: 50%;
     left: 50%;
     margin-left: -15px;
-    background: #000;
+    margin-top: -1px;
 
     @keyframes bar-1-close {
       0% {
-        transform: translateY(-8px);
+        transform: rotate(0deg) translateY(-8px);
       }
 
       50% {
-        transform: translateY(0px);
+        transform: rotate(0deg) translateY(0px);
       }
 
       100% {
@@ -110,11 +120,11 @@
 
     @keyframes bar-3-close {
       0% {
-        transform: translateY(8px);
+        transform: rotate(0deg) translateY(8px);
       }
 
       50% {
-        transform: translateY(0px);
+        transform: rotate(0deg) translateY(0px);
       }
 
       100% {
@@ -128,11 +138,11 @@
       }
 
       50% {
-        transform: translateY(0px);
+        transform: rotate(0deg) translateY(0px);
       }
 
       100% {
-        transform: translateY(-8px);
+        transform: rotate(0deg) translateY(-8px);
       }
     }
 
@@ -156,17 +166,20 @@
       }
 
       50% {
-        transform: translateY(0px);
+        transform: rotate(0deg) translateY(0px);
       }
 
       100% {
-        transform: translateY(8px);
+        transform: rotate(0deg) translateY(8px);
       }
     }
 
     &:nth-of-type(1) {
       transform: translateY(-8px);
-      animation: bar-1-open .2s ease-in-out both;
+
+      .toolbarClosed & {
+        animation: bar-1-open .2s ease-in-out both;
+      }
 
       .toolbarOpen & {
         animation: bar-1-close .2s ease-in-out both;
@@ -174,7 +187,10 @@
     }
     &:nth-of-type(2) {
       transform: scaleX(1);
-      animation: bar-2-open .2s ease-in-out both;
+
+      .toolbarClosed & {
+        animation: bar-2-open .2s ease-in-out both;
+      }
 
       .toolbarOpen & {
         animation: bar-2-close .2s ease-in-out both;
@@ -182,7 +198,10 @@
     }
     &:nth-of-type(3) {
       transform: translateY(8px);
-      animation: bar-3-open .2s ease-in-out both;
+
+      .toolbarClosed & {
+        animation: bar-3-open .2s ease-in-out both;
+      }
 
       .toolbarOpen & {
         animation: bar-3-close .2s ease-in-out both;
@@ -190,19 +209,8 @@
     }
   }
 
-  .label {
+  .buttonLabel {
     position: absolute;
     left: -9999px;
-  }
-}
-
-.headline {
-  font-family: 'Work Sans', sans-serif;
-  @media (max-width: 767.9px) {
-    font-size: 14px;
-
-    &:not(:last-of-type) {
-      margin-bottom: .5em;
-    }
   }
 }

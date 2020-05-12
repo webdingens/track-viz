@@ -23,7 +23,8 @@ const defaultSettings = {
   vrSupport: true,  // should support VR
   vrModeEnabled: false,
   vrSessionRunning: false,
-  mapControlsDampingEnabled: false
+  mapControlsDampingEnabled: false,
+  graphicsQuality: .6,  // 60%
 };
 
 let initialState = cleanupSlice(
@@ -57,6 +58,9 @@ export const settingsTrack3DSlice = createSlice({
     setMapControlsDampingEnabled: (state, action) => {
       state.mapControlsDampingEnabled = action.payload;
     },
+    setGraphicsQuality: (state, action) => {
+      state.graphicsQuality = action.payload;
+    },
     reset: (state) => {
       state = {...defaultSettings};
     },
@@ -68,7 +72,7 @@ export const settingsTrack3DSlice = createSlice({
   },
 });
 
-export const { setControlMode, setCamera, setControls, setVRModeEnabled, setVRSessionRunning, reset, resetCamera, setMapControlsDampingEnabled } = settingsTrack3DSlice.actions;
+export const { setControlMode, setCamera, setControls, setVRModeEnabled, setVRSessionRunning, reset, resetCamera, setMapControlsDampingEnabled, setGraphicsQuality } = settingsTrack3DSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
@@ -82,5 +86,6 @@ export const selectTrack3DVRSupport = state => state.settings.track3D.vrSupport;
 export const selectTrack3DVRSessionRunning = state => state.settings.track3D.vrSessionRunning;
 export const selectTrack3DVRModeEnabled = state => state.settings.track3D.vrModeEnabled;
 export const selectTrack3DMapControlsDampingEnabled = state => state.settings.track3D.mapControlsDampingEnabled;
+export const selectTrack3DGraphicsQuality = state => state.settings.track3D.graphicsQuality;
 
 export default settingsTrack3DSlice.reducer;

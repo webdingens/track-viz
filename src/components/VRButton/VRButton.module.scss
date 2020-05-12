@@ -15,6 +15,7 @@
 
 .VRButton {
   @extend %guiElement;
+  font-family: 'Work Sans', sans-serif;
 
   &--sess-not-supported {
     cursor: auto;

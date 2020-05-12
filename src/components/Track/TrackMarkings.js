@@ -1,11 +1,11 @@
 import React from 'react';
 
-import styles from './Track.module.scss';
+import styles from './TrackMarkings.module.scss';
 
 const TICK_WIDTH = .6;
 const TICK_DISTANCE = 3.05;
 
-export default () => (
+export default (props) => (
   <>
     {/* Figure 2 */}
     {/* <line x1="-5.33" x2="5.33" y1="0" y2="0" />
@@ -123,11 +123,15 @@ export default () => (
 
 
     {/* Outside Track */}
-
-    <path className={styles.outsideOfficiatingBoundary} d={`M5.33,${7.775 + 3.05} A ${8.08 + 3.05} ${8.08 + 3.05} 180 1 0 5.33,${-8.385 - 3.05}`} />
-    <path className={styles.outsideOfficiatingBoundary} d={`M-5.33,${-7.775 - 3.05} A ${8.08 + 3.05} ${8.08 + 3.05} 180 1 0 -5.33,${8.385 + 3.05}`} />
-    {/* Line closure, top then bottom */}
-    <path className={styles.outsideOfficiatingBoundary} d={`M-5.33,${-7.775 - 3.05} L5.33,${-8.385 - 3.05}`} />
-    <path className={styles.outsideOfficiatingBoundary} d={`M5.33,${7.775 + 3.05} L-5.33,${+8.385 + 3.05}`} />
+    {props.showRefLane ? (
+      <g className={styles.outsideOfficiatingBoundary}>
+        <path d={`M5.33,${7.775 + 3.05} A ${8.08 + 3.05} ${8.08 + 3.05} 180 1 0 5.33,${-8.385 - 3.05}`} />
+        <path d={`M-5.33,${-7.775 - 3.05} A ${8.08 + 3.05} ${8.08 + 3.05} 180 1 0 -5.33,${8.385 + 3.05}`} />
+        {/* Line closure, top then bottom */}
+        <path d={`M-5.33,${-7.775 - 3.05} L5.33,${-8.385 - 3.05}`} />
+        <path d={`M5.33,${7.775 + 3.05} L-5.33,${+8.385 + 3.05}`} />
+      </g>
+    ) : null}
+    
   </>
 )

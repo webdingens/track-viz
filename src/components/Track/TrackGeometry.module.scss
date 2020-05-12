@@ -1,0 +1,36 @@
+$c-wftda: #f3a5c9;
+.svg {
+  max-height: 100vh;
+  height: 100%;
+  width: 100%;
+  display: block;
+
+  > g > circle {
+    fill: #fff;
+    stroke: #000;
+    stroke-width: .07;
+
+    &.current {
+      stroke: $c-wftda;
+    }
+  }
+
+  > g > line {
+    stroke: #000;
+    stroke-width: .07;
+
+    &.current {
+      stroke: $c-wftda;
+    }
+  }
+
+  > g > path {
+    fill: none;
+    stroke-width: .07;
+    stroke: #000;
+
+    &.current {
+      stroke: $c-wftda;
+    }
+  }
+}

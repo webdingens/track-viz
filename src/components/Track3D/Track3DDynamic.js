@@ -8,6 +8,7 @@ import Track3DSkaters from './Track3DSkaters';
 import Track3DFloor from './Track3DFloor';
 import PointerLockInstructions from '../PointerLockInstructions/PointerLockInstructions';
 import VRButton from '../VRButton/VRButton';
+import Track3DOverlay from './Track3DOverlay';
 
 import { selectGeneralSettings } from '../../app/reducers/settingsGeneralSlice';
 import {
@@ -19,14 +20,13 @@ import {
   selectTrack3DVRModeEnabled,
   selectTrack3DControlMode,
   CONTROL_MODES,
-  selectTrack3DMapControlsDampingEnabled
+  selectTrack3DMapControlsDampingEnabled,
+  selectTrack3DGraphicsQuality,
 } from '../../app/reducers/settingsTrack3DSlice';
 
 import ControlsMap from './controls/ControlsMap';
 import ControlsFirstPerson from './controls/ControlsFirstPerson';
 import ControlsXR from './controls/ControlsXR';
-
-const GRAPHICS_QUALITY = 1;
 
 class Track3DDynamic extends React.Component {
   constructor(props) {
@@ -72,6 +72,12 @@ class Track3DDynamic extends React.Component {
   */
   shouldComponentUpdate(nextProps, nextState) {
     this.syncWithNextProps(nextProps);
+
+    // quality change
+    if (nextProps.graphicsQuality !== this.props.graphicsQuality) {
+      this.updateRendererSize(nextProps);
+      this.requestAnimate();
+    }
 
     if (this.state.firstPersonControlsActive !== nextState.firstPersonControlsActive) return true;
     if (this.state.controlsInitialized !== nextState.controlsInitialized) return true;
@@ -339,14 +345,14 @@ class Track3DDynamic extends React.Component {
     }
   }
 
-  updateRendererSize() {
+  updateRendererSize(props) {
     if (this.renderer) {
       let container = this.renderer.domElement;
       let bbox = container.getBoundingClientRect();
 
       this.renderer.setSize(
-        Math.round(bbox.width * GRAPHICS_QUALITY),
-        Math.round(bbox.height * GRAPHICS_QUALITY),
+        Math.round(bbox.width * props.graphicsQuality),
+        Math.round(bbox.height * props.graphicsQuality),
         false // prevent inline style attribute on the renderer
       );
     }
@@ -354,7 +360,7 @@ class Track3DDynamic extends React.Component {
 
   onResize() {
     this.updateCamera();
-    this.updateRendererSize();
+    this.updateRendererSize(this.props);
     
     this.requestAnimate();
   }
@@ -376,11 +382,17 @@ class Track3DDynamic extends React.Component {
           scene={this.scene}
           onSkaterUpdated={this.onSubcomponentUpdated}
         />
-        <VRButton renderer={this.renderer} />
+        { !this.state.firstPersonControlsActive ? (
+          <VRButton renderer={this.renderer} />
+        ) : null }
 
         { (this.state.controlsInitialized === CONTROL_MODES.FIRST_PERSON &&
           !this.state.firstPersonControlsActive) ? (
           <PointerLockInstructions onClick={this.controls.enterFirstPersonControls} />
+        ) : null }
+
+        { !this.state.firstPersonControlsActive ? (
+          <Track3DOverlay renderer={this.renderer} />
         ) : null }
       </>
     )
@@ -397,6 +409,7 @@ const mapStateToProps = (state) => {
     controlMode: selectTrack3DControlMode(state),
     vrModeEnabled: selectTrack3DVRModeEnabled(state),
     mapControlsDampingEnabled: selectTrack3DMapControlsDampingEnabled(state),
+    graphicsQuality: selectTrack3DGraphicsQuality(state),
   }
 }
 

@@ -1,21 +1,22 @@
 import React from 'react';
 
-import TrackMarkings from './TrackMarkings';
-import TrackPackMarkings from './TrackPackMarkings';
-import TrackSkaters from './TrackSkaters';
+import TrackDragging from '../Track/TrackDragging';
+import TrackOverlay from '../Track/TrackOverlay';
 
 import styles from './Track.module.scss';
 
-const Track = (props) => (
-  <svg ref={props.trackContainerRef} className={styles.svg} viewBox="-17,-12 34,24" preserveAspectRatio="xMidYMid meet">
+class Track extends React.PureComponent {
 
-    <TrackPackMarkings skaters={props.skaters} />
+  render() {
+    return (
+      <div className={styles.track}>
+        <TrackDragging />
 
-    <TrackMarkings />
+        <TrackOverlay />
+      </div>
+    )
+  }
+}
 
-    <TrackSkaters {...props} />
-
-  </svg>
-)
 
 export default Track;

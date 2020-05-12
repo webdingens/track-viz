@@ -5,12 +5,16 @@ import { gsap } from 'gsap';
 import Draggable from 'gsap/Draggable';
 import _ from 'lodash';
 
-import Track from './Track';
+import TrackGeometry from './TrackGeometry';
 
 import {
   setSkaters,
   selectCurrentSkatersWDP
 } from '../../app/reducers/currentTrackSlice';
+
+import {
+  selectTrackOrientation,
+} from '../../app/reducers/settingsTrackSlice';
 
 require('../../utils/composedPathPolyfill');
 
@@ -187,7 +191,7 @@ class TrackDragging extends React.Component {
       let text = instance.skaterNodes[idx].querySelectorAll('.js-blocker-number')[0];
       gsap.set(text, {
         svgOrigin: '0, 0',
-        rotate: -draggable.rotation
+        rotate: -draggable.rotation - instance.props.trackOrientation
       });
     }
 
@@ -292,7 +296,7 @@ class TrackDragging extends React.Component {
 
   render() {
     return (
-      <Track
+      <TrackGeometry
         trackContainerRef={this.trackContainer}
         skaters={this.props.skaters}
         preventDragUpdate={this.state.dragging > 0}
@@ -306,7 +310,8 @@ class TrackDragging extends React.Component {
 //
 const mapStateToProps = state => {
   return {
-    skaters: selectCurrentSkatersWDP(state)
+    skaters: selectCurrentSkatersWDP(state),
+    trackOrientation: selectTrackOrientation(state),
   }
 }
 

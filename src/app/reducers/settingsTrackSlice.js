@@ -11,6 +11,7 @@ export const TRACK_ORIENTATIONS = {
 
 const defaultSettings = {
   orientation: TRACK_ORIENTATIONS.ORIENTATION_0_DEG,
+  showRefLane: true,
 };
 
 let initialState = cleanupSlice(
@@ -23,8 +24,11 @@ export const settingsTrackSlice = createSlice({
   initialState: initialState || defaultSettings,
   reducers: {
     setOrientation: (state, action) => {
-      if (TRACK_ORIENTATIONS.keys().indexOf(action.payload) !== -1)
+      if (Object.values(TRACK_ORIENTATIONS).indexOf(action.payload) !== -1)
         state.orientation = action.payload;
+    },
+    setShowRefLane: (state, action) => {
+      state.showRefLane = action.payload;
     },
     reset: (state) => {
       state = {...defaultSettings};
@@ -32,12 +36,14 @@ export const settingsTrackSlice = createSlice({
   },
 });
 
-export const { setTrackEditorVisibility, setTrackVisibility, reset } = settingsTrackSlice.actions;
+export const { setOrientation, setShowRefLane, reset } = settingsTrackSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 
 export const selectTrackSettings = state => state.settings.track;
+export const selectTrackOrientation = state => state.settings.track.orientation;
+export const selectTrackShowRefLane = state => state.settings.track.showRefLane;
 
 export default settingsTrackSlice.reducer;

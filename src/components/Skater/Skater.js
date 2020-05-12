@@ -1,8 +1,10 @@
 import React from 'react';
 import SkaterDragWrappers from './SkaterDragWrappers';
+import { connect } from 'react-redux';
 
 import styles from './Skater.module.scss';
 import classNames from 'classnames';
+import { selectTrackOrientation } from '../../app/reducers/settingsTrackSlice';
 
 const Skater = (props) => {
   let {
@@ -41,7 +43,7 @@ const Skater = (props) => {
             })}
             x="-.3em" y=".3em"
             fontSize=".3"
-            transform={`rotate(${-rotation})`}>{ label }</text>
+            transform={`rotate(${-rotation - props.trackOrientation})`}>{ label }</text>
         ): null}
         {isPivot ? (
           <>
@@ -51,7 +53,7 @@ const Skater = (props) => {
         ) : null}
         {isJammer ? (
           <>
-            <path className={styles.jammerStar} d="m55,237 74-228 74,228L9,96h240" transform="translate(-.23, -.23) scale(.0018)" />
+            <path className={styles.jammerStar} d="m55,237 74-228 74,228L9,96h240" transform={`rotate(-${props.trackOrientation}) translate(-.23, -.23) scale(.0018)`} />
           </>
         ) : null}
 
@@ -60,4 +62,10 @@ const Skater = (props) => {
   )
 }
 
-export default Skater;
+const mapStateToProps = (state) => {
+  return {
+    trackOrientation: selectTrackOrientation(state),
+  }
+}
+
+export default connect(mapStateToProps)(Skater);

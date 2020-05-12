@@ -2,6 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
+import ImportField from '../ImportField/ImportField';
+import ExportButton from '../ExportButton/ExportButton';
+
 import {
   setTrackEditorVisibility,
   setTrack3DVisibility,
@@ -20,14 +23,17 @@ class Toolbar extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      open: false
+      open: false,
+      openedOnce: false,
     }
   }
+
   render() {
     return (
       <div className={classNames({
         [styles.toolbar]: true,
-        [styles.toolbarOpen]: this.state.open
+        [styles.toolbarOpen]: this.state.open,
+        [styles.toolbarClosed]: this.state.openedOnce && !this.state.open
       })}>
         <ul>
           <li>
@@ -90,16 +96,33 @@ class Toolbar extends React.PureComponent {
               </ul>
             </li>
           ) : null}
+
+          <li>
+            <span className={styles.headline}>Import / Export</span>
+            <ul>
+              <li>
+                <ImportField />
+              </li>
+              <li>
+                <ExportButton />
+              </li>
+            </ul>
+          </li>
         </ul>
 
         <button
           className={styles.toggleButton}
-          onClick={() => this.setState({ open: !this.state.open })}
+          onClick={() => {
+            this.setState({
+              open: !this.state.open,
+              openedOnce: true,
+            })
+          }}
         >
           <span></span>
           <span></span>
           <span></span>
-          <span className={styles.label}>{this.state.open ? 'Close Menu' : 'Open Menu'}</span>
+          <span className={styles.buttonLabel}>{this.state.open ? 'Close Menu' : 'Open Menu'}</span>
         </button>
       </div>
     )

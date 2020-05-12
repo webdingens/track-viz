@@ -10,7 +10,7 @@ import {
 } from '../../utils/packFunctions';
 
 
-const defaultTrack = {
+export const defaultTrack = {
   skaters: defaultSkaters,
   refs: [],
 };
@@ -30,6 +30,10 @@ export const currentTrackSlice = createSlice({
     setRefs: (state, action) => {
       state.refs = action.payload;
     },
+    setCurrentTrack: (state, action) => {
+      state.refs = action.payload.refs;
+      state.skaters = action.payload.skaters;
+    },
     reset: (state) => {
       state.refs = [];
       state.skaters = defaultSkaters;
@@ -37,7 +41,7 @@ export const currentTrackSlice = createSlice({
   },
 });
 
-export const { setSkaters, setOrientation, setRefs, reset, resetCamera } = currentTrackSlice.actions;
+export const { setSkaters, setRefs, setCurrentTrack, reset } = currentTrackSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of

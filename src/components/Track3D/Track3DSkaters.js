@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Skater3D from '../Skater3D/Skater3D';
 
 import {
-  selectCurrentSkaters
+  selectCurrentSkaters,
 } from '../../app/reducers/currentTrackSlice';
 
 class Skaters extends React.Component {
@@ -12,7 +12,7 @@ class Skaters extends React.Component {
     return <>
       {
         this.props.skaters.map((skater, i) => (
-          <Skater3D scene={this.props.scene} key={i} onSkaterUpdated={this.props.onSkaterUpdated} {...skater} />
+          <Skater3D scene={this.props.scene} key={skater.id} onSkaterUpdated={this.props.onSkaterUpdated} {...skater} />
         ))
       }
     </>
@@ -24,7 +24,7 @@ class Skaters extends React.Component {
 //
 const mapStateToProps = state => {
   return {
-    skaters: selectCurrentSkaters(state)
+    skaters: selectCurrentSkaters(state),
   }
 }
 

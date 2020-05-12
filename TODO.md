@@ -21,10 +21,8 @@
 
 ### Track Editor
 
-- add buttons for changing the orientation (+90, 180, 270 degree)
 - add mobile considerations
   - portrait/landscape on mobile -> allow only 180 degree changes, use full space
-  - off canvas menu for settings
 - add history of track editor (dispatch new history entry after drag not during)
 - reorder skaters so that skaters with focus are rendered before others, so the handle is visible during overlap
 - choose better colors
@@ -45,7 +43,6 @@
 ### 3D View
 
 - Setting: perspective camera FOV (Perspektivische Verzerrung [20 - 75])
-- Setting: Resolution: Full, 75%, 50%, 25% for performance. Try different values
 - add collision detection of 3D models (cylinder first, realistic skater model later)
   -> which controlsMode?
 - compare loadable component and React.lazy, choose one, then start code splitting so we only load threejs when SplitView shows Track3D
@@ -84,7 +81,7 @@ X add POV camera / movement
 
 #### VR View
 
-- add controller controls? Don't have any :(
+- add gamepad/controller controls? Don't have any :(
 
 ### Timeline
 
@@ -109,6 +106,7 @@ X add POV camera / movement
 X add state handling
 X store current state to local storage
 X add new fonts
+X off canvas menu for settings
 
 ### Done: Track Editor
 
@@ -119,6 +117,7 @@ X Update Drag Position/Rotation while dragging so it's displayed on the Track3D
 X compute Pack / Engagement Zone
 X display Pack / Engagement Zone
 X add inPlay derived property for Skaters
+X add buttons for changing the orientation (+90, 180, 270 degree)
 
 ### Done: 3D View
 
@@ -131,6 +130,7 @@ X add reset option to load default skater data
 X display Pack / Engagement Zone in 3D
 X save camera to the state
 X Setting: First Person controls
+X Setting: Resolution: Full, 75%, 50%, 25% for performance. Try different values
 
 #### Done: Controls
 

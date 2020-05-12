@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
-import TrackOverlay from '../Track/TrackOverlay';
+import Track from '../Track/Track';
 import Track3D from '../Track3D/Track3D';
 
 import {
@@ -29,7 +29,7 @@ class SplitView extends React.Component {
       })}>
         {settings.trackEditorVisible ? (
           <div className={styles.column}>
-            <TrackOverlay />
+            <Track />
           </div>
         ) : null}
 
