@@ -54,7 +54,7 @@ class ImportField extends React.PureComponent {
     return (
       <div className={styles.ImportField}>
         <label>
-          <span><FiUploadCloud /> Import Data (from sources you trust)</span>
+          <span><FiUploadCloud /> Import Data (json)</span>
           <input type="file"
             accept="application/json"
             onChange={this.onChange}
