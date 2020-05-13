@@ -2,76 +2,80 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils';
 
-let modelOriginal;
 let modelA;
 let modelB;
 
 let textureLoader = new THREE.TextureLoader();
-let modelRedRequest;
+let textureRequest;
 let modelLoader = new GLTFLoader();
-let modelRequest;
 
-
-export const loadModel = (team) => new Promise((resolve, reject) => {
-
-  console.log('loading Team: ', team)
-  if (team === 'B' && modelB) return resolve(SkeletonUtils.clone(modelB));
-  if (team === 'A' && modelA) return resolve(SkeletonUtils.clone(modelA));
-
-  if (!modelRequest) {
-    modelRequest = new Promise((resolve, reject) => {
+const requestModels = () => new Promise((resolve, reject) => {
+  let modelRequest = new Promise((resolve, reject) => {
+    modelLoader.load(
+      'models/Skater1B/Skater1B.gltf',
+      (gltf) => {
+        modelA = gltf.scene.children[0];
+        // remove partial culling of stuff
+        for (let child of modelA.children) {
+          child.frustumCulled = false;
+        }
+        resolve();
+      },
+      null,
+      (evt) => reject(evt.message)
+    )
+  });
+  modelRequest.then(() => {
+    (new Promise((resolve, reject) => {
       modelLoader.load(
         'models/Skater1B/Skater1B.gltf',
-        (gltf) => resolve(gltf),
+        (gltf) => {
+          modelB = gltf.scene.children[0];
+          // remove partial culling of stuff
+          for (let child of modelB.children) {
+            child.frustumCulled = false;
+          }
+          resolve();
+        },
         null,
         (evt) => reject(evt.message)
       )
-    });
-  }
+    })).then(resolve).catch(reject)
+  })
+})
 
-  modelRequest.then((gltf) => {
-    if (!modelOriginal) {
-      modelOriginal = SkeletonUtils.clone(gltf.scene.children[0]);
-      // remove partial culling of stuff
-      for (let child of modelOriginal.children) {
-        child.frustumCulled = false;
-      }
-    }
+export const loadModel = (team) => new Promise((resolve, reject) => {
+  if (team === 'B' && modelB) return resolve(SkeletonUtils.clone(modelB));
+  if (team === 'A' && modelA) return resolve(SkeletonUtils.clone(modelA));
 
-    if (!modelRedRequest) {
-      modelRedRequest = new Promise((resolve, reject) => {
-        textureLoader.load(
-          window.location.href + 'models/Skater1B/textures/female_casualsuit02_diffuse_red.png',
-          (texture) => {
-            
-            // create our second model with this
-            let model = SkeletonUtils.clone(modelOriginal);
-            let material = model.children[3].material.clone();
-            let img = material.map;
-            material.map = texture;
-            material.map.flipY = false;
-            img.dispose()
-
-            model.children[3].material = material;
-
-            modelA = model;
-            resolve();
-          },
-          null,
-          (evt) => reject(evt.message)
-        )
-      });
-    }
-
-    if (team === 'B' && modelB) return resolve(SkeletonUtils.clone(modelB));
-    if (team === 'A' && modelA) return resolve(SkeletonUtils.clone(modelA));
-
+  requestModels().then(() => {
     if (team === 'A') {
-      modelRedRequest.then(() => {
+
+      if (!textureRequest) {
+        textureRequest = new Promise((resolve, reject) => {
+          textureLoader.load(
+            window.location.href + 'models/Skater1B/textures/female_casualsuit02_diffuse_red.png',
+            (texture) => {
+              let material = modelA.children[3].material.clone();
+              let img = material.map;
+              material.map = texture;
+              material.map.flipY = false;
+              img.dispose();
+  
+              modelA.children[3].material = material;
+  
+              resolve();
+            },
+            null,
+            (evt) => reject(evt.message)
+          )
+        })
+      }
+
+      textureRequest.then(() => {
         return resolve(SkeletonUtils.clone(modelA));
       })
     } else {
-      modelB = SkeletonUtils.clone(modelOriginal);
       return resolve(SkeletonUtils.clone(modelB));
     }
   })
