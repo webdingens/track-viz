@@ -117,7 +117,7 @@ class Track3D extends React.Component {
   initCamera() {
     let container = this.rendererContainer.current;
     let bbox = container.getBoundingClientRect();
-    this.camera = new THREE.PerspectiveCamera( 75, bbox.width / bbox.height, 0.1, 1000 );
+    this.camera = new THREE.PerspectiveCamera( 75, bbox.width / bbox.height, 0.1, 100 );
     this.scene.add(this.camera);
   }
 
@@ -126,24 +126,43 @@ class Track3D extends React.Component {
    */
   setupTrackLights() {
     let light;
+    let bulb;
 
-    light = new THREE.PointLight( 0xffffff, 1, 100 );
-    light.position.set( -5, 10, 7 );
-    this.scene.add( light );
+    let geometry = new THREE.SphereGeometry( .3, 32, 32 );
+    let material = new THREE.MeshBasicMaterial( {
+      color: 0xcccccc
+    } );
+    bulb = new THREE.Mesh( geometry, material );
 
-    light = new THREE.PointLight( 0xffffff, 1, 100 );
-    light.position.set( 5, 10, 7 );
-    this.scene.add( light );
+    light = new THREE.PointLight( 0xffffff, .7, 80 );
+    light.position.set( -5, 5.5, 7 );
+    let bulb1 = bulb.clone();
+    bulb1.position.set( -5, 5.5, 7 );
+    this.scene.add( light )
+      // .add(bulb1);
 
-    light = new THREE.PointLight( 0xffffff, 1, 100 );
-    light.position.set( -5, 10, -7 );
-    this.scene.add( light );
+    light = new THREE.PointLight( 0xffffff, .7, 80 );
+    light.position.set( 5, 5.5, 7 );
+    bulb1 = bulb.clone();
+    bulb1.position.set( 5, 5.5, 7 );
+    this.scene.add( light )
+      // .add(bulb1);
 
-    light = new THREE.PointLight( 0xffffff, 1, 100 );
-    light.position.set( -5, 10, -7 );
-    this.scene.add( light );
+    light = new THREE.PointLight( 0xffffff, .7, 80 );
+    light.position.set( -5, 5.5, -7 );
+    bulb1 = bulb.clone();
+    bulb1.position.set( -5, 5.5, -7 );
+    this.scene.add( light )
+      // .add(bulb1);
 
-    light = new THREE.AmbientLight( 0xffffff, .4 );
+    light = new THREE.PointLight( 0xffffff, .7, 80 );
+    light.position.set( 5, 5.5, -7 );
+    bulb1 = bulb.clone();
+    bulb1.position.set( 5, 5.5, -7 );
+    this.scene.add( light )
+      // .add(bulb1);
+
+    light = new THREE.AmbientLight( 0xffffff, .5 );
     this.scene.add( light );
   }
 

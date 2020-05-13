@@ -39,7 +39,7 @@ class TrackDragging extends React.Component {
     this.draggables = [];
     this.skaterNodes.forEach((el) => {
       let moveDraggable = Draggable.create(el, {
-        bounds: this.trackContainer.current,
+        bounds: this.trackContainer.current.parentNode,
         minimumMovement: .01,
         target: el.querySelectorAll('.js-skater-body-wrapper')[0],
         onDragStart: this.onDragStart,
@@ -82,7 +82,7 @@ class TrackDragging extends React.Component {
     this.trackContainer.current.addEventListener('click', this.onClickBody);
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
 
     this.draggables.forEach((draggable, idx) => {
       let skater = this.props.skaters[idx];
@@ -93,7 +93,7 @@ class TrackDragging extends React.Component {
         });
         draggable.moveDraggable.update();
       }
-      
+
       if (skater.rotation !== draggable.rotateDraggable.rotation ) {
         gsap.set(draggable.rotateDraggable.target, {
           rotation: skater.rotation

@@ -6,7 +6,13 @@
   ul {
     list-style-type: none;
     padding: 0;
-    margin: 0;
+    margin: 0 -5px -5px;
+  }
+
+  li {
+    display: inline-block;
+
+    margin: 0 5px 5px;
   }
 
   label {
@@ -14,6 +20,48 @@
     span {
       margin-right: .5em;
     }
+  }
+}
+
+.menuButton {
+  border: 1px solid #000;
+  background: transparent;
+  border-radius: 1em;
+  padding: .4em 1em;
+  position: relative;
+
+  font-family: 'Work Sans', sans-serif;
+
+  cursor: pointer;
+
+  &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 1em;
+    box-shadow: 1px 1px 2px 0 #000;
+    opacity: 0;
+    transition: all .1s ease-in-out;
+  }
+
+  &:hover {
+    &:after {
+      opacity: 1;
+    }
+  }
+
+  span {
+    vertical-align: middle;
+  }
+
+  svg {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
   }
 }
 
