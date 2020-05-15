@@ -1,7 +1,14 @@
 .splitView {
   display: flex;
   align-items: stretch;
+  flex-direction: column;
   height: 100%;
+
+  .viewColumns {
+    display: flex;
+    align-items: stretch;
+    flex: 1 0 auto;
+  }
 
   .column {
     flex: 1 0 auto;
@@ -24,6 +31,7 @@
         height: 100vh;
         top: 50%;
         transform: translateY(-50%);
+        z-index: 1;
       }
     }
   }
@@ -37,5 +45,13 @@
 
   &.active {
     font-size: 200%;
+  }
+
+  .sequenceEditorWrapper {
+    border-top: 4px solid #ddd;
+    position: relative;
+    z-index: 1;
+    background: #fff;
+    padding: .25rem 0 0;
   }
 }

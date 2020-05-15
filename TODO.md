@@ -18,6 +18,8 @@
 - add testing options
   - engagement zone markings moving around the track, with or without skaters
   - random scenarios/loaded scenarios with question: where is the pack? then reveal
+- ignore certain fields from export (e.g. splitViewRerender, anything that is viewing related)
+- add another redux slice for internal states, so we don't export that and don't load initial states either
 
 ### Track Editor
 

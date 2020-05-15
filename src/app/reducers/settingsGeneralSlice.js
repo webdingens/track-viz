@@ -5,6 +5,7 @@ import { loadSlice, cleanupSlice } from '../storePersistence';
 const defaultSettings = {
   trackEditorVisible: true,
   track3DVisible: false,
+  sequenceEditorVisible: true,
 };
 
 let initialState = cleanupSlice(
@@ -22,13 +23,16 @@ export const settingsGeneralSlice = createSlice({
     setTrack3DVisibility: (state, action) => {
       state.track3DVisible = action.payload;
     },
+    setSequenceEditorVisibility: (state, action) => {
+      state.sequenceEditorVisible = action.payload;
+    },
     reset: (state) => {
       state = {...defaultSettings};
     },
   },
 });
 
-export const { setTrackEditorVisibility, setTrack3DVisibility, reset } = settingsGeneralSlice.actions;
+export const { setTrackEditorVisibility, setTrack3DVisibility, setSequenceEditorVisibility, reset } = settingsGeneralSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of

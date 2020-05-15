@@ -23,17 +23,54 @@ class ControlsMap extends ControlsBase {
     this.requestAnimate = this.requestAnimate.bind(this);
     this._animateWithDamping = this._animateWithDamping.bind(this);
     this._onMapInteractionEnd = this._onMapInteractionEnd.bind(this);
+    this._updateTargetObject = this._updateTargetObject.bind(this);
 
     this.setupControls();
   }
 
+  _addTargetObject() {
+    this.targetObj = new THREE.Group();
+
+    // show target visually
+    let geometry = new THREE.ConeGeometry( .05, .1, 20 );
+    let material = new THREE.MeshPhongMaterial({
+      color: 0x00aa00,
+      transparent: true,
+      opacity: .5
+    });
+    let targetCone = new THREE.Mesh( geometry, material );
+
+    this.targetObj.add(targetCone);
+
+    let lineMaterial = new THREE.LineBasicMaterial({
+      color: 0xaa0000,
+      transparent: true,
+      opacity: .1
+    });
+    let points = [];
+    points.push( new THREE.Vector3( 0, 0, 0 ) );
+    points.push( new THREE.Vector3( 0, 10, 0 ) );
+
+    let lineGeometry = new THREE.Geometry().setFromPoints( points );
+
+    let line = new THREE.Line( lineGeometry, lineMaterial );
+
+    this.targetObj.add(line);
+
+    this.targetObj.position.set(this.controls.target.x , .05, this.controls.target.z);
+    this.context.scene.add( this.targetObj );
+  }
+
   setupControls() {
+
     this.controls = new MapControls( this.camera, this.renderer.domElement );
     this.controls.screenSpacePanning = false;
     this.controls.minDistance = 3;
     this.controls.maxDistance = 50;
     this.controls.maxPolarAngle = Math.PI / 2;
     this.controls.target = new THREE.Vector3(...this.context.props.controls.target);
+
+    this._addTargetObject();
 
     this.controls.addEventListener('end', this._onMapInteractionEnd);
 
@@ -66,8 +103,13 @@ class ControlsMap extends ControlsBase {
     }
   }
 
+  _updateTargetObject() {
+    this.targetObj.position.set(this.controls.target.x , .05, this.controls.target.z);
+  }
+
   _animateWithoutDamping() {
     this.controls.update();
+    this._updateTargetObject();
 
     this.renderer.render( this.context.scene, this.camera );
 
@@ -76,6 +118,7 @@ class ControlsMap extends ControlsBase {
 
   _animateWithDamping() {
     let updated = this.controls.update();
+    this._updateTargetObject();
     this.renderer.render( this.context.scene, this.camera );
 
     if (!updated) {
@@ -88,6 +131,7 @@ class ControlsMap extends ControlsBase {
 
   update() {
     this.controls.update();
+    this._updateTargetObject();
   }
 
   _didTargetChange(prevProps, nextProps) {
@@ -114,6 +158,10 @@ class ControlsMap extends ControlsBase {
     this.controls.removeEventListener('end', this._onMapInteractionEnd);
     this.controls.dispose();
     this.controls = null;
+
+    if (this.targetObj) {
+      this.context.scene.remove( this.targetObj );
+    }
 
     if (this.animationRequest) {
       cancelAnimationFrame(this.animationRequest);

@@ -134,35 +134,35 @@ class Track3D extends React.Component {
     } );
     bulb = new THREE.Mesh( geometry, material );
 
-    light = new THREE.PointLight( 0xffffff, .7, 80 );
+    light = new THREE.PointLight( 0xffffff, .70, 80 );
     light.position.set( -5, 5.5, 7 );
     let bulb1 = bulb.clone();
     bulb1.position.set( -5, 5.5, 7 );
     this.scene.add( light )
       // .add(bulb1);
 
-    light = new THREE.PointLight( 0xffffff, .7, 80 );
+    light = new THREE.PointLight( 0xffffff, .70, 80 );
     light.position.set( 5, 5.5, 7 );
     bulb1 = bulb.clone();
     bulb1.position.set( 5, 5.5, 7 );
     this.scene.add( light )
       // .add(bulb1);
 
-    light = new THREE.PointLight( 0xffffff, .7, 80 );
+    light = new THREE.PointLight( 0xffffff, .70, 80 );
     light.position.set( -5, 5.5, -7 );
     bulb1 = bulb.clone();
     bulb1.position.set( -5, 5.5, -7 );
     this.scene.add( light )
       // .add(bulb1);
 
-    light = new THREE.PointLight( 0xffffff, .7, 80 );
+    light = new THREE.PointLight( 0xffffff, .70, 80 );
     light.position.set( 5, 5.5, -7 );
     bulb1 = bulb.clone();
     bulb1.position.set( 5, 5.5, -7 );
     this.scene.add( light )
       // .add(bulb1);
 
-    light = new THREE.AmbientLight( 0xffffff, .5 );
+    light = new THREE.AmbientLight( 0xffffff, .75 );
     this.scene.add( light );
   }
 
