@@ -29,9 +29,9 @@ const TrackGeometry = (props) => {
   return (
     <svg ref={props.trackContainerRef} className={styles.svg} viewBox={getViewBox(props.orientation, props.showRefLane)} preserveAspectRatio="xMidYMid meet">
       <g transform={`rotate(${props.orientation})`}>
-        <TrackPackMarkings useSkaters={props.isPreview ? props.skaters : null} />
+        <TrackPackMarkings useSkaters={props.isPreview ? props.skaters : false} />
   
-        <TrackMarkings showRefLane={props.showRefLane} />
+        <TrackMarkings showRefLane={props.isPreview ? false : props.showRefLane} />
   
         <TrackSkaters {...props} />
       </g>
