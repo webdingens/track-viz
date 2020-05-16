@@ -5,6 +5,11 @@ import { connect } from 'react-redux';
 import { selectSortedPackBoundaries } from '../../app/reducers/currentTrackSlice';
 
 import {
+  getSortedPackBoundaries,
+  getPack,
+} from '../../utils/packFunctions';
+
+import {
   computePartialTrackShape,
   ENGAGEMENT_ZONE_DISTANCE_TO_PACK
 } from '../../utils/packFunctions';
@@ -24,8 +29,12 @@ const PartialTrackShape = ({bounds, ...props}) => {
   );
 }
 
-const TrackPackMarkings = ({sortedPackBoundaries}) => {
+const TrackPackMarkings = ({sortedPackBoundaries, useSkaters}) => {
   let packBounds = sortedPackBoundaries;
+
+  if (useSkaters) {
+    packBounds = getSortedPackBoundaries(getPack(useSkaters))
+  }
   let engagementZoneBounds;
 
   if (packBounds) {

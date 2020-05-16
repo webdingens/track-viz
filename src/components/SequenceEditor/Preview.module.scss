@@ -1,0 +1,47 @@
+$previewWidth: 350;
+$previewPadding: 5;
+$animationDuration: 3;
+
+.Preview {
+  opacity: 0;
+  z-index: 2;
+
+  padding: 1px * $previewPadding;
+  background: rgba(255,255,255,.8);
+
+  position: fixed;
+  width: 1px * $previewWidth;
+
+  transform: translate(-50%, -100%);
+  margin-top: -30px;
+}
+
+@keyframes showPreview {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.PreviewVisible {
+  animation: showPreview 1s * $animationDuration ease-in-out both;
+}
+
+//
+//  Exports
+//
+:export {
+  previewWidth: $previewWidth;
+  previewPadding: $previewPadding;
+  animationDuration: $animationDuration;
+}

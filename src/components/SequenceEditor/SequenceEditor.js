@@ -1,6 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
+import _ from 'lodash';
+
+import Preview from './Preview';
 
 import {
   FiPlusCircle,
@@ -29,13 +32,25 @@ import {
 
 import styles from './SequenceEditor.module.scss';
 
+let previewId = 0;
+
 class SequenceEditor extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      activeTrack: null
+      activeTrack: null,
+      previews: [],
     }
+
+    this.onPreviewShown = this.onPreviewShown.bind(this);
+  }
+
+  onPreviewShown(id) {
+    let previews = this.state.previews.filter((preview) => preview.id !== id);
+    this.setState({
+      previews
+    })
   }
 
   render() {
@@ -55,9 +70,21 @@ class SequenceEditor extends React.Component {
                   <input
                     type="radio"
                     name="tracks[]"
-                    onClick={() => this.setState({
-                      activeTrack: track.id
-                    })}
+                    onClick={(evt) => {
+                      let previews = this.state.previews;
+                      if (!track.empty) {
+                        previews = _.cloneDeep(previews);
+                        previews.push({
+                          bbox: evt.target.getBoundingClientRect(),
+                          track,
+                          id: previewId++,
+                        })
+                      }
+                      this.setState({
+                        activeTrack: track.id,
+                        previews,
+                      })
+                    }}
                     onDoubleClick={() => this.props.setCurrentTrack(track)}
                   />
                   <span>Track {track.id}</span>
@@ -129,6 +156,16 @@ class SequenceEditor extends React.Component {
           >
             <FiPlusCircle /><span>Add Track</span>
           </button>
+        </div>
+
+        <div>
+          {this.state.previews.map((preview) => (
+            <Preview
+              key={preview.id}
+              onShown={() => this.onPreviewShown(preview.id)}
+              {...preview}
+            />
+          ))}
         </div>
       </div>
     )
