@@ -46,12 +46,43 @@
   &.active {
     font-size: 200%;
   }
+}
 
-  .sequenceEditorWrapper {
-    border-top: 4px solid #ddd;
+.LowerSection {
+  border-top: 1px solid #ddd;
+  position: relative;
+  z-index: 1;
+  background: #fff;
+}
+
+.SequenceEditorToggleButton {
+  background: #f3f3f3;
+  width: 100%;
+  display: block;
+  border: 0;
+  border-radius: 0;
+  padding: .25em .5em;
+  display: flex;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  svg {
+    vertical-align: middle;
     position: relative;
-    z-index: 1;
-    background: #fff;
-    padding: .25rem 0 0;
+
+    &:last-of-type {
+      margin-left: auto;
+    }
   }
+
+  span {
+    margin-left: .25em;
+    vertical-align: middle;
+  }
+}
+
+.SequenceEditorWrapper {
+  display: flex;
 }

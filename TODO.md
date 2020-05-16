@@ -20,6 +20,7 @@
   - random scenarios/loaded scenarios with question: where is the pack? then reveal
 - ignore certain fields from export (e.g. splitViewRerender, anything that is viewing related)
 - add another redux slice for internal states, so we don't export that and don't load initial states either
+- i10n
 
 ### Track Editor
 
@@ -31,16 +32,18 @@
 - change font for blocker label
 - add possibility to make a brace if skaters are near enough (auto brace? little wiggly arms?)
 - add Option to move Skaters 180 degrees around the track (mirroring around the center)
-- add Option to move Scene by any degree around the track (which we could then animate)
-  - needs collision detection
-  - should be a modifier with preview and apply button
-  - compute next position by placing them on the relative point on the line perpendicular to the inside boundary, keeping the relative position on that line with regards to the length of the line. Then iteratively resolve collisions. See if optimization for position and resolution of constraints is a better option or we already found it with the first approach.
-- Setting: Orientation
+- Setting: Focus on Starting Area
 - add touch capabilites (special rotation? two touch rotate like twisting a knob, or a figure by their head)
 - replace helmet star with a star that has no copyright issues (current one is copy paste from google image search)
 - add Toogle for: center view around skaters (with some padding) / Show whole track
 - auto rotate player based on the drag vector (probably should use last movements and a threshold or falloff)
+- add Option to move Scene by any degree around the track (which we could then animate)
+  - needs collision detection
+  - should be a modifier with preview and apply button
+  - compute next position by placing them on the relative point on the line perpendicular to the inside boundary, keeping the relative position on that line with regards to the length of the line. Then iteratively resolve collisions. See if optimization for position and resolution of constraints is a better option or we already found it with the first approach.
 - align with 3d camera position (like with gps navigation and look ahead, makes editing easier during split view)
+- Setting: Show/Hide Pack and Engagement Area (Cycle Nub)
+- Setting: Pre-Start mode, with blockers having to be on track, between jammer and pivot line
 
 ### 3D View
 
@@ -70,22 +73,27 @@ X add POV camera / movement
 #### Models
 
 - add poses to 3d skater models (could use a different view for the 2d editor, or make edit possible in 3d, maybe tab cycle or mouse click, or maybe add little icon on the top right of the skater to depict what stance they have)
-- load skater data/models/positions into the scene
+  - try using the bones in the skinned mesh
 - create models for skaters in 3D
   - spheres, cylinders or sth.
   - create small sphere with face in Blender
   - create small dummy helmets in Blender
     - partial spheres with Jammer and Pivot texture
-  - realistic skater models maybe later (use make human and modify ice skating boots asset in documents folder)
+  X realistic skater models maybe later (use make human and modify ice skating boots asset in documents folder)
 - create a skating hall (flat geometry, frontside rendering, with textures)
   - floor with different scenarios: plastic tiles (ice rink overlay), linoleum, concrete
-- replace lines with shape + fill so we have lines with thickness
+- replace lines with shape + fill so we have lines with depth
 
 #### VR View
 
 - add gamepad/controller controls? Don't have any :(
 
-### Timeline
+### Sequence Editor
+
+- add label to tracks
+- show label in preview
+
+#### Timeline
 
 - add option to have more than one state and a timeline (like bookmarks but for tweening)
 - add history of timeline
@@ -120,6 +128,7 @@ X compute Pack / Engagement Zone
 X display Pack / Engagement Zone
 X add inPlay derived property for Skaters
 X add buttons for changing the orientation (+90, 180, 270 degree)
+X Setting: Orientation
 
 ### Done: 3D View
 
@@ -133,6 +142,10 @@ X display Pack / Engagement Zone in 3D
 X save camera to the state
 X Setting: First Person controls
 X Setting: Resolution: Full, 75%, 50%, 25% for performance. Try different values
+
+#### Done: 3D Models
+
+X load skater data/models/positions into the scene
 
 #### Done: Controls
 
@@ -149,3 +162,10 @@ X switch rendering loops when vrModeEnabled changed
 X add VR Option so we can look around the scene
 X add Controls so we can run around in the scene
 X copy over current camera state to vr scene
+
+## Sequence Editor
+
+X Setting: Open/Close Editor
+X check if multiple small tracks beside each other triggers phobia of holes -> only for irregular patterns of holes
+
+### Timeline

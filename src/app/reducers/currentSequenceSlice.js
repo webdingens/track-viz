@@ -4,12 +4,14 @@ import _ from 'lodash';
 
 export const defaultSequence = {
   tracks: [],
+  isPlaying: false,
 };
 
 let initialState = cleanupSlice(
   loadSlice('currentSequence'),
   defaultSequence
 );
+initialState.isPlaying = false;
 
 const getUniqueId = (state) => {
   // get unique id per sequence
@@ -66,13 +68,16 @@ export const currentSequenceSlice = createSlice({
         id: getUniqueId(state)
       })
     },
+    setIsPlaying: (state, action) => {
+      state.isPlaying = action.payload;
+    },
     clearSequence: (state) => {
       state.tracks = [];
     },
   },
 });
 
-export const { setTracks, removeTrack, moveTrackRight, moveTrackLeft, setTrack, addTrack, clearSequence } = currentSequenceSlice.actions;
+export const { setTracks, removeTrack, moveTrackRight, moveTrackLeft, setTrack, addTrack, clearSequence, setIsPlaying } = currentSequenceSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
@@ -80,5 +85,6 @@ export const { setTracks, removeTrack, moveTrackRight, moveTrackLeft, setTrack, 
 
 export const selectCurrentSequence = state => state.currentSequence;
 export const selectCurrentTracks = state => state.currentSequence.tracks;
+export const selectIsPlaying = state => state.currentSequence.isPlaying;
 
 export default currentSequenceSlice.reducer;

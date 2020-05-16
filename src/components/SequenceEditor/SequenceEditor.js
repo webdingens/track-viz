@@ -85,7 +85,9 @@ class SequenceEditor extends React.Component {
                         previews,
                       })
                     }}
-                    onDoubleClick={() => this.props.setCurrentTrack(track)}
+                    onDoubleClick={() => {
+                      if (!track.empty) this.props.setCurrentTrack(track)
+                    }}
                   />
                   <span>Track {track.id}</span>
                   <StoreNub className={classNames({

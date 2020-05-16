@@ -41,8 +41,9 @@ const Skater = (props) => {
             [styles.blockerNumber]: true,
             'js-blocker-number': true
             })}
-            x="-.3em" y=".3em"
-            fontSize=".3"
+            x="-.07em" y=".35em"
+            fontSize=".4"
+            textAnchor="middle"
             transform={`rotate(${-rotation - props.trackOrientation})`}>{ label }</text>
         ): null}
         {isPivot ? (

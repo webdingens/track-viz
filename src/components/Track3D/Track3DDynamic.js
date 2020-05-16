@@ -148,7 +148,7 @@ class Track3DDynamic extends React.Component {
    * @returns {boolean}
    */
   didEditorVisibilitiesChange(props) {
-    return this.props.settings.general.trackEditorVisible !== props.settings.general.trackEditorVisible || this.props.settings.general.track3DVisible !== props.settings.general.track3DVisible;
+    return this.props.settings.general.trackEditorVisible !== props.settings.general.trackEditorVisible || this.props.settings.general.track3DVisible !== props.settings.general.track3DVisible || this.props.settings.general.sequenceEditorVisible !== props.settings.general.sequenceEditorVisible;
   }
 
   /**

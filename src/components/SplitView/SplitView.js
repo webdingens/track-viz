@@ -5,10 +5,17 @@ import classNames from 'classnames';
 import Track from '../Track/Track';
 import Track3D from '../Track3D/Track3D';
 import SequenceEditor from '../SequenceEditor/SequenceEditor';
+import PlaybackControls from '../PlaybackControls/PlaybackControls';
 
 import {
-  selectGeneralSettings
+  selectGeneralSettings,
+  setSequenceEditorVisibility,
 } from '../../app/reducers/settingsGeneralSlice';
+
+import {
+  FiChevronsDown,
+  FiChevronsUp
+} from "react-icons/fi";
 
 import styles from './SplitView.module.scss';
 
@@ -42,11 +49,23 @@ class SplitView extends React.Component {
             </div>
           ) : null}
         </div>
-        {settings.sequenceEditorVisible ? (
-          <div className={styles.sequenceEditorWrapper}>
-            <SequenceEditor />
-          </div>
-        ) : null}
+
+        <div className={styles.LowerSection}>
+          <button
+            className={styles.SequenceEditorToggleButton}
+            onClick={() => this.props.setSequenceEditorVisibility(!settings.sequenceEditorVisible)}
+          >
+            {settings.sequenceEditorVisible ? <FiChevronsDown /> : <FiChevronsUp />}
+            <span>{settings.sequenceEditorVisible ? 'Close' : 'Open'} Sequence Editor</span>
+            {settings.sequenceEditorVisible ? <FiChevronsDown /> : <FiChevronsUp />}
+          </button>
+          {settings.sequenceEditorVisible ? (
+            <div className={styles.SequenceEditorWrapper}>
+              <PlaybackControls />
+              <SequenceEditor />
+            </div>
+          ) : null}
+        </div>
       </div>
     )
   }
@@ -58,4 +77,10 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps)(SplitView);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setSequenceEditorVisibility: (val) => dispatch(setSequenceEditorVisibility(val))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SplitView);
