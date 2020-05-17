@@ -356,6 +356,90 @@ export const getSkatersWDPInPlayPackSkater = (skaters, packBoundaries) => {
   })
 }
 
+export const getRelativeVPosition = (skater) => {
+  let pos = new Vector2(skater.x, skater.y);  // blocker position
+
+  // first half circle
+  if (pos.x > C1.x) {
+    let p = pos.clone().sub(C1);
+    let v = p.length() - MEASUREMENT_RADIUS;
+    return v;
+  }
+
+  // straightaway -y
+  if (pos.x <= C1.x && pos.x >= C2.x && pos.y <= 0) {
+    let v = -(pos.y + MEASUREMENT_RADIUS); // move to y=0 then mirror
+    return v;
+  }
+
+  // second half circle
+  if (pos.x < C2.x) {
+    // compute angle of skater to C1
+    let p = pos.clone().sub(C2);
+    let v = p.length() - MEASUREMENT_RADIUS;
+    return v;
+  }
+
+  // straightaway y
+  if (pos.x <= C1.x && pos.x >= C2.x && pos.y > 0) {
+    let v = pos.y - MEASUREMENT_RADIUS;
+    return v;
+  }
+}
+
+export const setPositionFromVAndDist = (skater) => {
+  let s = _.cloneDeep(skater);
+  let dist = skater.pivotLineDist;
+
+  // first half circle
+  if (dist < CIRCUMFERENCE_HALF_CIRCLE) {
+
+    let angle = dist / MEASUREMENT_RADIUS;
+    let direction = new Vector2(0, MEASUREMENT_RADIUS + skater.v);
+
+    direction.rotateAround(new Vector2(0, 0), -angle);
+    let p = direction.add(C1);
+
+    s.x = p.x;
+    s.y = p.y;
+    return s;
+  }
+
+  // straightaway -y
+  if (dist < CIRCUMFERENCE_HALF_CIRCLE + LINE_DIST) {
+    let x = C1.x - (skater.pivotLineDist - CIRCUMFERENCE_HALF_CIRCLE);
+    let y = -MEASUREMENT_RADIUS - skater.v;
+
+    s.x = x;
+    s.y = y;
+    return s;
+  }
+
+  // second half circle
+  if (dist < 2 * CIRCUMFERENCE_HALF_CIRCLE + LINE_DIST) {
+
+    let angle = (dist - (CIRCUMFERENCE_HALF_CIRCLE + LINE_DIST)) / MEASUREMENT_RADIUS;
+    let direction = new Vector2(0, -MEASUREMENT_RADIUS - skater.v);
+
+    direction.rotateAround(new Vector2(0, 0), -angle);
+    let p = direction.add(C2);
+
+    s.x = p.x;
+    s.y = p.y;
+    return s;
+  }
+
+  // straightaway y
+  if (dist <= MEASUREMENT_LENGTH) {
+    let x = C2.x + (skater.pivotLineDist - (2 * CIRCUMFERENCE_HALF_CIRCLE + LINE_DIST));
+    let y = MEASUREMENT_RADIUS + skater.v;
+
+    s.x = x;
+    s.y = y;
+    return s;
+  }
+}
+
 
 /*
 *
