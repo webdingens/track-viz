@@ -391,9 +391,12 @@ export const setPositionFromVAndDist = (skater) => {
   let s = _.cloneDeep(skater);
   let dist = skater.pivotLineDist;
   if (dist < 0) {
-    dist += Math.ceil(dist / MEASUREMENT_LENGTH);
+    dist += Math.ceil(-dist / MEASUREMENT_LENGTH) * MEASUREMENT_LENGTH;
   }
   dist = dist % MEASUREMENT_LENGTH;
+
+  if (dist < 0) console.log('Dist smaller 0: ', dist)
+  if (dist > MEASUREMENT_LENGTH) console.log('Dist too large: ', dist)
 
   // first half circle
   if (dist < CIRCUMFERENCE_HALF_CIRCLE) {
@@ -411,7 +414,7 @@ export const setPositionFromVAndDist = (skater) => {
 
   // straightaway -y
   if (dist < CIRCUMFERENCE_HALF_CIRCLE + LINE_DIST) {
-    let x = C1.x - (skater.pivotLineDist - CIRCUMFERENCE_HALF_CIRCLE);
+    let x = C1.x - (dist - CIRCUMFERENCE_HALF_CIRCLE);
     let y = -MEASUREMENT_RADIUS - skater.v;
 
     s.x = x;
@@ -435,7 +438,7 @@ export const setPositionFromVAndDist = (skater) => {
 
   // straightaway y
   if (dist <= MEASUREMENT_LENGTH) {
-    let x = C2.x + (skater.pivotLineDist - (2 * CIRCUMFERENCE_HALF_CIRCLE + LINE_DIST));
+    let x = C2.x + (dist - (2 * CIRCUMFERENCE_HALF_CIRCLE + LINE_DIST));
     let y = MEASUREMENT_RADIUS + skater.v;
 
     s.x = x;
@@ -462,14 +465,14 @@ const getClosestNextCircularValue = (valFrom, valTo, limit) => {
   let d1 = valFrom;
   // bring distFrom in between [0, limit]
   if (d1 < 0) {
-    d1 += Math.ceil(d1 / limit);
+    d1 += Math.ceil(-d1 / limit) * limit;
   }
   d1 = d1 % limit;
 
   let d2 = valTo;
   // bring distFrom in between [0, limit]
   if (d2 < 0) {
-    d2 += Math.ceil(d2 / limit);
+    d2 += Math.ceil(-d2 / limit) * limit;
   }
   d2 = d2 % limit;
 
@@ -477,8 +480,9 @@ const getClosestNextCircularValue = (valFrom, valTo, limit) => {
   // but computes the vector between both points and adds that to distFrom
   if (d1 < d2) {
     if ((d2 - d1) >= (d1 - (d2 - limit))) {
-      return valFrom + (d1 - (d2 - limit));
+      return valFrom + ((d2 - limit) - d1);
     }
+    // return switched for smaller arc
     return valFrom + (d2 - d1);
   } else {
     if ((d1 - d2) >= (d2 - (d1 - limit))) {

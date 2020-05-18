@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import _ from 'lodash';
 
 import Preview from './Preview';
+import Player from './Player';
 
 import {
   FiPlusCircle,
@@ -169,6 +170,8 @@ class SequenceEditor extends React.Component {
             />
           ))}
         </div>
+
+        <Player />
       </div>
     )
   }

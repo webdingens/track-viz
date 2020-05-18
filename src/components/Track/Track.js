@@ -6,14 +6,20 @@ import TrackOverlay from '../Track/TrackOverlay';
 
 import styles from './Track.module.scss';
 import TrackAnimating from './TrackAnimating';
-import { selectIsPlaying } from '../../app/reducers/currentSequenceSlice';
+import {
+  ANIMATION_STATE,
+  selectAnimationState,
+} from '../../app/reducers/currentSequenceSlice';
 
 class Track extends React.PureComponent {
 
   render() {
+    const trackIsAnimating = [ANIMATION_STATE.PLAYING, ANIMATION_STATE.PAUSED].indexOf(this.props.animationState) !== -1;
+    console.log(this.props.animationState)
+    console.log(trackIsAnimating)
     return (
       <div className={styles.track}>
-        {this.props.isPlaying ?
+        {trackIsAnimating ?
           <TrackAnimating /> :
           <TrackDragging />
         }
@@ -26,7 +32,7 @@ class Track extends React.PureComponent {
 
 const mapStateToProps = (state) => {
   return {
-    isPlaying: selectIsPlaying(state),
+    animationState: selectAnimationState(state),
   }
 }
 

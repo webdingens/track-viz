@@ -51,6 +51,7 @@ class Preview extends React.Component {
         <TrackGeometry
           skaters={this.props.track.skaters}
           isPreview={true}
+          updatePack={true}
         />
       </div>
     )

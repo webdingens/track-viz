@@ -2,9 +2,16 @@ import { createSlice } from '@reduxjs/toolkit';
 import { loadSlice, cleanupSlice } from '../storePersistence';
 import _ from 'lodash';
 
+export const ANIMATION_STATE = {
+  PLAYING: 'playing',
+  PAUSED: 'paused',
+  STOPPED: 'stopped',
+}
+
 export const defaultSequence = {
   tracks: [],
   isPlaying: false,
+  animationState: ANIMATION_STATE.STOPPED,
 };
 
 let initialState = cleanupSlice(
@@ -12,6 +19,7 @@ let initialState = cleanupSlice(
   defaultSequence
 );
 initialState.isPlaying = false;
+initialState.animationState = ANIMATION_STATE.STOPPED;
 
 const getUniqueId = (state) => {
   // get unique id per sequence
@@ -31,7 +39,7 @@ export const currentSequenceSlice = createSlice({
     setTracks: (state, action) => {
       state.tracks = action.payload;
     },
-    removeTrack:  (state, action) => {
+    removeTrack: (state, action) => {
       let idx = _.findIndex(state.tracks, (o) => o.id === action.payload.id);
       if (idx === -1) return;
 
@@ -71,13 +79,16 @@ export const currentSequenceSlice = createSlice({
     setIsPlaying: (state, action) => {
       state.isPlaying = action.payload;
     },
+    setAnimationState: (state, action) => {
+      state.animationState = action.payload;
+    },
     clearSequence: (state) => {
       state.tracks = [];
     },
   },
 });
 
-export const { setTracks, removeTrack, moveTrackRight, moveTrackLeft, setTrack, addTrack, clearSequence, setIsPlaying } = currentSequenceSlice.actions;
+export const { setTracks, removeTrack, moveTrackRight, moveTrackLeft, setTrack, addTrack, clearSequence, setIsPlaying, setAnimationState } = currentSequenceSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
@@ -86,5 +97,6 @@ export const { setTracks, removeTrack, moveTrackRight, moveTrackLeft, setTrack, 
 export const selectCurrentSequence = state => state.currentSequence;
 export const selectCurrentTracks = state => state.currentSequence.tracks;
 export const selectIsPlaying = state => state.currentSequence.isPlaying;
+export const selectAnimationState = state => state.currentSequence.animationState;
 
 export default currentSequenceSlice.reducer;

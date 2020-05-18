@@ -1,6 +1,7 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import currentTrackReducer from './reducers/currentTrackSlice';
 import currentSequenceReducer from './reducers/currentSequenceSlice';
+import animatingTrackReducer from './reducers/animatingTrackSlice';
 import settingsGeneralReducer from './reducers/settingsGeneralSlice';
 import settingsTrack from './reducers/settingsTrackSlice';
 import settingsTrack3D from './reducers/settingsTrack3DSlice';
@@ -10,6 +11,7 @@ let store = configureStore({
   reducer: {
     currentTrack: currentTrackReducer,
     currentSequence: currentSequenceReducer,
+    animatingTrack: animatingTrackReducer,
     settings: combineReducers({
       general: settingsGeneralReducer,
       track: settingsTrack,
