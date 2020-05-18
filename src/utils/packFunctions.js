@@ -390,6 +390,10 @@ export const getRelativeVPosition = (skater) => {
 export const setPositionFromVAndDist = (skater) => {
   let s = _.cloneDeep(skater);
   let dist = skater.pivotLineDist;
+  if (dist < 0) {
+    dist += Math.ceil(dist / MEASUREMENT_LENGTH);
+  }
+  dist = dist % MEASUREMENT_LENGTH;
 
   // first half circle
   if (dist < CIRCUMFERENCE_HALF_CIRCLE) {
@@ -439,6 +443,51 @@ export const setPositionFromVAndDist = (skater) => {
     return s;
   }
 }
+
+/**
+ * Computes a new distTo that is closest distFrom, not mapped into the range
+ * of [0, MEASUREMENT_LENGTH]
+ * @param {number} distFrom 
+ * @param {number} distTo 
+ */
+export const getClosestNextPivotLineDist = (distFrom, distTo) => {
+  return getClosestNextCircularValue(distFrom, distTo, MEASUREMENT_LENGTH);
+}
+
+export const getClosestNextAngle = (angleFrom, angleTo) => {
+  return getClosestNextCircularValue(angleFrom, angleTo, 360);
+}
+
+const getClosestNextCircularValue = (valFrom, valTo, limit) => {
+  let d1 = valFrom;
+  // bring distFrom in between [0, limit]
+  if (d1 < 0) {
+    d1 += Math.ceil(d1 / limit);
+  }
+  d1 = d1 % limit;
+
+  let d2 = valTo;
+  // bring distFrom in between [0, limit]
+  if (d2 < 0) {
+    d2 += Math.ceil(d2 / limit);
+  }
+  d2 = d2 % limit;
+
+  // based off getSortedClosestPointsOnLine
+  // but computes the vector between both points and adds that to distFrom
+  if (d1 < d2) {
+    if ((d2 - d1) >= (d1 - (d2 - limit))) {
+      return valFrom + (d1 - (d2 - limit));
+    }
+    return valFrom + (d2 - d1);
+  } else {
+    if ((d1 - d2) >= (d2 - (d1 - limit))) {
+      return valFrom + (d2 + limit - d1);  // switch
+    }
+    return valFrom + (d2 - d1);
+  }
+}
+
 
 
 /*

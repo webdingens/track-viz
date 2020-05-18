@@ -7,6 +7,8 @@ import TrackGeometry from './TrackGeometry';
 import {
   getRelativeVPosition,
   setPositionFromVAndDist,
+  getClosestNextPivotLineDist,
+  getClosestNextAngle,
 } from '../../utils/packFunctions';
 
 import {
@@ -116,6 +118,7 @@ class TrackAnimating extends React.PureComponent {
     let tracks = this.props.currentSequence.tracks;
     let firstTrack = true;
     let prevTrackIdx;
+    let prevTrack = this.props.currentTrack;
     let prevTrackEnd = 0;
     for (let i=0;i<tracks.length;i++) {
       let track = tracks[i];
@@ -124,24 +127,31 @@ class TrackAnimating extends React.PureComponent {
       track = this.getTrackWithRelativeVPositions(track);
 
       for (let j=0;j<track.skaters.length;j++) {
+        track.skaters[j].pivotLineDist = getClosestNextPivotLineDist(prevTrack.skaters[j].pivotLineDist, track.skaters[j].pivotLineDist);
+        track.skaters[j].rotation = getClosestNextAngle(prevTrack.skaters[j].rotation, track.skaters[j].rotation);
+
         if (firstTrack) {
           tl.to(this.animatingTrack.skaters[j], {
-            // rotation: track.skaters[j].rotation,
+            rotation: track.skaters[j].rotation,
             pivotLineDist: track.skaters[j].pivotLineDist,
             v: track.skaters[j].v,
             duration: .2,
           }, 0);
         } else {
+          // set pivot Line Dist based on prevTrack
           tl.to(this.animatingTrack.skaters[j], {
-            // rotation: track.skaters[j].rotation,
+            rotation: track.skaters[j].rotation,
             pivotLineDist: track.skaters[j].pivotLineDist,
             v: track.skaters[j].v,
             duration: .2 * (i - prevTrackIdx)
           }, prevTrackEnd + .5);
         }
       }
+
       prevTrackEnd = firstTrack ? .2 + .5 : prevTrackEnd + .5 + .2 * (i - prevTrackIdx);
       prevTrackIdx = i;
+
+      prevTrack = track;
       firstTrack = false;
     }
     tl.add(() => this.props.setIsPlaying(false), '+=1')
