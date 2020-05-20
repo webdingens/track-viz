@@ -9,6 +9,7 @@ import Track3DFloor from './Track3DFloor';
 import PointerLockInstructions from '../PointerLockInstructions/PointerLockInstructions';
 import VRButton from '../VRButton/VRButton';
 import Track3DOverlay from './Track3DOverlay';
+import Track3DWalls from './Track3DWalls';
 
 import { selectGeneralSettings } from '../../app/reducers/settingsGeneralSlice';
 import {
@@ -22,11 +23,13 @@ import {
   CONTROL_MODES,
   selectTrack3DMapControlsDampingEnabled,
   selectTrack3DGraphicsQuality,
+  selectTrack3DShowWalls,
 } from '../../app/reducers/settingsTrack3DSlice';
 
 import ControlsMap from './controls/ControlsMap';
 import ControlsFirstPerson from './controls/ControlsFirstPerson';
 import ControlsXR from './controls/ControlsXR';
+// import Track3DSceneExportButton from './Track3DSceneExportButton';
 
 class Track3DDynamic extends React.Component {
   constructor(props) {
@@ -82,8 +85,13 @@ class Track3DDynamic extends React.Component {
     if (this.state.firstPersonControlsActive !== nextState.firstPersonControlsActive) return true;
     if (this.state.controlsInitialized !== nextState.controlsInitialized) return true;
     if (this.didControlModeChange(nextProps)) return true;
+    if (this.props.showWalls !== nextProps.showWalls) return true;
 
     return false;
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.showWalls !== prevProps.showWalls) this.requestAnimate();
   }
 
   componentWillUnmount() {
@@ -372,7 +380,20 @@ class Track3DDynamic extends React.Component {
   render() {
     return (
       <>
-        <Track3DFloor scene={this.scene} />
+        <Track3DFloor
+          scene={this.scene}
+          renderer={this.renderer}
+          onUpdate={this.onSubcomponentUpdated}
+        />
+
+        {this.props.showWalls ? (
+          <Track3DWalls
+            scene={this.scene}
+            renderer={this.renderer}
+            onUpdate={this.onSubcomponentUpdated}
+          />
+        ) : null}
+
         <Track3DMarkings scene={this.scene} />
         <Track3DPackMarkings
           scene={this.scene}
@@ -394,6 +415,8 @@ class Track3DDynamic extends React.Component {
         { !this.state.firstPersonControlsActive ? (
           <Track3DOverlay renderer={this.renderer} />
         ) : null }
+
+        {/* <Track3DSceneExportButton scene={this.scene} /> */}
       </>
     )
   }
@@ -410,6 +433,7 @@ const mapStateToProps = (state) => {
     vrModeEnabled: selectTrack3DVRModeEnabled(state),
     mapControlsDampingEnabled: selectTrack3DMapControlsDampingEnabled(state),
     graphicsQuality: selectTrack3DGraphicsQuality(state),
+    showWalls: selectTrack3DShowWalls(state),
   }
 }
 

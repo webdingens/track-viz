@@ -1,0 +1,12 @@
+{
+  "type": "MeshStandardMaterial",
+  "color": "0xcccccc",
+  "map": "asphalt_map.jpg",
+  "normalMap": "asphalt_normal.jpg",
+  "normalScale": [0.15, 0.15],
+  "displacementMap": "asphalt_displacement.jpg",
+  "displacementScale": 0.01,
+  "metalness": 0,
+  "roughness": 1,
+  "roughnessMap": "asphalt_roughness.jpg"
+}

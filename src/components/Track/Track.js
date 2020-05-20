@@ -15,8 +15,7 @@ class Track extends React.PureComponent {
 
   render() {
     const trackIsAnimating = [ANIMATION_STATE.PLAYING, ANIMATION_STATE.PAUSED].indexOf(this.props.animationState) !== -1;
-    console.log(this.props.animationState)
-    console.log(trackIsAnimating)
+
     return (
       <div className={styles.track}>
         {trackIsAnimating ?

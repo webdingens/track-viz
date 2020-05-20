@@ -7,16 +7,61 @@ import {
   selectTrack3DUseTextures,
 } from '../../app/reducers/settingsTrack3DSlice';
 
-class Track3DFloor extends React.PureComponent {
+class Track3DWalls extends React.PureComponent {
 
   componentDidMount() {
     if (!this.props.scene) return;
 
-    this.floor = this.getFloor();
-    this.floor.rotateX(-Math.PI / 2);
-    this.floor.position.y = -.007;
+    this.walls = [];
 
-    this.props.scene.add(this.floor);
+    let walls = [{
+      x: -17.5,
+      y: 1,
+      z: 0,
+      width: 25,
+      height: 2,
+      rotation: [0, Math.PI / 2, 0, 'YXZ']
+    },
+    {
+      x: 0,
+      y: 1,
+      z: -12.5,
+      width: 35,
+      height: 2,
+      rotation: [0, 0, 0, 'YXZ']
+    },
+    {
+      x: 17.5,
+      y: 1,
+      z: 0,
+      width: 25,
+      height: 2,
+      rotation: [0, -Math.PI / 2, 0, 'YXZ']
+    },
+    {
+      x: 0,
+      y: 1,
+      z: 12.5,
+      width: 35,
+      height: 2,
+      rotation: [0, Math.PI, 0, 'YXZ']
+    }]
+
+    walls.forEach((w) => {
+      let geometry = new THREE.PlaneGeometry( w.width, w.height );
+      let material = new THREE.MeshBasicMaterial( { color: 0xbb7777, side: THREE.FrontSide } );
+
+      let wall = new THREE.Mesh( geometry, material );
+      wall.receiveShadow = true;
+      wall.rotation.fromArray(w.rotation);
+      wall.position.set(w.x, w.y, w.z);
+
+      this.props.scene.add(wall);
+      this.walls.push({
+        mesh: wall,
+        ...w
+      });
+    })
 
     if (this.props.useTextures) this.loadTexturedMaterial();
   }
@@ -32,27 +77,19 @@ class Track3DFloor extends React.PureComponent {
   }
 
   componentWillUnmount() {
-    if (this.props.scene && this.floor)
-      this.props.scene.remove(this.floor);
+    if (this.props.scene && this.walls)
+      this.walls.forEach((wall) => this.props.scene.remove(wall.mesh))
   }
 
-  getFloor() {
-    let geometry = new THREE.PlaneGeometry( 35, 25 );
-    let material = new THREE.MeshBasicMaterial( { color: 0xdddddd, side: THREE.FrontSide } );
-    let floor = new THREE.Mesh( geometry, material );
-    floor.receiveShadow = true;
-
-    return floor;
-  }
-
-  
   loadTexturedMaterial() {
     this.getTexturedMaterial().then((material) => {
-      this.floor.material = material.clone();
-      this.floor.material.map = material.map.clone();
-      this.floor.material.map.needsUpdate = true;
-      this.floor.material.map.repeat.set(.1 * 35, .1 * 25);
-      this.floor.material.needsUpdate = true;
+      this.walls.forEach((wall) => {
+        wall.mesh.material = material.clone();
+        wall.mesh.material.map = material.map.clone();
+        wall.mesh.material.map.needsUpdate = true;
+        wall.mesh.material.map.repeat.set(.4 * wall.width, .5 * wall.height);
+        wall.mesh.material.needsUpdate = true;
+      })
       this.props.onUpdate();
     });
   }
@@ -61,7 +98,7 @@ class Track3DFloor extends React.PureComponent {
     if (this.texturedMaterialRequest) return this.texturedMaterialRequest;
 
     this.texturedMaterialRequest = new Promise((resolve, reject) => {
-      let asphaltUrl = 'textures/asphalt_material/asphalt.json';
+      let asphaltUrl = 'textures/wall_material/wall.json';
       let asphaltFolder = asphaltUrl.slice(0, asphaltUrl.lastIndexOf('/'));
   
       fetch(asphaltUrl).then((response) => response.json())
@@ -79,7 +116,6 @@ class Track3DFloor extends React.PureComponent {
                 (texture) => {
                   texture.wrapS = THREE.RepeatWrapping;
                   texture.wrapT = THREE.RepeatWrapping;
-                  texture.repeat.set(5, 5);
                   texture.anisotropy = Math.min(2, this.props.renderer.capabilities.getMaxAnisotropy());
                   textures[images[key]] = texture;
                   resolve();
@@ -100,21 +136,22 @@ class Track3DFloor extends React.PureComponent {
   
               // onLoad callback
               ( material ) => {
-                resolve(material)
+                resolve(material);
               },
               null,
               reject
             );
-          })
-      })
+          });
+        });
     })
     return this.texturedMaterialRequest;
   }
 
   loadBasicMaterial() {
-    this.floor.material = new THREE.MeshBasicMaterial( { color: 0xdddddd, side: THREE.FrontSide } );
-    this.floor.material.needsUpdate = true;
-
+    this.walls.forEach((wall) => {
+      wall.mesh.material = new THREE.MeshBasicMaterial( { color: 0xbb7777, side: THREE.FrontSide } );
+      wall.mesh.material.needsUpdate = true;
+    })
     this.props.onUpdate();
   }
 
@@ -129,4 +166,4 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps)(Track3DFloor);
+export default connect(mapStateToProps)(Track3DWalls);

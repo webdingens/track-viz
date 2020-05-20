@@ -118,7 +118,6 @@ class Player extends React.Component {
         if (!this.requestUpdate) {
           let track = this.purgeTrack(this.setTrackWithUpdatedPosition(this.animatingTrack));
           this.requestUpdate = true;
-          console.dir(track.skaters[1])
           this.props.setAnimatingTrack(track);
         }
       }

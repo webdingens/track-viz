@@ -1,0 +1,12 @@
+{
+  "type": "MeshStandardMaterial",
+  "color": "0x886666",
+  "map": "wall_map.jpg",
+  "normalMap": "wall_normal.jpg",
+  "normalScale": [0.3, 0.3],
+  "displacementMap": "wall_displacement.jpg",
+  "displacementScale": 0.1,
+  "metalness": 0,
+  "roughness": 1,
+  "roughnessMap": "wall_roughness.jpg"
+}

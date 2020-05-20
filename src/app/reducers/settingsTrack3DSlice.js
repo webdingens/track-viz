@@ -26,6 +26,8 @@ const defaultSettings = {
   mapControlsDampingEnabled: false,
   graphicsQuality: .6,  // 60%
   use3DModels: false,
+  showWalls: false,
+  useTextures: false,
 };
 
 let initialState = cleanupSlice(
@@ -65,6 +67,12 @@ export const settingsTrack3DSlice = createSlice({
     setUse3DModels: (state, action) => {
       state.use3DModels = action.payload;
     },
+    setShowWalls: (state, action) => {
+      state.showWalls = action.payload;
+    },
+    setUseTextures: (state, action) => {
+      state.useTextures = action.payload;
+    },
     reset: (state) => {
       state = {...defaultSettings};
     },
@@ -76,7 +84,7 @@ export const settingsTrack3DSlice = createSlice({
   },
 });
 
-export const { setControlMode, setCamera, setControls, setVRModeEnabled, setVRSessionRunning, reset, resetCamera, setMapControlsDampingEnabled, setGraphicsQuality, setUse3DModels } = settingsTrack3DSlice.actions;
+export const { setControlMode, setCamera, setControls, setVRModeEnabled, setVRSessionRunning, reset, resetCamera, setMapControlsDampingEnabled, setGraphicsQuality, setUse3DModels, setShowWalls, setUseTextures } = settingsTrack3DSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
@@ -92,5 +100,7 @@ export const selectTrack3DVRModeEnabled = state => state.settings.track3D.vrMode
 export const selectTrack3DMapControlsDampingEnabled = state => state.settings.track3D.mapControlsDampingEnabled;
 export const selectTrack3DGraphicsQuality = state => state.settings.track3D.graphicsQuality;
 export const selectTrack3DUse3DModels = state => state.settings.track3D.use3DModels;
+export const selectTrack3DShowWalls = state => state.settings.track3D.showWalls;
+export const selectTrack3DUseTextures = state => state.settings.track3D.useTextures;
 
 export default settingsTrack3DSlice.reducer;

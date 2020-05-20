@@ -4,7 +4,6 @@
 
 ### General
 
-- add export function
 - add bookmarks (for timelines or current state of track editor)
 - give skaters a solid id, not by order
 - add screenshot option for easier save (download blob? screenshot api? render to canvas? render svg to canvas to jpg?)
@@ -29,7 +28,6 @@
 - add history of track editor (dispatch new history entry after drag not during)
 - reorder skaters so that skaters with focus are rendered before others, so the handle is visible during overlap
 - choose better colors
-- change font for blocker label
 - add possibility to make a brace if skaters are near enough (auto brace? little wiggly arms?)
 - add Option to move Skaters 180 degrees around the track (mirroring around the center)
 - Setting: Focus on Starting Area
@@ -72,6 +70,7 @@ X add POV camera / movement
 
 #### Models
 
+- replace lines with shape + fill so we have lines with depth
 - add poses to 3d skater models (could use a different view for the 2d editor, or make edit possible in 3d, maybe tab cycle or mouse click, or maybe add little icon on the top right of the skater to depict what stance they have)
   - try using the bones in the skinned mesh
 - create models for skaters in 3D
@@ -79,10 +78,10 @@ X add POV camera / movement
   - create small sphere with face in Blender
   - create small dummy helmets in Blender
     - partial spheres with Jammer and Pivot texture
-  X realistic skater models maybe later (use make human and modify ice skating boots asset in documents folder)
-- create a skating hall (flat geometry, frontside rendering, with textures)
-  - floor with different scenarios: plastic tiles (ice rink overlay), linoleum, concrete
-- replace lines with shape + fill so we have lines with depth
+- add option for floor with different scenarios: plastic tiles (ice rink overlay), linoleum, concrete
+- add option for higher res textures
+- prevent adding of models after async loading finishes and the models have been disabled since click
+- fix the shadow bug with alpha ordering? Order something?
 
 #### VR View
 
@@ -117,6 +116,7 @@ X add state handling
 X store current state to local storage
 X add new fonts
 X off canvas menu for settings
+X add export function
 
 ### Done: Track Editor
 
@@ -129,6 +129,7 @@ X display Pack / Engagement Zone
 X add inPlay derived property for Skaters
 X add buttons for changing the orientation (+90, 180, 270 degree)
 X Setting: Orientation
+X change font for blocker label
 
 ### Done: 3D View
 
@@ -146,6 +147,8 @@ X Setting: Resolution: Full, 75%, 50%, 25% for performance. Try different values
 #### Done: 3D Models
 
 X load skater data/models/positions into the scene
+X add realistic skater models
+X create a skating hall (flat geometry, frontside rendering, with textures)
 
 #### Done: Controls
 

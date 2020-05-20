@@ -4,13 +4,11 @@ import * as THREE from 'three';
 import { WEBGL } from 'three/examples/jsm/WebGL';
 
 import {
-  selectTrack3DVRSupport,
+  selectTrack3DVRSupport, selectTrack3DGraphicsQuality,
 } from '../../app/reducers/settingsTrack3DSlice';
 
 import styles from './Track3D.module.scss';
 import Track3DDynamic from './Track3DDynamic';
-
-const GRAPHICS_QUALITY = .6;
 
 class Track3D extends React.Component {
   constructor(props) {
@@ -98,8 +96,8 @@ class Track3D extends React.Component {
     // use a dom element already present
     let bbox = this.rendererContainer.current.getBoundingClientRect();
     this.renderer.setSize(
-      Math.round(bbox.width * GRAPHICS_QUALITY),
-      Math.round(bbox.height * GRAPHICS_QUALITY),
+      Math.round(bbox.width * this.props.graphicsQuality),
+      Math.round(bbox.height * this.props.graphicsQuality),
       false // prevent inline style attribute on the renderer
     );
 
@@ -134,35 +132,35 @@ class Track3D extends React.Component {
     } );
     bulb = new THREE.Mesh( geometry, material );
 
-    light = new THREE.PointLight( 0xffffff, .70, 80 );
+    light = new THREE.PointLight( 0xffffff, .8, 25 );
     light.position.set( -5, 5.5, 7 );
     let bulb1 = bulb.clone();
     bulb1.position.set( -5, 5.5, 7 );
     this.scene.add( light )
       // .add(bulb1);
 
-    light = new THREE.PointLight( 0xffffff, .70, 80 );
+    light = new THREE.PointLight( 0xffffff, .8, 25 );
     light.position.set( 5, 5.5, 7 );
     bulb1 = bulb.clone();
     bulb1.position.set( 5, 5.5, 7 );
     this.scene.add( light )
       // .add(bulb1);
 
-    light = new THREE.PointLight( 0xffffff, .70, 80 );
+    light = new THREE.PointLight( 0xffffff, .8, 25 );
     light.position.set( -5, 5.5, -7 );
     bulb1 = bulb.clone();
     bulb1.position.set( -5, 5.5, -7 );
     this.scene.add( light )
       // .add(bulb1);
 
-    light = new THREE.PointLight( 0xffffff, .70, 80 );
+    light = new THREE.PointLight( 0xffffff, .8, 25 );
     light.position.set( 5, 5.5, -7 );
     bulb1 = bulb.clone();
     bulb1.position.set( 5, 5.5, -7 );
     this.scene.add( light )
       // .add(bulb1);
 
-    light = new THREE.AmbientLight( 0xffffff, .75 );
+    light = new THREE.AmbientLight( 0xffffff, 1.1 );
     this.scene.add( light );
   }
 
@@ -191,6 +189,7 @@ class Track3D extends React.Component {
 const mapStateToProps = (state) => {
   return {
     vrSupport: selectTrack3DVRSupport(state),
+    graphicsQuality: selectTrack3DGraphicsQuality(state),
   }
 }
 

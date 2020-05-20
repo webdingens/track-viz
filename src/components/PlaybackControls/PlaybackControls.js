@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 
 import { FiPlay, FiSquare, FiRepeat } from "react-icons/fi";
 
+import Player from './Player';
+
 import {
   selectIsPlaying,
   setIsPlaying,
@@ -19,6 +21,8 @@ class PlaybackControls extends React.Component {
         >{this.props.isPlaying ? <FiSquare /> : <FiPlay />}
         </button>
         <button><FiRepeat /></button>
+
+        <Player />
       </div>
     )
   }

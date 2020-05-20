@@ -22,7 +22,7 @@ const requestModels = () => new Promise((resolve, reject) => {
         resolve();
       },
       null,
-      (evt) => reject(evt.message)
+      reject
     )
   });
   modelRequest.then(() => {
@@ -38,7 +38,7 @@ const requestModels = () => new Promise((resolve, reject) => {
           resolve();
         },
         null,
-        (evt) => reject(evt.message)
+        reject
       )
     })).then(resolve).catch(reject)
   })
@@ -59,7 +59,9 @@ export const loadModel = (team) => new Promise((resolve, reject) => {
               let material = modelA.children[3].material.clone();
               let img = material.map;
               material.map = texture;
+              material.map.needsUpdate = true;
               material.map.flipY = false;
+              material.needsUpdate = true;
               img.dispose();
   
               modelA.children[3].material = material;

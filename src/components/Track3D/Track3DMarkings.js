@@ -3,6 +3,7 @@ import * as THREE from 'three';
 
 const TICK_WIDTH = .6;
 const TICK_DISTANCE = 3.05;
+const TICK_STROKE_WIDTH = .05;
 
 class Track3DMarkings extends React.PureComponent {
 
@@ -17,7 +18,7 @@ class Track3DMarkings extends React.PureComponent {
 
       if (options.striped) {
         material = new THREE.LineDashedMaterial({
-          color: 0x999999,
+          color: 0x000000,
           scale: 1,
           dashSize: .1,
           gapSize: .1,
@@ -34,78 +35,103 @@ class Track3DMarkings extends React.PureComponent {
       trackMarkings.add( line );
     }
 
+    const addShape = (points) => {
+      let shape = new THREE.Shape(points);
+      let options3D = {
+        // curveSegments: 200,
+        color: 0x000000,
+        // opacity: .5,
+        // transparent: true,
+        metalness: 0,
+        roughness: .5,
+        // wireframe: true,
+      }
+      let geometry = new THREE.ShapeGeometry( shape );
+      let material = new THREE.MeshStandardMaterial(options3D);
+      let mesh = new THREE.Mesh( geometry, material );
+      trackMarkings.add( mesh );
+    }
+
+    const addLineShape = (p1, p2) => {
+      let dir = p2.clone().sub(p1);
+      let unit = new THREE.Vector2(1, 0);
+      let perp = unit.rotateAround(new THREE.Vector2(0, 0), dir.angle() + Math.PI / 2);
+      perp.multiplyScalar(TICK_STROKE_WIDTH / 2);
+
+      addShape([
+        p1.clone().add(perp),
+        p1.clone().sub(perp),
+        p2.clone().sub(perp),
+        p2.clone().add(perp),
+      ]);
+    }
+
     let p;
+    let shape;
 
     // Logic from components/Track/TrackMarkings.js
 
     // inner boundaries
-    p = new THREE.Path();
-    p.absarc(
-        5.33,
-        0,
-        3.81,
-        -90 * Math.PI / 180,
-        -270 * Math.PI / 180,
-        false
-      )
-      p.lineTo(-5.33, 3.81)
-      p.absarc(
-        -5.33,
-        0,
-        3.81,
-        90 * Math.PI / 180,
-        270 * Math.PI / 180,
-        false
-      )
-      .lineTo(5.33, -3.81);
-    addPath(p);
+    shape = new THREE.Shape();
+    shape.moveTo(5.33, -3.81 + TICK_STROKE_WIDTH / 2)
+      .lineTo(5.33, -3.81 - TICK_STROKE_WIDTH / 2)
+      .absarc(5.33, 0, 3.81 + TICK_STROKE_WIDTH / 2, -Math.PI / 2, Math.PI / 2, false)
+      .lineTo(-5.33, 3.81 + TICK_STROKE_WIDTH / 2)
+      .absarc(-5.33, 0, 3.81 + TICK_STROKE_WIDTH / 2, Math.PI / 2, 3 * Math.PI / 2, false)
+      .lineTo(5.33, -3.81 - TICK_STROKE_WIDTH / 2)
+      .lineTo(5.33, -3.81 + TICK_STROKE_WIDTH / 2)
+      .lineTo(-5.33, -3.81 + TICK_STROKE_WIDTH / 2)
+      .absarc(-5.33, 0, 3.81 - TICK_STROKE_WIDTH / 2, 3 * Math.PI / 2, Math.PI / 2, true)
+      .lineTo(5.33, 3.81 - TICK_STROKE_WIDTH / 2)
+      .absarc(5.33, 0, 3.81 - TICK_STROKE_WIDTH / 2, Math.PI / 2, -Math.PI / 2, true)
+      .closePath();
+    addShape(shape.getPoints(18));
 
     // outer boundaries
-    p = new THREE.Path();
-    p.moveTo(5.33, 0)
-      .arc(0, .305, 8.08,
-        -90 * Math.PI / 180,
-        90 * Math.PI / 180,
-        false
-        )
-      .lineTo(-5.33, 7.775)
-      .arc(0, -8.08, 8.08,
-        90 * Math.PI / 180,
-        -90 * Math.PI / 180,
-        false
-        )
-      .lineTo(5.33, -7.775)
-    addPath(p);
+    shape = new THREE.Shape();
+    shape.moveTo(5.33, .305 - 8.08 + TICK_STROKE_WIDTH / 2)
+      .lineTo(5.33, .305 - 8.08 - TICK_STROKE_WIDTH / 2)
+      .absarc(5.33, .305, 8.08 + TICK_STROKE_WIDTH / 2, -Math.PI / 2, Math.PI / 2, false)
+      .lineTo(-5.33, 7.775 + TICK_STROKE_WIDTH / 2)
+      .absarc(-5.33, -.305, 8.08 + TICK_STROKE_WIDTH / 2, Math.PI / 2,  3 * Math.PI / 2, false)
+      .lineTo(5.33, -7.775 - TICK_STROKE_WIDTH / 2)
+      .lineTo(5.33, -7.775 + TICK_STROKE_WIDTH / 2)
+      .lineTo(-5.33, -8.385 + TICK_STROKE_WIDTH / 2)
+      .absarc(-5.33, -.305, 8.08 - TICK_STROKE_WIDTH / 2, 3 * Math.PI / 2, Math.PI / 2, true)
+      .lineTo(5.33, 8.385 - TICK_STROKE_WIDTH / 2)
+      .absarc(5.33, .305, 8.08 - TICK_STROKE_WIDTH / 2, Math.PI / 2, -Math.PI / 2, true)
+      .closePath();
+    addShape(shape.getPoints(30));
 
     // pivot line
-    p = new THREE.Path();
-    p.moveTo(5.33, -3.81)
-      .lineTo(5.33, -7.775)
-    addPath(p);
+    addLineShape(
+      new THREE.Vector2(5.33, -3.81),
+      new THREE.Vector2(5.33, -7.775)
+    );
 
     // Ticks
-    p = new THREE.Path();
-    p.moveTo(5.33 - TICK_DISTANCE, -5.41 + TICK_WIDTH/2)
-      .lineTo(5.33 - TICK_DISTANCE, -5.41 - TICK_WIDTH/2)
-    addPath(p);
+    addLineShape(
+      new THREE.Vector2(5.33 - TICK_DISTANCE, -5.41 + TICK_WIDTH/2),
+      new THREE.Vector2(5.33 - TICK_DISTANCE, -5.41 - TICK_WIDTH/2)
+    );
 
-    p = new THREE.Path();
-    p.moveTo(5.33 - 2 * TICK_DISTANCE, -5.41 + TICK_WIDTH/2)
-      .lineTo(5.33 - 2 * TICK_DISTANCE, -5.41 - TICK_WIDTH/2)
-    addPath(p);
+    addLineShape(
+      new THREE.Vector2(5.33 - 2 * TICK_DISTANCE, -5.41 + TICK_WIDTH/2),
+      new THREE.Vector2(5.33 - 2 * TICK_DISTANCE, -5.41 - TICK_WIDTH/2)
+    );
 
     // jammer line
-    p = new THREE.Path();
-    p.moveTo(5.33 - 3 * TICK_DISTANCE, -3.81)
-      .lineTo(5.33 - 3 * TICK_DISTANCE, -(7.775 - 8.385) / (2*5.33) * (5.33 - 3 * TICK_DISTANCE) - 8.08)
-    addPath(p);
+    addLineShape(
+      new THREE.Vector2(5.33 - 3 * TICK_DISTANCE, -3.81),
+      new THREE.Vector2(5.33 - 3 * TICK_DISTANCE, -(7.775 - 8.385) / (2*5.33) * (5.33 - 3 * TICK_DISTANCE) - 8.08)
+    );
 
     // Ticks
     [0,1,2,3].forEach((el, idx) => {
-      p = new THREE.Path();
-      p.moveTo(-5.33 + el * TICK_DISTANCE, 5.41 + TICK_WIDTH/2)
-        .lineTo(-5.33 + el * TICK_DISTANCE, 5.41 - TICK_WIDTH/2)
-      addPath(p);
+      addLineShape(
+        new THREE.Vector2(-5.33 + el * TICK_DISTANCE, 5.41 + TICK_WIDTH/2),
+        new THREE.Vector2(-5.33 + el * TICK_DISTANCE, 5.41 - TICK_WIDTH/2)
+      );
     });
 
     [1,2,3,4,5].forEach((el, idx) => {
@@ -130,10 +156,10 @@ class Track3DMarkings extends React.PureComponent {
       ];
       p2 = [p2[0] + cR[0], p2[1] + cR[1]];
 
-      p = new THREE.Path();
-      p.moveTo(p1[0], -p1[1])
-        .lineTo(p2[0], -p2[1])
-      addPath(p);
+      addLineShape(
+        new THREE.Vector2(p1[0], -p1[1]),
+        new THREE.Vector2(p2[0], -p2[1])
+      );
     });
 
     [1,2,3,4,5].forEach((el, idx) => {
@@ -158,10 +184,10 @@ class Track3DMarkings extends React.PureComponent {
       ];
       p2 = [p2[0] + cR[0], p2[1] + cR[1]];
 
-      p = new THREE.Path();
-      p.moveTo(p1[0], -p1[1])
-        .lineTo(p2[0], -p2[1])
-      addPath(p);
+      addLineShape(
+        new THREE.Vector2(p1[0], -p1[1]),
+        new THREE.Vector2(p2[0], -p2[1])
+      );
     });
 
     // outside Track

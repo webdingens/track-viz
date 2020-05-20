@@ -10,6 +10,10 @@ import {
   selectTrack3DUse3DModels,
   setGraphicsQuality,
   setUse3DModels,
+  selectTrack3DShowWalls,
+  setShowWalls,
+  setUseTextures,
+  selectTrack3DUseTextures,
 } from '../../app/reducers/settingsTrack3DSlice';
 
 import styles from './Track3DOverlay.module.scss';
@@ -17,6 +21,22 @@ import styles from './Track3DOverlay.module.scss';
 const Track3DOverlay = (props) => (
   <div className={styles.overlay}>
     <ul className={styles.controls}>
+      <li>
+        <button
+          className={styles.menuButton}
+          onClick={() => props.setShowWalls(!props.showWalls)}
+        >
+          {props.showWalls ? <FiXSquare /> : <FiSquare />} <span>Walls</span>
+        </button>
+      </li>
+      <li>
+        <button
+          className={styles.menuButton}
+          onClick={() => props.setUseTextures(!props.useTextures)}
+        >
+          {props.useTextures ? <FiXSquare /> : <FiSquare />} <span>Textures</span>
+        </button>
+      </li>
       <li>
         <button
           className={styles.menuButton}
@@ -46,14 +66,18 @@ const Track3DOverlay = (props) => (
 const mapStateToProps = (state) => {
   return {
     graphicsQuality: selectTrack3DGraphicsQuality(state),
-    use3DModels: selectTrack3DUse3DModels(state)
+    use3DModels: selectTrack3DUse3DModels(state),
+    showWalls: selectTrack3DShowWalls(state),
+    useTextures: selectTrack3DUseTextures(state),
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
     setGraphicsQuality: (val) => dispatch(setGraphicsQuality(val)),
-    setUse3DModels: (val) => dispatch(setUse3DModels(val))
+    setUse3DModels: (val) => dispatch(setUse3DModels(val)),
+    setShowWalls: (val) => dispatch(setShowWalls(val)),
+    setUseTextures: (val) => dispatch(setUseTextures(val)),
   }
 }
 
