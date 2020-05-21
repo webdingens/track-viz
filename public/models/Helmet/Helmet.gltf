@@ -1,0 +1,262 @@
+{
+    "asset" : {
+        "generator" : "Khronos glTF Blender I/O v1.1.46",
+        "version" : "2.0"
+    },
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "mesh" : 0,
+            "name" : "Sphere"
+        }
+    ],
+    "materials" : [
+        {
+            "doubleSided" : true,
+            "emissiveFactor" : [
+                0.710554301738739,
+                0.710554301738739,
+                0.710554301738739
+            ],
+            "name" : "Styrophome",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    0.9911020994186401,
+                    0.9911019802093506,
+                    0.9911020994186401,
+                    1
+                ],
+                "metallicFactor" : 0.21100956201553345,
+                "roughnessFactor" : 0.6743118762969971
+            }
+        },
+        {
+            "doubleSided" : true,
+            "emissiveFactor" : [
+                0,
+                0,
+                0
+            ],
+            "name" : "Cover",
+            "pbrMetallicRoughness" : {
+                "baseColorTexture" : {
+                    "index" : 0,
+                    "texCoord" : 0
+                },
+                "metallicFactor" : 0.19266057014465332,
+                "roughnessFactor" : 0.5905963182449341
+            }
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "Sphere",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 0,
+                        "NORMAL" : 1,
+                        "TEXCOORD_0" : 2,
+                        "JOINTS_0" : 3,
+                        "WEIGHTS_0" : 4
+                    },
+                    "indices" : 5,
+                    "material" : 0
+                },
+                {
+                    "attributes" : {
+                        "POSITION" : 6,
+                        "NORMAL" : 7,
+                        "TEXCOORD_0" : 8,
+                        "JOINTS_0" : 9,
+                        "WEIGHTS_0" : 10
+                    },
+                    "indices" : 11,
+                    "material" : 1
+                }
+            ]
+        }
+    ],
+    "textures" : [
+        {
+            "source" : 0
+        }
+    ],
+    "images" : [
+        {
+            "mimeType" : "image/png",
+            "name" : "capRedJammer",
+            "uri" : "textures/capRedJammer.png"
+        }
+    ],
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5126,
+            "count" : 1616,
+            "max" : [
+                0.11800277233123779,
+                0.11023134738206863,
+                0.11527097225189209
+            ],
+            "min" : [
+                -0.11800277233123779,
+                -0.033876460045576096,
+                -0.112978994846344
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5126,
+            "count" : 1616,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5126,
+            "count" : 1616,
+            "type" : "VEC2"
+        },
+        {
+            "bufferView" : 3,
+            "componentType" : 5123,
+            "count" : 1616,
+            "type" : "VEC4"
+        },
+        {
+            "bufferView" : 4,
+            "componentType" : 5126,
+            "count" : 1616,
+            "type" : "VEC4"
+        },
+        {
+            "bufferView" : 5,
+            "componentType" : 5123,
+            "count" : 2388,
+            "type" : "SCALAR"
+        },
+        {
+            "bufferView" : 6,
+            "componentType" : 5126,
+            "count" : 1064,
+            "max" : [
+                0.11800277233123779,
+                0.11803954094648361,
+                0.11527097225189209
+            ],
+            "min" : [
+                -0.11800277233123779,
+                -0.03285454586148262,
+                -0.11798375844955444
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 7,
+            "componentType" : 5126,
+            "count" : 1064,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 8,
+            "componentType" : 5126,
+            "count" : 1064,
+            "type" : "VEC2"
+        },
+        {
+            "bufferView" : 9,
+            "componentType" : 5123,
+            "count" : 1064,
+            "type" : "VEC4"
+        },
+        {
+            "bufferView" : 10,
+            "componentType" : 5126,
+            "count" : 1064,
+            "type" : "VEC4"
+        },
+        {
+            "bufferView" : 11,
+            "componentType" : 5123,
+            "count" : 1560,
+            "type" : "SCALAR"
+        }
+    ],
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 19392,
+            "byteOffset" : 0
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 19392,
+            "byteOffset" : 19392
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 12928,
+            "byteOffset" : 38784
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 12928,
+            "byteOffset" : 51712
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 25856,
+            "byteOffset" : 64640
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 4776,
+            "byteOffset" : 90496
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 12768,
+            "byteOffset" : 95272
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 12768,
+            "byteOffset" : 108040
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 8512,
+            "byteOffset" : 120808
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 8512,
+            "byteOffset" : 129320
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 17024,
+            "byteOffset" : 137832
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 3120,
+            "byteOffset" : 154856
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 157976,
+            "uri" : "Helmet.bin"
+        }
+    ]
+}

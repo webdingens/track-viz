@@ -6,7 +6,7 @@ import {
   selectTrack3DUse3DModels,
 } from '../../app/reducers/settingsTrack3DSlice';
 
-import { loadModel } from './modelLoader/modelLoader';
+import { loadModel, loadHelmet } from './modelLoader/modelLoader';
 
 class Skater3D extends React.PureComponent {
 
@@ -54,7 +54,8 @@ class Skater3D extends React.PureComponent {
         if (this.skaterModel && this.props.scene) {
           this.props.scene.remove(this.skaterModel);
         }
-        this.addLowPolySkater();
+        // this.addLowPolySkater();
+        this.addHelmetSkater();
       }
       needsRender = true;
     }
@@ -63,8 +64,18 @@ class Skater3D extends React.PureComponent {
   }
 
   add3DModelSkater() {
-    loadModel(this.props.team).then((skater) => {
+    Promise.all([
+      loadModel(this.props.team),
+      loadHelmet(this.props),
+    ])
+    .then((retVals) => {
+      let skater = retVals[0];
+      let helmet = retVals[1];
       if (!this) return;
+
+      helmet.position.set(0, 1.163, .32);
+      helmet.rotation.fromArray([-.17, 0, 0])
+      skater.add(helmet);
 
       skater.position.set(this.props.x, 0, this.props.y);
       skater.rotation.fromArray([0, (-this.props.rotation + 90) * Math.PI / 180, 0, 'YXZ']);
@@ -90,6 +101,22 @@ class Skater3D extends React.PureComponent {
     this.props.scene.add( this.skater );
   }
 
+  addHelmetSkater() {
+    loadHelmet(this.props)
+      .then((helmet) => {
+        if (!this) return;
+
+        helmet.position.set(this.props.x, .85, this.props.y);
+        helmet.rotation.fromArray([0, (-this.props.rotation + 90) * Math.PI / 180, 0, 'YXZ']);
+        helmet.scale.set(60/24,60/24,60/24);
+
+        this.props.scene.add( helmet );
+        this.skater = helmet;
+
+        this.props.onSkaterUpdated();
+    })
+  }
+
   addShadow() {
     let geometry = new THREE.CircleGeometry( .3, 32 );
     let material = new THREE.MeshBasicMaterial( { color: 0x222222, opacity: .2, transparent: true } );
@@ -103,7 +130,8 @@ class Skater3D extends React.PureComponent {
     if (this.props.use3DModels) {
       this.add3DModelSkater();
     } else {
-      this.addLowPolySkater();
+      // this.addLowPolySkater();
+      this.addHelmetSkater();
     }
 
     // Skater Shadow
