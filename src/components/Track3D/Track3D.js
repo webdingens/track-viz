@@ -116,6 +116,7 @@ class Track3D extends React.Component {
     let container = this.rendererContainer.current;
     let bbox = container.getBoundingClientRect();
     this.camera = new THREE.PerspectiveCamera( 75, bbox.width / bbox.height, 0.1, 100 );
+    this.camera.name = 'Camera';
     this.scene.add(this.camera);
   }
 
@@ -134,6 +135,7 @@ class Track3D extends React.Component {
 
     light = new THREE.PointLight( 0xffffff, .8, 25 );
     light.position.set( -5, 5.5, 7 );
+    light.name = 'Light';
     let bulb1 = bulb.clone();
     bulb1.position.set( -5, 5.5, 7 );
     this.scene.add( light )
@@ -141,6 +143,7 @@ class Track3D extends React.Component {
 
     light = new THREE.PointLight( 0xffffff, .8, 25 );
     light.position.set( 5, 5.5, 7 );
+    light.name = 'Light';
     bulb1 = bulb.clone();
     bulb1.position.set( 5, 5.5, 7 );
     this.scene.add( light )
@@ -148,6 +151,7 @@ class Track3D extends React.Component {
 
     light = new THREE.PointLight( 0xffffff, .8, 25 );
     light.position.set( -5, 5.5, -7 );
+    light.name = 'Light';
     bulb1 = bulb.clone();
     bulb1.position.set( -5, 5.5, -7 );
     this.scene.add( light )
@@ -155,12 +159,14 @@ class Track3D extends React.Component {
 
     light = new THREE.PointLight( 0xffffff, .8, 25 );
     light.position.set( 5, 5.5, -7 );
+    light.name = 'Light';
     bulb1 = bulb.clone();
     bulb1.position.set( 5, 5.5, -7 );
     this.scene.add( light )
       // .add(bulb1);
 
     light = new THREE.AmbientLight( 0xffffff, 1.1 );
+    light.name = 'Light';
     this.scene.add( light );
   }
 

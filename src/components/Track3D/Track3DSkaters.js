@@ -7,12 +7,22 @@ import {
   selectCurrentSkaters,
 } from '../../app/reducers/currentTrackSlice';
 
+import {
+  selectUserIsInteractingWithTrack3D,
+} from '../../app/reducers/currentTransientsSlice';
+
 class Skaters extends React.Component {
   render() {
     return <>
       {
         this.props.skaters.map((skater, i) => (
-          <Skater3D scene={this.props.scene} key={skater.id} onSkaterUpdated={this.props.onSkaterUpdated} {...skater} />
+          <Skater3D
+            scene={this.props.scene}
+            key={skater.id}
+            onSkaterUpdated={this.props.onSkaterUpdated}
+            userIsInteracting={this.props.userIsInteracting}
+            {...skater}
+          />
         ))
       }
     </>
@@ -25,6 +35,7 @@ class Skaters extends React.Component {
 const mapStateToProps = state => {
   return {
     skaters: selectCurrentSkaters(state),
+    userIsInteracting: selectUserIsInteractingWithTrack3D(state)
   }
 }
 

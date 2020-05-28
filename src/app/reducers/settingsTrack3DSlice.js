@@ -13,7 +13,8 @@ const defaultControls = {
 
 export const CONTROL_MODES = {
   FIRST_PERSON: 'First Person',
-  MAP: 'Map'
+  MAP: 'Map',
+  DRAG: 'Drag'
 };
 
 const defaultSettings = {

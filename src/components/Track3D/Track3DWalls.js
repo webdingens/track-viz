@@ -55,6 +55,7 @@ class Track3DWalls extends React.PureComponent {
       wall.receiveShadow = true;
       wall.rotation.fromArray(w.rotation);
       wall.position.set(w.x, w.y, w.z);
+      wall.name = 'Wall';
 
       this.props.scene.add(wall);
       this.walls.push({

@@ -58,6 +58,8 @@ class ControlsMap extends ControlsBase {
     this.targetObj.add(line);
 
     this.targetObj.position.set(this.controls.target.x , .05, this.controls.target.z);
+    this.targetObj.name = 'Map Controls Target';
+
     this.context.scene.add( this.targetObj );
   }
 

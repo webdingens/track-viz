@@ -15,6 +15,7 @@ class Track3DFloor extends React.PureComponent {
     this.floor = this.getFloor();
     this.floor.rotateX(-Math.PI / 2);
     this.floor.position.y = -.007;
+    this.floor.name = 'Floor';
 
     this.props.scene.add(this.floor);
 

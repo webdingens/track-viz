@@ -27,6 +27,7 @@ import {
 } from '../../app/reducers/settingsTrack3DSlice';
 
 import ControlsMap from './controls/ControlsMap';
+import ControlsDrag from './controls/ControlsDrag';
 import ControlsFirstPerson from './controls/ControlsFirstPerson';
 import ControlsXR from './controls/ControlsXR';
 // import Track3DSceneExportButton from './Track3DSceneExportButton';
@@ -37,7 +38,7 @@ class Track3DDynamic extends React.Component {
 
     this.state = {
       firstPersonControlsActive: false,
-      controlsInitialized: false
+      controlsInitialized: false,
     }
 
     // TODO: rename props from parent and connect
@@ -234,6 +235,9 @@ class Track3DDynamic extends React.Component {
       case CONTROL_MODES.FIRST_PERSON:
         this.setupFirstPersonControls();
         break;
+      case CONTROL_MODES.DRAG:
+        this.setupDragControls();
+        break;
       default:
         break;
     }
@@ -285,6 +289,22 @@ class Track3DDynamic extends React.Component {
       camera: this.camera,
       context: this,
     });
+  }
+
+  setupDragControls() {
+    // redux dev double render debug
+    if (this.controls && this.controls instanceof ControlsDrag) {
+      return;
+    }
+    if (this.controls) {
+      throw new Error('Controls still initialized');
+    }
+
+    this.controls = new ControlsDrag({
+      renderer: this.renderer,
+      camera: this.camera,
+      context: this,
+    })
   }
 
 

@@ -1,4 +1,5 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
+import _ from 'lodash';
 import { defaultSkaters } from '../../data/defaultSkaters.json';
 import { loadSlice, cleanupSlice } from '../storePersistence';
 import {
@@ -34,6 +35,11 @@ export const currentTrackSlice = createSlice({
       state.refs = action.payload.refs;
       state.skaters = action.payload.skaters;
     },
+    updateSkater: (state, action) => {
+      let { id, ...skaterData } = action.payload;
+      let idx = _.findIndex(state.skaters, (o) => o.id === id);
+      _.assign(state.skaters[idx], skaterData);
+    },
     reset: (state) => {
       state.refs = [];
       state.skaters = defaultSkaters;
@@ -41,7 +47,7 @@ export const currentTrackSlice = createSlice({
   },
 });
 
-export const { setSkaters, setRefs, setCurrentTrack, reset } = currentTrackSlice.actions;
+export const { setSkaters, setRefs, setCurrentTrack, updateSkater, reset } = currentTrackSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
