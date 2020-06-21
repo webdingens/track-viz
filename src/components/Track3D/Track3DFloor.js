@@ -42,6 +42,7 @@ class Track3DFloor extends React.PureComponent {
     let material = new THREE.MeshBasicMaterial( { color: 0xdddddd, side: THREE.FrontSide } );
     let floor = new THREE.Mesh( geometry, material );
     floor.receiveShadow = true;
+    floor.renderOrder = 1;
 
     return floor;
   }

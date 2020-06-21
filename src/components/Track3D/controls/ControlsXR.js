@@ -45,7 +45,7 @@ class ControlsXR extends ControlsBase {
     // set our viewer (head) position to that of the camera
     let currCamRot = this.camera.rotation.clone().reorder('YXZ');
     let currCamPos = this.camera.position.toArray();
-    currCamPos[1] = EYE_HEIGHT;
+    currCamPos[1] = 30;
 
     this.viewerXR.position.fromArray(currCamPos);
     this.viewerXR.rotation.fromArray([0, currCamRot.y, 0, 'YXZ']); // starting view of our VR session (just the Y rotation)
@@ -243,6 +243,13 @@ class ControlsXR extends ControlsBase {
 
   animateXR(t, xrFrame) {
     this.updateFirstPersonControlsBasedOnKeys();
+    console.log('Frame Details')
+    console.dir(xrFrame);
+    console.log('referenceSpace: ', this.renderer.xr.getReferenceSpace());
+    console.dir(xrFrame.getViewerPose( this.renderer.xr.getReferenceSpace() ));
+    console.dir(this.xrCamera.position)
+    console.dir(this.xrCamera.rotation);
+    console.dir(this.renderer.xr)
     if (xrFrame) this.currentXRPose = xrFrame.getViewerPose( this.renderer.xr.getReferenceSpace() );
 
     this.renderer.render( this.context.scene, this.xrCamera );

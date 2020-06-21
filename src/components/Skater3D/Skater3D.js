@@ -15,6 +15,7 @@ class Skater3D extends React.Component {
 
     this.skater = new THREE.Group();
     this.skater.name = 'Skater3D';
+    this.skater.renderOrder = 6;
     this.skater.skaterId = this.props.id;
 
     this.renderSkater();
@@ -122,6 +123,7 @@ class Skater3D extends React.Component {
     this.shadow.position.set(0, Math.random() * .001, 0);
     this.shadow.rotateX(-90 * Math.PI / 180);
     this.shadow.name = 'Skater3D Shadow';
+    this.shadow.renderOrder = 5;
 
     target.add( this.shadow );
   }
@@ -134,6 +136,7 @@ class Skater3D extends React.Component {
     let mesh = new THREE.Mesh( geometry, material );
     mesh.position.set(0, .45, 0);
     mesh.name = 'Bounding Element';
+    mesh.renderOrder = 7;
     target.add( mesh );
   }
 

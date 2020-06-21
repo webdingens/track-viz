@@ -86,6 +86,8 @@ X add POV camera / movement
 #### VR View
 
 - add gamepad/controller controls? Don't have any :(
+- Setting: I am using Google Cardboard and want to use my custom Eye Level instead
+  -> set reference space to local in initWebXR and set camera default position to eye level setting in ControlsXR
 
 ### Sequence Editor
 
@@ -109,6 +111,16 @@ X add POV camera / movement
 ### Settings
 
 - Setting: settings view (how does one create a view? One could add another button to the app overlay, which hides/shows the input fields)
+
+### Testing Mode
+
+- add description of current scene (case book)
+- create scenes of the case book
+  - needs animation mode
+  - maybe use step through
+- create scenarios for testing pack refs
+  - with countdown (just x seconds to determine where pack is)
+  - add draw mode to draw a line on the floor, then users can accept or correct, after which the pack is shown
 
 ## Done
 

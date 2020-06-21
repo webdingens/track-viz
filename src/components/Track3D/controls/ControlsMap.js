@@ -2,8 +2,14 @@ import ControlsBase from './ControlsBase';
 
 import * as THREE from 'three';
 import _ from 'lodash';
+import store from '../../../app/store';
 
-import { MapControls } from 'three/examples/jsm/controls/OrbitControls';
+// import { MapControls } from 'three/examples/jsm/controls/OrbitControls';
+import { MapControls } from './threejs/OrbitControls';
+
+import {
+  setTouchEnabledDevice,
+} from '../../../app/reducers/currentTransientsSlice';
 
 // TODO: move things from context to options
 // TODO: use dispatch in controls instead of using the props actions
@@ -24,6 +30,7 @@ class ControlsMap extends ControlsBase {
     this._animateWithDamping = this._animateWithDamping.bind(this);
     this._onMapInteractionEnd = this._onMapInteractionEnd.bind(this);
     this._updateTargetObject = this._updateTargetObject.bind(this);
+    this.onTouchStart = this.onTouchStart.bind(this);
 
     this.setupControls();
   }
@@ -84,6 +91,14 @@ class ControlsMap extends ControlsBase {
     } else {
       this.controls.addEventListener('change', this.requestAnimate);
     }
+
+    document.addEventListener('touchstart', this.onTouchStart, false);
+  }
+
+  onTouchStart() {
+    store.dispatch(setTouchEnabledDevice(true));
+
+    document.removeEventListener('touchstart', this.onTouchStart);
   }
 
   _onMapInteractionEnd() {

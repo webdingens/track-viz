@@ -31,6 +31,7 @@ var DragControls = function ( _objects, _camera, _domElement ) {
 
 	var _selected = null, _hovered = null, _selectedIntersection = null;
 	var _selectedIntersectionOffset = new Vector3();
+	var _isDragging = false;
 
 	//
 
@@ -61,9 +62,7 @@ var DragControls = function ( _objects, _camera, _domElement ) {
 	}
 
 	function dispose() {
-
 		deactivate();
-
 	}
 
 	function getObjects() {
@@ -83,6 +82,8 @@ var DragControls = function ( _objects, _camera, _domElement ) {
 		//	Hover Effect
 		//	make bounding objects visible
 		//
+		if (_isDragging) return;
+
 		_intersections.length = 0;
 
 		_raycaster.setFromCamera( _mouse, _camera );
@@ -152,6 +153,7 @@ var DragControls = function ( _objects, _camera, _domElement ) {
 		}
 
 		_domElement.style.cursor = _hovered ? 'pointer' : 'auto';
+		_isDragging = false;
 
 	}
 
@@ -217,6 +219,7 @@ var DragControls = function ( _objects, _camera, _domElement ) {
 			}
 
 			_domElement.style.cursor = 'move';
+			_isDragging = true;
 
 			scope.dispatchEvent( { type: 'dragstart', object: _selected } );
 
@@ -244,6 +247,7 @@ var DragControls = function ( _objects, _camera, _domElement ) {
 		}
 
 		_domElement.style.cursor = 'auto';
+		_isDragging = false;
 
 	}
 

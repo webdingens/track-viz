@@ -291,6 +291,7 @@ class Track3DDynamic extends React.Component {
     });
   }
 
+
   setupDragControls() {
     // redux dev double render debug
     if (this.controls && this.controls instanceof ControlsDrag) {
@@ -316,9 +317,10 @@ class Track3DDynamic extends React.Component {
   initWebXR() {
     // Web XR
     this.renderer.xr.enabled = true;
-    this.renderer.xr.setReferenceSpaceType( 'local' );
+    // this.renderer.xr.setReferenceSpaceType( 'local' );
     this.currentXRSession = null;
   }
+
 
   /**
    * Animation for when we started a VR Session
@@ -336,6 +338,7 @@ class Track3DDynamic extends React.Component {
     this.xrSessionRequested = false;
   }
 
+
   onXRSessionEnded() {
     this.controlsXR = null;
     this.currentXRSession = null;
@@ -347,22 +350,25 @@ class Track3DDynamic extends React.Component {
     this.requestAnimate();
   }
 
+
   startXRSession() {
     if ( this.currentXRSession === null && !this.xrSessionRequested) {
       // features need to be requested on session start
-      // var sessionInit = {
-      //   optionalFeatures: [ 'local-floor', 'bounded-floor' ]
-      // };
-      // navigator.xr.requestSession( 'immersive-vr', sessionInit ).then( this.onXRSessionStarted );
-      navigator.xr.requestSession( 'immersive-vr' ).then( this.onXRSessionStarted );
+      let sessionInit = {
+        optionalFeatures: [ 'local-floor', 'bounded-floor' ]
+      };
+      navigator.xr.requestSession( 'immersive-vr', sessionInit ).then( this.onXRSessionStarted );
+      // navigator.xr.requestSession( 'immersive-vr' ).then( this.onXRSessionStarted );
       this.xrSessionRequested = true;
     }
   }
+
 
   stopXRSession() {
     if (this.currentXRSession === null) return;
     this.currentXRSession.end();
   }
+
 
   updateCamera() {
     if (this.camera && this.renderer) {
@@ -372,6 +378,7 @@ class Track3DDynamic extends React.Component {
       this.camera.updateProjectionMatrix();
     }
   }
+
 
   updateRendererSize(props) {
     if (this.renderer) {
@@ -386,6 +393,7 @@ class Track3DDynamic extends React.Component {
     }
   }
 
+
   onResize() {
     this.updateCamera();
     this.updateRendererSize(this.props);
@@ -393,9 +401,11 @@ class Track3DDynamic extends React.Component {
     this.requestAnimate();
   }
 
+
   onSubcomponentUpdated() {
     this.requestAnimate();
   }
+
 
   render() {
     return (
@@ -442,6 +452,7 @@ class Track3DDynamic extends React.Component {
   }
 }
 
+
 const mapStateToProps = (state) => {
   return {
     settings: {
@@ -457,6 +468,7 @@ const mapStateToProps = (state) => {
   }
 }
 
+
 const mapDispatchToProps = (dispatch) => {
   return {
     setCamera: ({ position, rotation }) => dispatch(setCamera({ position, rotation })),
@@ -464,5 +476,6 @@ const mapDispatchToProps = (dispatch) => {
     setVRModeEnabled: (val) => dispatch(setVRModeEnabled(val))
   }
 };
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(Track3DDynamic);

@@ -10,6 +10,9 @@ import {
 import styles from './Track3D.module.scss';
 import Track3DDynamic from './Track3DDynamic';
 
+// WEB XR Polyfill way too big lol
+import WebXRPolyfill from 'webxr-polyfill';
+
 class Track3D extends React.Component {
   constructor(props) {
     super(props)
@@ -18,6 +21,8 @@ class Track3D extends React.Component {
       rendererInitialized: false,
       contextType: '',
     }
+
+    new WebXRPolyfill();
 
     // ref to attach our render canvas to
     this.rendererContainer = createRef();

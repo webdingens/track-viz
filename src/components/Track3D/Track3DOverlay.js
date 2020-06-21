@@ -5,6 +5,8 @@ import {
   FiXSquare,
 } from "react-icons/fi";
 
+import Track3DMapControlButtons from './Track3DMapControlButtons';
+
 import {
   selectTrack3DGraphicsQuality,
   selectTrack3DUse3DModels,
@@ -14,9 +16,12 @@ import {
   setShowWalls,
   setUseTextures,
   selectTrack3DUseTextures,
+  CONTROL_MODES,
+  selectTrack3DControlMode,
 } from '../../app/reducers/settingsTrack3DSlice';
 
 import styles from './Track3DOverlay.module.scss';
+import { selectTouchEnabledDevice } from '../../app/reducers/currentTransientsSlice';
 
 const Track3DOverlay = (props) => (
   <div className={styles.overlay}>
@@ -60,6 +65,11 @@ const Track3DOverlay = (props) => (
         </label>
       </li>
     </ul>
+
+    {props.touchEnabledDevice && props.controlMode === CONTROL_MODES.MAP ? (
+      <Track3DMapControlButtons />
+    ) : null}
+    
   </div>
 )
 
@@ -69,6 +79,8 @@ const mapStateToProps = (state) => {
     use3DModels: selectTrack3DUse3DModels(state),
     showWalls: selectTrack3DShowWalls(state),
     useTextures: selectTrack3DUseTextures(state),
+    touchEnabledDevice: selectTouchEnabledDevice(state),
+    controlMode: selectTrack3DControlMode(state),
   }
 }
 

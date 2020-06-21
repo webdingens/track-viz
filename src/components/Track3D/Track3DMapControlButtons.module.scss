@@ -1,0 +1,26 @@
+.ToggleRotateButton {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+
+  background: transparent;
+
+  border-radius: 50%;
+  line-height: 0;
+
+  width: 40px;
+  height: 40px;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &.active {
+    box-shadow: 0 0 0 20px rgba(0,0,0,.2);
+  }
+
+  &:focus {
+    outline: none;
+  }
+}

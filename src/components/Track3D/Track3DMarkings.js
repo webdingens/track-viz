@@ -216,6 +216,7 @@ class Track3DMarkings extends React.PureComponent {
     this.trackMarkings = this.getTrackMarkings();
     this.trackMarkings.rotateX(-Math.PI / 2);
     this.trackMarkings.name = 'Track Markings';
+    this.trackMarkings.renderOrder = 2;
 
     this.props.scene.add(this.trackMarkings);
   }
