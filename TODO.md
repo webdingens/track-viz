@@ -20,6 +20,7 @@
 - ignore certain fields from export (e.g. splitViewRerender, anything that is viewing related)
 - add another redux slice for internal states, so we don't export that and don't load initial states either
 - i10n
+- Github Project Board testen: https://docs.github.com/en/issues/organizing-your-work-with-project-boards/managing-project-boards/about-project-boards
 
 ### Track Editor
 

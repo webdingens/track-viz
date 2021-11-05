@@ -1,12 +1,13 @@
-import React from 'react';
-import SkaterDragWrappers from './SkaterDragWrappers';
-import { connect } from 'react-redux';
+import React from "react";
+import SkaterDragWrappers from "./SkaterDragWrappers";
+import { useSelector } from "react-redux";
 
-import styles from './Skater.module.scss';
-import classNames from 'classnames';
-import { selectTrackOrientation } from '../../app/reducers/settingsTrackSlice';
+import styles from "./Skater.module.scss";
+import classNames from "classnames";
+import { selectTrackOrientation } from "../../app/reducers/settingsTrackSlice";
 
 const Skater = (props) => {
+  const trackOrientation = useSelector(selectTrackOrientation);
   let {
     team,
     rotation,
@@ -17,7 +18,7 @@ const Skater = (props) => {
     isJammer = false,
     inBounds = false,
     inPlay = false,
-    packSkater = false
+    packSkater = false,
   } = props;
 
   return (
@@ -25,48 +26,49 @@ const Skater = (props) => {
       className={classNames({
         [styles.skater]: true,
         [styles[`skater-${team}`]]: true,
-        [styles['skater--has-focus']]: hasFocus,
-        [styles['skater--in-bounds']]: inBounds,
-        [styles['skater--in-play']]: inPlay,
-        [styles['skater--pack-skater']]: packSkater,
+        [styles["skater--has-focus"]]: hasFocus,
+        [styles["skater--in-bounds"]]: inBounds,
+        [styles["skater--in-play"]]: inPlay,
+        [styles["skater--pack-skater"]]: packSkater,
       })}
       data-idx={idx}
     >
       <SkaterDragWrappers {...props}>
-
         <path className={styles.shield} d="M.1,.3 A.3 .3 90 1 0 .1,-.3" />
         <circle className={styles.skaterBackground} r=".3" fill="green" />
         {label ? (
-          <text className={classNames({
-            [styles.blockerNumber]: true,
-            'js-blocker-number': true
+          <text
+            className={classNames({
+              [styles.blockerNumber]: true,
+              "js-blocker-number": true,
             })}
-            x="-.07em" y=".35em"
+            x="-.07em"
+            y=".35em"
             fontSize=".4"
             textAnchor="middle"
-            transform={`rotate(${-rotation - props.trackOrientation})`}>{ label }</text>
-        ): null}
+            transform={`rotate(${-rotation - trackOrientation})`}
+          >
+            {label}
+          </text>
+        ) : null}
         {isPivot ? (
           <>
-            <path className={styles.pivotStripe} d="M-.3,0 L .3,0"/>
+            <path className={styles.pivotStripe} d="M-.3,0 L .3,0" />
             <circle className={styles.pivotOutline} r=".3" />
           </>
         ) : null}
         {isJammer ? (
           <>
-            <path className={styles.jammerStar} d="m55,237 74-228 74,228L9,96h240" transform={`rotate(-${props.trackOrientation}) translate(-.23, -.23) scale(.0018)`} />
+            <path
+              className={styles.jammerStar}
+              d="m55,237 74-228 74,228L9,96h240"
+              transform={`rotate(-${trackOrientation}) translate(-.23, -.23) scale(.0018)`}
+            />
           </>
         ) : null}
-
       </SkaterDragWrappers>
     </g>
-  )
-}
+  );
+};
 
-const mapStateToProps = (state) => {
-  return {
-    trackOrientation: selectTrackOrientation(state),
-  }
-}
-
-export default connect(mapStateToProps)(Skater);
+export default Skater;

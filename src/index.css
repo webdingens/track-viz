@@ -35,3 +35,7 @@ code {
 * {
   box-sizing: border-box;
 }
+
+.js-focus-visible :focus:not(.focus-visible) {
+  outline: none;
+}

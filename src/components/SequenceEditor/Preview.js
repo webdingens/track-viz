@@ -1,67 +1,61 @@
-import React, { createRef } from 'react';
-import { connect } from 'react-redux';
+import React, { useRef, useEffect } from "react";
+import { useSelector } from "react-redux";
 
-import TrackGeometry from '../Track/TrackGeometry';
+import TrackGeometry from "../Track/TrackGeometry";
 
 import {
   selectTrackOrientation,
   TRACK_ORIENTATIONS,
-} from '../../app/reducers/settingsTrackSlice';
+} from "../../app/reducers/settingsTrackSlice";
 
-import styles from './Preview.module.scss';
+import styles from "./Preview.module.scss";
 
-class Preview extends React.Component {
+const Preview = ({ track, bbox, onShown }) => {
+  const element = useRef();
+  const timeout = useRef();
+  const orientation = useSelector(selectTrackOrientation);
 
-  constructor(props) {
-    super(props);
-
-    this.element = createRef();
-  }
-
-  componentDidMount() {
-    let el = this.element.current;
+  const fadeElementInOut = () => {
+    let el = element.current;
     if (!el) return;
 
     // set position
-    let landscape = this.props.orientation === TRACK_ORIENTATIONS.ORIENTATION_0_DEG || this.props.orientation === TRACK_ORIENTATIONS.ORIENTATION_180_DEG
-    el.style.width = landscape ? `${styles.previewWidth - 2 * styles.previewPadding}px` : `${(styles.previewWidth - 2 * styles.previewPadding) * 17.9 / 27.9}px`;
+    let landscape =
+      orientation === TRACK_ORIENTATIONS.ORIENTATION_0_DEG ||
+      orientation === TRACK_ORIENTATIONS.ORIENTATION_180_DEG;
+    el.style.width = landscape
+      ? `${styles.previewWidth - 2 * styles.previewPadding}px`
+      : `${
+          ((styles.previewWidth - 2 * styles.previewPadding) * 17.9) / 27.9
+        }px`;
 
-    el.style.top = this.props.bbox.top + 'px';
-    let left = this.props.bbox.left + this.props.bbox.width;
+    el.style.top = bbox.top + "px";
+    let left = bbox.left + bbox.width;
     left = Math.max(Math.round(styles.previewWidth / 2), left);
-    el.style.left = left + 'px';
+    el.style.left = left + "px";
 
     // add Class
-    this.element.current.classList.add(styles.PreviewVisible)
+    element.current.classList.add(styles.PreviewVisible);
 
     // set timeout to call callback
-    this.timeout = setTimeout(() => this.props.onShown(), styles.animationDuration * 1000);
-  }
+    timeout.current = setTimeout(
+      () => onShown(),
+      styles.animationDuration * 1000
+    );
+  };
 
-  // componentDidUpdate() {
-  //   this.element.current.classList.remove(styles.PreviewVisible);
-  //   if (this.timeout) clearTimeout(this.timeout);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(fadeElementInOut, []);
 
-  //   this.componentDidMount();
-  // }
+  return (
+    <div ref={element} className={styles.Preview}>
+      <TrackGeometry
+        skaters={track.skaters}
+        isPreview={true}
+        updatePack={true}
+      />
+    </div>
+  );
+};
 
-  render() {
-    return (
-      <div ref={this.element} className={styles.Preview}>
-        <TrackGeometry
-          skaters={this.props.track.skaters}
-          isPreview={true}
-          updatePack={true}
-        />
-      </div>
-    )
-  }
-}
-
-const mapStateToProps = (state) => {
-  return {
-    orientation: selectTrackOrientation(state),
-  }
-}
-
-export default connect(mapStateToProps)(Preview);
+export default Preview;

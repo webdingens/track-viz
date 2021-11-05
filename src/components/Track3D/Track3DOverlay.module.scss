@@ -1,21 +1,22 @@
 .overlay {
 
-  ul {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-  }
+  background: #fff;
+  padding: 1rem 1rem;
+
+  box-shadow: -2px 2px 24px 0 rgba(0,0,0,.0);
 
   ul {
     list-style-type: none;
     padding: 0;
-    margin: 0 -5px -5px;
+    margin: 0;
+
+    min-width: 170px;
   }
 
   li {
-    display: inline-block;
-
-    margin: 0 5px 5px;
+    &:not(:last-child) {
+      margin-bottom: 1em;
+    }
   }
 
   label {
@@ -23,6 +24,56 @@
     span {
       margin-right: .5em;
     }
+  }
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  transition: .5s all ease-in-out;
+  transform: translateX(100%);
+
+  &--open {
+    transform: translateX(0);
+
+    box-shadow: -2px 2px 24px 0 rgba(0,0,0,.2);
+
+    .toggleButton svg {
+      transform: rotate(-260deg);
+    }
+  }
+}
+
+.toggleButton {
+  position: absolute;
+  top: 10px;
+  left: -50px;
+
+  width: 40px;
+  height: 40px;
+  padding: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  svg {
+    width: 20px;
+    height: 20px;
+
+    transition: .5s all ease-in-out;
+    transform: rotate(0deg);
+  }
+
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+
+  overflow: hidden;
+
+  span {
+    display: inline-block;
+    position: absolute;
+    left: -9999px;
   }
 }
 
@@ -157,4 +208,8 @@
   &:focus::-ms-fill-upper {
     background: #36d9dd;
   }
+}
+
+.rangeSliderLabel {
+  display: block;
 }

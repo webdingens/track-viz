@@ -1,64 +1,96 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import _ from 'lodash';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
+import { useSelector } from "react-redux";
+import _ from "lodash";
 
-import { FiDownloadCloud } from 'react-icons/fi';
+import { FiDownloadCloud } from "react-icons/fi";
 
-import { selectCurrentTrack } from '../../app/reducers/currentTrackSlice';
-import {
-  EXPORT_VERSION,
-  EXPORT_TYPES,
-} from '../../app/io/export';
+import { selectCurrentTrack } from "../../app/reducers/currentTrackSlice";
+import { EXPORT_VERSION, EXPORT_TYPES } from "../../app/io/export";
 
-import styles from './ExportButton.module.scss';
+import styles from "./ExportButton.module.scss";
 
-class ExportButton extends React.PureComponent {
+/* Custom Hook Converts an Object and generates a JSON file as Blob Url */
+const useDataToBlobUrl = (initialData = {}) => {
+  const [data, setData] = useState(initialData);
+  const [url, setUrl] = useState("");
+  const blobUrl = useRef(null);
 
-  constructor(props) {
-    super(props);
+  const getBlob = useCallback((data) => {
+    let json = JSON.stringify(data);
+    const blob = new Blob([json], { type: "octet/stream" });
 
-    this.getFileUrl();
-  }
+    return window.URL.createObjectURL(blob);
+  }, []);
 
-  componentDidUpdate() {
-    URL.revokeObjectURL(this.url);
-    this.getFileUrl();
-  }
+  /* cleanup after url was created */
+  useEffect(() => {
+    // create new Blob
+    blobUrl.current = getBlob(data);
+    setUrl(blobUrl.current);
 
-  componentWillUnmount() {
-    URL.revokeObjectURL(this.url);
-  }
+    return () => {
+      if (blobUrl.current) {
+        URL.revokeObjectURL(blobUrl.current);
+        blobUrl.current = null;
+      }
+    };
+  }, [data, getBlob]);
 
-  getFileUrl() {
-    let currentTrack = _.cloneDeep(this.props.currentTrack);
+  return [url, setData];
+};
 
-    currentTrack.version = EXPORT_VERSION;
-    currentTrack.type = EXPORT_TYPES.SINGLE_TRACK;
+const ExportButton = () => {
+  const currentTrack = useSelector(selectCurrentTrack);
+  const [updating, setUpdating] = useState(false);
+  const [url, setData] = useDataToBlobUrl(currentTrack);
+  const debounced = useRef();
 
-    let json = JSON.stringify(currentTrack);
-    let blob = new Blob([json], {type: "octet/stream"});
+  const createUrl = useCallback(
+    (currentTrack) => {
+      let currentTrackCopy = _.cloneDeep(currentTrack);
 
-    this.url = window.URL.createObjectURL(blob);
+      currentTrackCopy.version = EXPORT_VERSION;
+      currentTrackCopy.type = EXPORT_TYPES.SINGLE_TRACK;
 
-    return this.url;
-  }
-  
-  render() {
-    return (
-      <a href={this.getFileUrl()}
-        className={styles.ExportButton}
-        download="TrackVizExport.json"
-      >
-        <FiDownloadCloud /> Export (Save Link As)
-      </a>
-    )
-  }
-}
+      setData(currentTrackCopy);
+      setUpdating(false);
+    },
+    [setData]
+  );
 
-const mapStateToProps = (state) => {
-  return {
-    currentTrack: selectCurrentTrack(state),
-  }
-}
+  const createUrlThrottled = useMemo(
+    () => _.debounce(createUrl, 1200),
+    [createUrl]
+  );
 
-export default connect(mapStateToProps)(ExportButton);
+  useEffect(() => {
+    setUpdating(true);
+    debounced.current = createUrlThrottled(currentTrack);
+    return () => {
+      if (debounced.current) debounced.current.cancel();
+    };
+  }, [currentTrack, createUrlThrottled]);
+
+  const href = updating ? "" : url;
+
+  return (
+    <a
+      href={href}
+      className={styles.ExportButton}
+      download="TrackVizExport.json"
+      style={{
+        cursor: updating ? "progress" : "",
+      }}
+    >
+      <FiDownloadCloud /> Export (Save Link As)
+    </a>
+  );
+};
+
+export default ExportButton;

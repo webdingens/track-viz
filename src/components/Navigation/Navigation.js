@@ -1,9 +1,7 @@
-import React from 'react';
-import {
-  Link
-} from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 
-import styles from './Navigation.module.scss';
+import styles from "./Navigation.module.scss";
 
 export default function Navigation() {
   return (
@@ -17,5 +15,5 @@ export default function Navigation() {
         </li>
       </ul>
     </nav>
-  )
+  );
 }

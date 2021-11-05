@@ -3,6 +3,7 @@ import './App.css';
 
 import Toolbar from './components/Toolbar/Toolbar'
 import SplitView from './components/SplitView/SplitView';
+require('focus-visible');
 
 function App() {
   return (

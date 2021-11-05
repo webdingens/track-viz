@@ -4,13 +4,14 @@ import styles from './TrackMarkings.module.scss';
 
 const TICK_WIDTH = .6;
 const TICK_DISTANCE = 3.05;
+const MEASUREMENT_RADIUS = 5.41;
 
 export default (props) => (
   <>
     {/* Figure 2 */}
     {/* <line x1="-5.33" x2="5.33" y1="0" y2="0" />
-    <circle cx="0" cy="0" r=".1" />
-    <circle cx="-5.33" cy="0" r=".1" />
+    <circle cx="0" cy="0" r=".1" /> */}
+    {/* <circle cx="-5.33" cy="0" r=".1" />
     <circle cx="5.33" cy="0" r=".1" /> */}
 
     {/* Inner Track Boundary */}
@@ -72,7 +73,7 @@ export default (props) => (
       var cR = [5.33, 0];
       // U = 2*PI * r
       // 3.05 = alpha * 5.41
-      var measurementRadius = 5.41
+      var measurementRadius = MEASUREMENT_RADIUS;
       var angle = el * -TICK_DISTANCE / measurementRadius;  // minus because of the flipped coordinate system
       // Rotate
       p1 = [p1[0] - cR[0], p1[1] - cR[1]];
@@ -132,6 +133,21 @@ export default (props) => (
         <path d={`M5.33,${7.775 + 3.05} L-5.33,${+8.385 + 3.05}`} />
       </g>
     ) : null}
+
+
+    {/* Measurement Line */}
+    {/* <path className={styles.measurementLine}
+      d={`M-5.33,-${MEASUREMENT_RADIUS} A ${MEASUREMENT_RADIUS} ${MEASUREMENT_RADIUS} 180 1 0 -5.33,${MEASUREMENT_RADIUS}`}
+    />
+    <path className={styles.measurementLine}
+      d={`M5.33,${MEASUREMENT_RADIUS} A ${MEASUREMENT_RADIUS} ${MEASUREMENT_RADIUS} 180 1 0 5.33,-${MEASUREMENT_RADIUS}`}
+    />
+    <path className={styles.measurementLine}
+      d={`M5.33,${MEASUREMENT_RADIUS} L-5.33,${MEASUREMENT_RADIUS}`}
+    />
+    <path className={styles.measurementLine}
+      d={`M5.33,-${MEASUREMENT_RADIUS} L-5.33,-${MEASUREMENT_RADIUS}`}
+    /> */}
     
   </>
 )
