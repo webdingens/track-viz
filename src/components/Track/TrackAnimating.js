@@ -1,20 +1,13 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React from "react";
+import { useSelector } from "react-redux";
 
-import TrackGeometry from './TrackGeometry';
+import TrackGeometry from "./TrackGeometry";
 
-import {
-  selectAnimatingTrack,
-} from '../../app/reducers/animatingTrackSlice';
+import { selectAnimatingTrack } from "../../app/reducers/animatingTrackSlice";
 
-const TrackAnimating = (props) => (
-  <TrackGeometry skaters={props.animatingTrack.skaters} updatePack={true} />
-)
+const TrackAnimating = () => {
+  const animatingTrack = useSelector(selectAnimatingTrack);
+  return <TrackGeometry skaters={animatingTrack.skaters} updatePack={true} />;
+};
 
-const mapStateToProps = (state) => {
-  return {
-    animatingTrack: selectAnimatingTrack(state),
-  }
-}
-
-export default connect(mapStateToProps)(TrackAnimating);
+export default TrackAnimating;

@@ -1,28 +1,23 @@
-import { createSlice, createSelector } from '@reduxjs/toolkit';
-import _ from 'lodash';
-import { defaultSkaters } from '../../data/defaultSkaters.json';
-import { loadSlice, cleanupSlice } from '../storePersistence';
+import { createSlice, createSelector } from "@reduxjs/toolkit";
+import _ from "lodash";
+import { defaultSkaters } from "../../data/defaultSkaters.json";
+import { loadSlice, cleanupSlice } from "../storePersistence";
 import {
-  getSortedPackBoundaries,
-  getPack,
   getSkatersWDPInBounds,
   getSkatersWDPInPlayPackSkater,
   getSkatersWDPPivotLineDistance,
-} from '../../utils/packFunctions';
-
+  PACK_MEASURING_METHODS,
+} from "../../utils/packFunctions";
 
 export const defaultTrack = {
   skaters: defaultSkaters,
   refs: [],
 };
 
-let initialState = cleanupSlice(
-  loadSlice('currentTrack'),
-  defaultTrack
-);
+let initialState = cleanupSlice(loadSlice("currentTrack"), defaultTrack);
 
 export const currentTrackSlice = createSlice({
-  name: 'currentTrack',
+  name: "currentTrack",
   initialState: initialState || defaultTrack,
   reducers: {
     setSkaters: (state, action) => {
@@ -47,14 +42,15 @@ export const currentTrackSlice = createSlice({
   },
 });
 
-export const { setSkaters, setRefs, setCurrentTrack, updateSkater, reset } = currentTrackSlice.actions;
+export const { setSkaters, setRefs, setCurrentTrack, updateSkater, reset } =
+  currentTrackSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 
-export const selectCurrentTrack = state => state.currentTrack;
-export const selectCurrentSkaters = state => state.currentTrack.skaters;
+export const selectCurrentTrack = (state) => state.currentTrack;
+export const selectCurrentSkaters = (state) => state.currentTrack.skaters;
 
 /**
  * Current Skaters Reselection with InBounds
@@ -65,26 +61,40 @@ export const selectCurrentSkatersWDPInBounds = createSelector(
 );
 
 /**
- * Current Skaters Reselection with InBounds
+ * Current Skaters Reselection with InBounds Properties
  */
 export const selectCurrentSkatersWDPPivotLineDistance = createSelector(
   selectCurrentSkatersWDPInBounds,
   getSkatersWDPPivotLineDistance
 );
 
-export const selectSortedPackBoundaries = createSelector(
-  selectCurrentSkatersWDPPivotLineDistance,
-  skaters => getSortedPackBoundaries(getPack(skaters))
-);
-
 /**
  * Current Skaters Reselection with derived properties
  * such as inBounds, packSkater, outOfPlay
  */
-export const selectCurrentSkatersWDP = createSelector(
+const selectCurrentSkatersWDPSector = createSelector(
   selectCurrentSkatersWDPPivotLineDistance,
-  selectSortedPackBoundaries,
-  getSkatersWDPInPlayPackSkater
+  (skaters) =>
+    getSkatersWDPInPlayPackSkater(skaters, {
+      method: PACK_MEASURING_METHODS.SECTOR,
+    })
 );
+const selectCurrentSkatersWDPRectangle = createSelector(
+  selectCurrentSkatersWDPPivotLineDistance,
+  (skaters) =>
+    getSkatersWDPInPlayPackSkater(skaters, {
+      method: PACK_MEASURING_METHODS.RECTANGLE,
+    })
+);
+export const selectCurrentSkatersWDP = (
+  state,
+  method = PACK_MEASURING_METHODS.SECTOR
+) => {
+  if (method === PACK_MEASURING_METHODS.SECTOR) {
+    return selectCurrentSkatersWDPSector(state);
+  } else {
+    return selectCurrentSkatersWDPRectangle(state);
+  }
+};
 
 export default currentTrackSlice.reducer;

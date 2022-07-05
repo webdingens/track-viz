@@ -1,38 +1,30 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React from "react";
+import { useSelector } from "react-redux";
 
-import TrackDragging from '../Track/TrackDragging';
-import TrackOverlay from '../Track/TrackOverlay';
+import TrackDragging from "../Track/TrackDragging";
+import TrackOverlay from "../Track/TrackOverlay";
 
-import styles from './Track.module.scss';
-import TrackAnimating from './TrackAnimating';
+import styles from "./Track.module.scss";
+import TrackAnimating from "./TrackAnimating";
 import {
   ANIMATION_STATE,
   selectAnimationState,
-} from '../../app/reducers/currentSequenceSlice';
+} from "../../app/reducers/currentSequenceSlice";
 
-class Track extends React.PureComponent {
+const Track = () => {
+  const animationState = useSelector(selectAnimationState);
+  const trackIsAnimating = [
+    ANIMATION_STATE.PLAYING,
+    ANIMATION_STATE.PAUSED,
+  ].includes(animationState);
 
-  render() {
-    const trackIsAnimating = [ANIMATION_STATE.PLAYING, ANIMATION_STATE.PAUSED].indexOf(this.props.animationState) !== -1;
+  return (
+    <div className={styles.track}>
+      {trackIsAnimating ? <TrackAnimating /> : <TrackDragging />}
 
-    return (
-      <div className={styles.track}>
-        {trackIsAnimating ?
-          <TrackAnimating /> :
-          <TrackDragging />
-        }
+      <TrackOverlay />
+    </div>
+  );
+};
 
-        <TrackOverlay />
-      </div>
-    )
-  }
-}
-
-const mapStateToProps = (state) => {
-  return {
-    animationState: selectAnimationState(state),
-  }
-}
-
-export default connect(mapStateToProps)(Track);
+export default Track;

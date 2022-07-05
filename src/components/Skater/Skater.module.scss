@@ -33,6 +33,7 @@
 }
 
 .skater {
+  pointer-events: all;
   .rotationHandle {
     display: none;
     cursor: pointer;

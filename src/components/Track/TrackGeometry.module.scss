@@ -4,6 +4,7 @@ $c-wftda: #f3a5c9;
   height: 100%;
   width: 100%;
   display: block;
+  pointer-events: all;
 
   > g > circle {
     fill: #fff;

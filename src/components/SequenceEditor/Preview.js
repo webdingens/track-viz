@@ -38,10 +38,7 @@ const Preview = ({ track, bbox, onShown }) => {
     element.current.classList.add(styles.PreviewVisible);
 
     // set timeout to call callback
-    timeout.current = setTimeout(
-      () => onShown(),
-      styles.animationDuration * 1000
-    );
+    timeout.current = setTimeout(onShown, styles.animationDuration * 1000);
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps

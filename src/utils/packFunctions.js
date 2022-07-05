@@ -36,6 +36,11 @@ export const LINE_DIST = LINE1.p1.distanceTo(LINE1.p2);
 
 export const MEASUREMENT_LENGTH = 2 * CIRCUMFERENCE_HALF_CIRCLE + 2 * LINE_DIST;
 
+export const PACK_MEASURING_METHODS = {
+  SECTOR: "sector",
+  RECTANGLE: "rectangle",
+};
+
 /**
  * Get Skaters with Derived Property inBounds
  * @param {object} skaters
@@ -98,9 +103,12 @@ export const getSkatersWDPInBounds = (skaters) => {
   });
 };
 
+/**
+ * Get Skaters with Derived Property pivotLineDistance
+ * @param {object} skaters
+ */
 export const getSkatersWDPPivotLineDistance = (skaters) => {
-  let ret = _.cloneDeep(skaters);
-  ret.forEach((skater, idx, array) => {
+  return _.cloneDeep(skaters).map((skater) => {
     let dist = 0; // distance to pivot line (+y)
     let pos = new Vector2(skater.x, skater.y); // blocker position
 
@@ -114,8 +122,8 @@ export const getSkatersWDPPivotLineDistance = (skaters) => {
 
       dist += angle * MEASUREMENT_RADIUS;
 
-      array[idx].pivotLineDist = dist;
-      return;
+      skater.pivotLineDist = dist;
+      return skater;
     } else {
       // add circumference of half circle past the pivot line
       dist += CIRCUMFERENCE_HALF_CIRCLE;
@@ -125,8 +133,8 @@ export const getSkatersWDPPivotLineDistance = (skaters) => {
     if (pos.x <= C1.x && pos.x >= C2.x && pos.y <= 0) {
       dist += C1.x - pos.x;
 
-      array[idx].pivotLineDist = dist;
-      return;
+      skater.pivotLineDist = dist;
+      return skater;
     } else {
       dist += LINE_DIST;
     }
@@ -141,8 +149,8 @@ export const getSkatersWDPPivotLineDistance = (skaters) => {
 
       dist += angle * MEASUREMENT_RADIUS;
 
-      array[idx].pivotLineDist = dist;
-      return;
+      skater.pivotLineDist = dist;
+      return skater;
     } else {
       // add circumference of half circle past the pivot line
       dist += CIRCUMFERENCE_HALF_CIRCLE;
@@ -153,23 +161,28 @@ export const getSkatersWDPPivotLineDistance = (skaters) => {
       dist += pos.x - C2.x;
     }
 
-    array[idx].pivotLineDist = dist;
+    skater.pivotLineDist = dist;
+    return skater;
   });
-
-  return ret;
 };
 
 /*
  * Computes the groups of skaters with a maximum distance of 3.05m
  */
-const groupBlockers = (blockers) => {
+const groupBlockers = (
+  blockers,
+  { method = PACK_MEASURING_METHODS.SECTOR } = {}
+) => {
   let ret = [];
   let skaters = _.cloneDeep(blockers);
   let closeSkaters = [];
   for (let i = 0; i < skaters.length - 1; i++) {
     for (let j = i + 1; j < skaters.length; j++) {
-      let dist = getDistanceOfTwoSkaters(skaters[j], skaters[i]);
+      let dist = getDistanceOfTwoSkaters(skaters[j], skaters[i], {
+        method,
+      });
 
+      // Inf values in case of rectangle method are filtered out here
       if (dist < 3.05) {
         closeSkaters.push([i, j]);
       }
@@ -219,8 +232,11 @@ const groupBlockers = (blockers) => {
   return ret;
 };
 
+/*
+ * Given grouped skaters find a singular largest group, return null if multiple or none found
+ */
 const getLargestGroup = (groups = []) => {
-  let ret = false;
+  let ret = null;
   let size = 1;
 
   groups.forEach((group) => {
@@ -234,15 +250,28 @@ const getLargestGroup = (groups = []) => {
   // find all the groups with determined largest group size
   let largestGroups = groups.filter((group) => group.length === size);
 
-  // check if the largest group is unique, else not a pack
-  let notAUniqueLargestGroup = largestGroups.length > 1;
+  // check if there is a singular largest group, else not a pack
+  let notAUniqueLargestGroup = largestGroups.length !== 1;
 
-  return notAUniqueLargestGroup ? false : ret;
+  return notAUniqueLargestGroup ? null : ret;
 };
 
-const getDistanceOfTwoSkaters = (skaterA, skaterB) => {
+/*
+ *   Compute the distance between two skaters
+ */
+const getDistanceOfTwoSkaters = (
+  skaterA,
+  skaterB,
+  { method = PACK_MEASURING_METHODS.SECTOR } = {}
+) => {
+  if (method === PACK_MEASURING_METHODS.SECTOR)
+    return getDistanceOfTwoSkatersSector(skaterA, skaterB);
+  if (method === PACK_MEASURING_METHODS.RECTANGLE)
+    return getDistanceOfTwoSkatersRectangle(skaterA, skaterB);
+};
+const getDistanceOfTwoSkatersSector = (skaterA, skaterB) => {
   let distances = [skaterA.pivotLineDist, skaterB.pivotLineDist];
-  distances.sort(distanceSortFunction);
+  distances.sort((a, b) => a - b);
 
   // Minimize distance going counter- and clockwise
   let dist = Math.min(
@@ -252,9 +281,121 @@ const getDistanceOfTwoSkaters = (skaterA, skaterB) => {
 
   return dist;
 };
+const getDistanceOfTwoSkatersRectangle = (skaterA, skaterB) => {
+  const P1 = {
+    x: skaterA.x,
+    y: skaterA.y,
+  };
+  const P2 = {
+    x: skaterB.x,
+    y: skaterB.y,
+  };
 
-const getSkatersFurthestApart = (pack) => {
-  if (pack.length <= 1) return pack; // should not happen
+  /*
+   *   First Curve
+   */
+
+  // Circle Right to P1 vec
+  const C1P1 = {
+    x: P1.x - C1.x,
+    y: P1.y - C1.y,
+  };
+  // Circle Right to P2 vec
+  const C1P2 = {
+    x: P2.x - C1.x,
+    y: P2.y - C1.y,
+  };
+
+  let alphaC1 = Math.atan2(C1P1.y + C1P2.y, C1P1.x + C1P2.x);
+
+  while (alphaC1 < 0) {
+    alphaC1 = alphaC1 + 2 * Math.PI;
+  }
+
+  if (alphaC1 >= (3 / 2) * Math.PI || alphaC1 <= (1 / 2) * Math.PI) {
+    return (
+      2 * Math.abs(Math.cos(alphaC1) * C1P1.y - Math.sin(alphaC1) * C1P1.x)
+    );
+  }
+
+  /*
+   *   Second Curve
+   */
+
+  // Circle Left to P1 vec
+  const C2P1 = {
+    x: P1.x - C2.x,
+    y: P1.y - C2.y,
+  };
+  // Circle Left to P2 vec
+  const C2P2 = {
+    x: P2.x - C2.x,
+    y: P2.y - C2.y,
+  };
+
+  let alphaC2 = Math.atan2(C2P1.y + C2P2.y, C2P1.x + C2P2.x);
+
+  while (alphaC2 < 0) {
+    alphaC2 = alphaC2 + 2 * Math.PI;
+  }
+
+  if (alphaC2 >= (1 / 2) * Math.PI && alphaC2 <= (3 / 2) * Math.PI) {
+    return (
+      2 * Math.abs(Math.cos(alphaC2) * C2P1.y - Math.sin(alphaC2) * C2P1.x)
+    );
+  }
+
+  /*
+   *   Straightaways
+   */
+  const PMid = {
+    x: 0.5 * (P1.x + P2.x),
+    y: 0.5 * (P1.y + P2.y),
+  };
+
+  if (PMid.x < C1.x && PMid.x > C2.x) {
+    if (P1.y * P2.y < 0) {
+      return Infinity;
+    } else {
+      return Math.abs(P1.x - P2.x);
+    }
+  }
+};
+
+const filterOutGroupsWithOnlyOneTeam = (groupedBlockers) => {
+  return groupedBlockers.filter((group) => {
+    let teamA = group.filter((g) => g.team === "A");
+    let teamB = group.filter((g) => g.team === "B");
+    return teamA.length && teamB.length;
+  });
+};
+
+/*
+ *   Get Skaters that form the pack
+ *   Requires array of skaters with properties inBounds and pivotLineDistanceComputed
+ */
+export const getPack = (
+  skaters,
+  { method = PACK_MEASURING_METHODS.SECTOR } = {}
+) => {
+  let blockers = skaters.filter((skater) => !skater.isJammer);
+  // only in bounds blockers
+  let possiblePack = blockers.filter((blocker) => blocker.inBounds);
+  possiblePack = groupBlockers(possiblePack, { method });
+  // console.dir(possiblePack)
+  possiblePack = filterOutGroupsWithOnlyOneTeam(possiblePack);
+  // console.dir(possiblePack)
+  let pack = getLargestGroup(possiblePack);
+
+  if (!pack) return [];
+  return pack;
+};
+
+/*
+ *   Find outermost skaters
+ */
+export const getOutermostSkaters = (pack) => {
+  if (pack.length <= 2) return pack;
   let blockers = _.cloneDeep(pack);
 
   let blockerA = blockers[0];
@@ -267,7 +408,7 @@ const getSkatersFurthestApart = (pack) => {
     blockers.forEach((blocker) => {
       if (blocker === blockerA) return;
 
-      let dist = getDistanceOfTwoSkaters(blocker, blockerA);
+      let dist = getDistanceOfTwoSkaters(blocker, blockerA); // relative position uses default sector method
       if (dist > newDist) {
         blockerB = blocker;
         newDist = dist;
@@ -288,32 +429,26 @@ const getSkatersFurthestApart = (pack) => {
     newDist = computeNewDistance();
   }
 
-  return [blockerA, blockerB];
+  return [blockerA, blockerB].filter(Boolean);
 };
 
-const distanceSortFunction = (a, b) => a - b;
+export const getSortedOutermostSkaters = (pack) => {
+  const outermostSkaters = getOutermostSkaters(pack);
+  if (outermostSkaters.length < 2) return false;
 
-const filterOutGroupsWithOnlyOneTeam = (groupedBlockers) => {
-  return groupedBlockers.filter((group) => {
-    let teamA = group.filter((g) => g.team === "A");
-    let teamB = group.filter((g) => g.team === "B");
-    return teamA.length && teamB.length;
-  });
-};
+  let distances = [outermostSkaters[0], outermostSkaters[1]];
+  distances.sort((a, b) => a.pivotLineDist - b.pivotLineDist);
 
-export const getPack = (skaters) => {
-  let blockers = skaters.filter((skater) => !skater.isJammer);
-  // only in bounds blockers
-  let possiblePack = blockers.filter((blocker) => blocker.inBounds);
-  possiblePack = groupBlockers(possiblePack);
-  // console.dir(possiblePack)
-  possiblePack = filterOutGroupsWithOnlyOneTeam(possiblePack);
-  // console.dir(possiblePack)
-  let pack = getLargestGroup(possiblePack);
-  // console.dir(pack)
-
-  if (!pack) return [];
-  return pack;
+  // set starting point of pack marking
+  if (
+    distances[1].pivotLineDist - distances[0].pivotLineDist >=
+    distances[0].pivotLineDist -
+      (distances[1].pivotLineDist - MEASUREMENT_LENGTH)
+  ) {
+    return [distances[1], distances[0]]; // switch
+  }
+  // return switched for smaller arc
+  return [distances[0], distances[1]];
 };
 
 const getSortedClosestPointsOnLine = (furthestSkaters = []) => {
@@ -322,7 +457,7 @@ const getSortedClosestPointsOnLine = (furthestSkaters = []) => {
   let distToPivotLine1 = furthestSkaters[0].pivotLineDist;
   let distToPivotLine2 = furthestSkaters[1].pivotLineDist;
   let distances = [distToPivotLine1, distToPivotLine2];
-  distances.sort(distanceSortFunction);
+  distances.sort((a, b) => a - b);
 
   // set starting point of pack marking
   if (
@@ -335,13 +470,18 @@ const getSortedClosestPointsOnLine = (furthestSkaters = []) => {
   return [distances[0], distances[1]];
 };
 
+/*
+ *   Find the range of the pack based on the points on the measurement line
+ *   (used by sector measuring method)
+ */
 export const getSortedPackBoundaries = (pack) => {
   if (pack.length < 2) return false;
 
-  let outermostSkaters = getSkatersFurthestApart(pack);
+  let outermostSkaters = getOutermostSkaters(pack);
   return getSortedClosestPointsOnLine(outermostSkaters);
 };
 
+// TODO: add method
 const isSkaterInZoneBounds = (skater, packBoundaries) => {
   let p = skater.pivotLineDist;
   let ret = false;
@@ -355,27 +495,45 @@ const isSkaterInZoneBounds = (skater, packBoundaries) => {
   return ret;
 };
 
-export const getSkatersWDPInPlayPackSkater = (skaters, packBoundaries) => {
+export const getSkatersWDPInPlayPackSkater = (
+  skaters,
+  { method = PACK_MEASURING_METHODS.SECTOR } = {}
+) => {
   return skaters.map((skater) => {
     let ret = _.cloneDeep(skater);
+
+    // TODO: switch packboundaries based on method
+
+    const pack = getPack(skaters, { method });
+    const packBoundaries = getSortedPackBoundaries(pack);
 
     if (skater.isJammer) {
       ret.inPlay = skater.inBounds;
     } else {
       ret.inPlay =
         skater.inBounds &&
+        packBoundaries &&
         isSkaterInZoneBounds(skater, [
           packBoundaries[0] - ENGAGEMENT_ZONE_DISTANCE_TO_PACK,
           packBoundaries[1] + ENGAGEMENT_ZONE_DISTANCE_TO_PACK,
         ]);
 
       ret.packSkater =
-        skater.inBounds && isSkaterInZoneBounds(skater, packBoundaries);
+        skater.inBounds &&
+        packBoundaries &&
+        !!pack.find((entry) => entry.id === skater.id);
     }
     return ret;
   });
 };
 
+/*
+ *   Get offset from measurement line (sector)
+ *   so we can compute a position during an animation
+ *   with x being the point on the measuring line, and y the offset from
+ *   the measuring line, y axis orthogonal to the measuring line in the
+ *   point x
+ */
 export const getRelativeVPosition = (skater) => {
   let pos = new Vector2(skater.x, skater.y); // blocker position
 
@@ -407,6 +565,10 @@ export const getRelativeVPosition = (skater) => {
   }
 };
 
+/*
+ *   Update the x and y coordinates of skater from the pivotLineDist
+ *   and v value (pivotLineDist is animated)
+ */
 export const setPositionFromVAndDist = (skater) => {
   let s = _.cloneDeep(skater);
   let dist = skater.pivotLineDist;
@@ -467,8 +629,8 @@ export const setPositionFromVAndDist = (skater) => {
 };
 
 /**
- * Computes a new distTo that is closest distFrom, not mapped into the range
- * of [0, MEASUREMENT_LENGTH]
+ * Computes a new distTo that is closest distFrom,
+ * not mapped into the range of [0, MEASUREMENT_LENGTH]
  * @param {number} distFrom
  * @param {number} distTo
  */
@@ -480,6 +642,14 @@ export const getClosestNextAngle = (angleFrom, angleTo) => {
   return getClosestNextCircularValue(angleFrom, angleTo, 360);
 };
 
+/*
+ *   Compute the closest circular value in case of reaching the
+ *   end of the period
+ *   e.g. 355 to 5 should result in 365, with a limit
+ *   of 360
+ *   (used in animation, to prevent erratic backwards skating
+ *   around the range boundaries)
+ */
 const getClosestNextCircularValue = (valFrom, valTo, limit) => {
   let d1 = valFrom;
   // bring distFrom in between [0, limit]
@@ -512,6 +682,267 @@ const getClosestNextCircularValue = (valFrom, valTo, limit) => {
 };
 
 /*
+ *   Get the engagement zone by the 2x2 intersections with the inside and
+ *   outside line. (rectangle measurement)
+ */
+const getEngagementZoneRectangle = (skater, { front = true } = {}) => {
+  if (!skater) return false;
+  const P1 = new Vector2(skater.x, skater.y);
+
+  /*
+   *   First Curve
+   */
+
+  // Circle Right to P1 vec
+  const C1P1 = {
+    x: P1.x - C1.x,
+    y: P1.y - C1.y,
+  };
+
+  let alphaC1 = Math.asin(
+    (0.5 * ENGAGEMENT_ZONE_DISTANCE_TO_PACK) /
+      Math.sqrt(C1P1.x * C1P1.x + C1P1.y * C1P1.y)
+  );
+  while (alphaC1 < 0) {
+    alphaC1 = alphaC1 + 2 * Math.PI;
+  }
+
+  let alphaSkater = Math.atan2(C1P1.y, C1P1.x);
+  while (alphaSkater < 0) {
+    alphaSkater = alphaSkater + 2 * Math.PI;
+  }
+
+  let alphaC1Middle;
+  if (front) {
+    alphaC1Middle = alphaSkater - alphaC1;
+    while (alphaC1Middle < 0) {
+      alphaC1Middle = alphaC1Middle + 2 * Math.PI;
+    }
+  } else {
+    alphaC1Middle = (alphaSkater + alphaC1) % (Math.PI * 2);
+  }
+
+  if (
+    alphaC1Middle >= (3 / 2) * Math.PI ||
+    alphaC1Middle <= (1 / 2) * Math.PI
+  ) {
+    // console.log("intersection in first curve");
+    /*
+     *   First compute the point that has the distance of ENGAGEMENT_ZONE_DISTANCE_TO_PACK
+     *   then we use that point to create a line and intersect the line with the inner and outer track boundary
+     */
+    const distanceToMiddlePoint = Math.sqrt(
+      C1P1.x * C1P1.x +
+        C1P1.y * C1P1.y +
+        Math.pow(0.5 * ENGAGEMENT_ZONE_DISTANCE_TO_PACK, 2)
+    );
+
+    const direction = new Vector2(
+      Math.cos(alphaC1Middle),
+      Math.sin(alphaC1Middle)
+    );
+    const PMiddle = {
+      x: C1.x + distanceToMiddlePoint * direction.x,
+      y: C1.y + distanceToMiddlePoint * direction.y,
+    };
+    const POnParallelLine = new Vector2(
+      // Parallel to the middle line between the two points, orthogonal to the inside line (same as with distance computation)
+      P1.x + 2 * (PMiddle.x - P1.x),
+      P1.y + 2 * (PMiddle.y - P1.y)
+    );
+
+    /*
+     *   Intersect with half circles and adjacent straight aways
+     */
+
+    let intersectionsHalfCircle = intersectLineRightHalfCircle(
+      POnParallelLine,
+      direction
+    );
+
+    // console.log("front: ", front);
+    // console.log("P1: ", P1);
+    // console.log("PMiddle: ", PMiddle);
+    // console.log("PONPARALLEL: ", POnParallelLine);
+
+    // console.log("intersect with straightaways");
+    let intersectionsStraightAways = front
+      ? intersectLineStraightAwaysTop(POnParallelLine, direction)
+      : intersectLineStraightAwaysBottom(POnParallelLine, direction);
+
+    // console.dir({
+    //   intersectionsHalfCircle,
+    //   intersectionsStraightAways,
+    // });
+
+    const intersections = {
+      outside: intersectionsHalfCircle.outside
+        ? intersectionsHalfCircle.outside
+        : front
+        ? intersectionsStraightAways.top
+        : intersectionsStraightAways.bottom,
+      inside: intersectionsHalfCircle.inside
+        ? intersectionsHalfCircle.inside
+        : front
+        ? intersectionsStraightAways.bottom
+        : intersectionsStraightAways.top,
+    };
+
+    return intersections;
+  }
+
+  // /*
+  //  *   Second Curve
+  //  */
+
+  // Circle Left to P1 vec
+  const C2P1 = {
+    x: P1.x - C2.x,
+    y: P1.y - C2.y,
+  };
+
+  let alphaC2 = Math.asin(
+    (0.5 * ENGAGEMENT_ZONE_DISTANCE_TO_PACK) /
+      Math.sqrt(C2P1.x * C2P1.x + C2P1.y * C2P1.y)
+  );
+  while (alphaC2 < 0) {
+    alphaC2 = alphaC2 + 2 * Math.PI;
+  }
+
+  alphaSkater = Math.atan2(C2P1.y, C2P1.x);
+  while (alphaSkater < 0) {
+    alphaSkater = alphaSkater + 2 * Math.PI;
+  }
+
+  let alphaC2Middle;
+  if (front) {
+    alphaC2Middle = alphaSkater - alphaC2;
+    while (alphaC2Middle < 0) {
+      alphaC2Middle = alphaC2Middle + 2 * Math.PI;
+    }
+  } else {
+    alphaC2Middle = (alphaSkater + alphaC2) % (Math.PI * 2);
+  }
+
+  if (
+    alphaC2Middle >= (1 / 2) * Math.PI &&
+    alphaC2Middle <= (3 / 2) * Math.PI
+  ) {
+    /*
+     *   First compute the point that has the distance of ENGAGEMENT_ZONE_DISTANCE_TO_PACK
+     *   then we use that point to create a line and intersect the line with the inner and outer track boundary
+     */
+    const distanceToMiddlePoint = Math.sqrt(
+      C2P1.x * C2P1.x +
+        C2P1.y * C2P1.y -
+        Math.pow(0.5 * ENGAGEMENT_ZONE_DISTANCE_TO_PACK, 2)
+    );
+    const direction = new Vector2(
+      Math.cos(alphaC2Middle),
+      Math.sin(alphaC2Middle)
+    );
+    const PMiddle = {
+      x: C2.x + distanceToMiddlePoint * direction.x,
+      y: C2.y + distanceToMiddlePoint * direction.y,
+    };
+    const POnParallelLine = new Vector2(
+      // Parallel to the middle line between the two points, orthogonal to the inside line (same as with distance computation)
+      P1.x + 2 * (PMiddle.x - P1.x),
+      P1.y + 2 * (PMiddle.y - P1.y)
+    );
+
+    /*
+     *   Intersect with half circles and adjacent straight aways
+     */
+
+    let intersectionsLeftHalfCircle = intersectLineLeftHalfCircle(
+      POnParallelLine,
+      direction
+    );
+
+    let intersectionsStraightAways = front
+      ? intersectLineStraightAwaysBottom(POnParallelLine, direction)
+      : intersectLineStraightAwaysTop(POnParallelLine, direction);
+
+    const intersections = {
+      outside: intersectionsLeftHalfCircle.outside
+        ? intersectionsLeftHalfCircle.outside
+        : front
+        ? intersectionsStraightAways.bottom
+        : intersectionsStraightAways.top,
+      inside: intersectionsLeftHalfCircle.inside
+        ? intersectionsLeftHalfCircle.inside
+        : front
+        ? intersectionsStraightAways.top
+        : intersectionsStraightAways.bottom,
+    };
+
+    return intersections;
+  }
+
+  // /*
+  //  *   Straightaways
+  //  */
+  const PMid = new Vector2(
+    P1.x +
+      ((front && P1.y >= 0) || (!front && P1.y < 0) ? 1 : -1) *
+        0.5 *
+        ENGAGEMENT_ZONE_DISTANCE_TO_PACK,
+    P1.y
+  );
+
+  if (PMid.x < C1.x && PMid.x > C2.x) {
+    const POnParallelLine = P1.clone().add(
+      PMid.clone().sub(P1).multiplyScalar(2)
+    );
+    const direction = new Vector2(0, 1);
+    if (POnParallelLine.y >= 0) {
+      let intersectionsHalfCircle = front
+        ? intersectLineRightHalfCircle(POnParallelLine, direction)
+        : intersectLineLeftHalfCircle(POnParallelLine, direction);
+
+      let intersectionsStraightAway = intersectLineStraightAwaysBottom(
+        POnParallelLine,
+        direction
+      );
+
+      const intersections = {
+        outside: intersectionsStraightAway.bottom
+          ? intersectionsStraightAway.bottom
+          : intersectionsHalfCircle.outside,
+        inside: intersectionsStraightAway.top
+          ? intersectionsStraightAway.top
+          : intersectionsHalfCircle.inside,
+      };
+
+      return intersections;
+    } else {
+      let intersectionsHalfCircle = front
+        ? intersectLineLeftHalfCircle(POnParallelLine, direction)
+        : intersectLineRightHalfCircle(POnParallelLine, direction);
+
+      let intersectionsStraightAway = intersectLineStraightAwaysTop(
+        POnParallelLine,
+        direction
+      );
+
+      const intersections = {
+        outside: intersectionsStraightAway.top
+          ? intersectionsStraightAway.top
+          : intersectionsHalfCircle.outside,
+        inside: intersectionsStraightAway.bottom
+          ? intersectionsStraightAway.bottom
+          : intersectionsHalfCircle.inside,
+      };
+
+      return intersections;
+    }
+  }
+  console.error("Should have intersected, but didn't");
+  return [];
+};
+
+/*
  *
  *         DRAWING PART
  *
@@ -525,7 +956,14 @@ const getClosestNextCircularValue = (valFrom, valTo, limit) => {
  * @param Number p2
  * @returns PathData / Polyline?
  */
-export const computePartialTrackShape = ({
+export const computePartialTrackShape = (options) => {
+  if (options.method === PACK_MEASURING_METHODS.RECTANGLE) {
+    return computePartialTrackShapeRectangle(options);
+  } else {
+    return computePartialTrackShapeSector(options);
+  }
+};
+export const computePartialTrackShapeSector = ({
   p1,
   p2,
   trackIs2D = true,
@@ -552,9 +990,6 @@ export const computePartialTrackShape = ({
     start += MEASUREMENT_LENGTH;
     end += MEASUREMENT_LENGTH;
   }
-
-  // console.log('start: ', start);
-  // console.log('end: ', end);
 
   let drawLength = 0;
   let currentIdx = 0;
@@ -648,6 +1083,423 @@ export const computePartialTrackShape = ({
   return shape;
 };
 
+/*
+ *   Compute the partial track shape for the engagement zone
+ */
+export const computePartialTrackShapeRectangle = ({
+  p1,
+  p2,
+  trackIs2D = true,
+  options3D = {},
+}) => {
+  // console.log("computePartialTrackShape");
+
+  const defaultOptions3D = {
+    curveSegments: 12,
+  };
+
+  const _options3D = Object.assign({}, defaultOptions3D, options3D);
+
+  let shape;
+
+  if (trackIs2D) shape = "";
+  else shape = new THREE.Shape();
+  // console.log('p1: ', p1);
+  // console.log('p2: ', p2);
+
+  /*
+   *   Setup start and end for outside lines
+   *   (Intersect with outside then )
+   */
+  let start = p1.pivotLineDist;
+  let end = p2.pivotLineDist;
+
+  // p2 is front, lower pivot Line Dist
+  const engagementZoneFront = getEngagementZoneRectangle(p2, {
+    front: true,
+  });
+  const engagementZoneBack = getEngagementZoneRectangle(p1, {
+    front: false,
+  });
+
+  // console.dir({
+  //   engagementZoneFront,
+  //   engagementZoneBack,
+  // });
+
+  // console.log("start: ", start);
+  // console.log("end: ", end);
+
+  let drawLength = 0;
+  let currentIdx = 0;
+
+  while (drawLength < 4 * MEASUREMENT_LENGTH) {
+    let newDrawLength = drawLength + drawShapes[currentIdx].length;
+    let startBeforeEndOfSection = start < newDrawLength;
+    let endBeforeEndOfSection = end < newDrawLength;
+    let startBeforeStartOfSection = start < drawLength;
+
+    // console.log('draw loop')
+    // console.log('newDrawLength: ', newDrawLength)
+    // console.log('start before end of section ', startBeforeEndOfSection);
+    // console.log('end before end of section ', endBeforeEndOfSection);
+
+    // console.log('draw Outer Line')
+    // console.log('with Start at: ', start - drawLength)
+    // console.log('with Starting Line?: ', start >= drawLength && startBeforeEndOfSection)
+    // console.log('with End at: ', endBeforeEndOfSection ? end - drawLength : false)
+    // console.log('sectionLength: ', drawShapes[currentIdx].length)
+    // console.log('drawOuterLine with start: ', start - drawLength)
+
+    if (startBeforeEndOfSection) {
+      let drawing = drawShapes[currentIdx].drawOuterLine({
+        start: startBeforeStartOfSection ? 0 : start - drawLength,
+        startNeedsDrawing: start >= drawLength && startBeforeEndOfSection,
+        startingPoints: engagementZoneFront,
+        endingPoints: engagementZoneBack,
+        end: endBeforeEndOfSection ? end - drawLength : false,
+        path3D: trackIs2D ? false : shape,
+      });
+      if (trackIs2D) {
+        shape += " " + drawing;
+      }
+    }
+    drawLength = newDrawLength;
+
+    if (endBeforeEndOfSection) break;
+    currentIdx = (currentIdx + 1) % drawShapes.length; // not increment
+  }
+
+  // console.log(currentIdx)
+  // console.log(drawLength)
+
+  // switching drawing direction
+  // swap start and end
+  let tmp = start;
+  start = end;
+  end = tmp;
+
+  // console.log('start: ', start);
+  // console.log('end: ', end);
+
+  // draw the inside lines (drat, counterclockwise)
+  while (drawLength > 0) {
+    let newDrawLength = drawLength - drawShapes[currentIdx].length;
+    let stillNeedsDrawing = drawLength >= end;
+    let startBeforeEndOfSection = start >= drawLength;
+    let endBeforeStartOfSection = end < newDrawLength;
+
+    // console.log('newDrawLength: ', newDrawLength);
+
+    // console.log(stillNeedsDrawing)
+    // console.log(currentIdx)
+
+    if (stillNeedsDrawing) {
+      let drawing = drawShapes[currentIdx].drawInnerLine({
+        start: startBeforeEndOfSection ? 0 : start - newDrawLength,
+        end: endBeforeStartOfSection ? 0 : end - newDrawLength,
+        startingPoints: engagementZoneFront,
+        endingPoints: engagementZoneBack,
+        path3D: trackIs2D ? false : shape,
+      });
+      if (trackIs2D) {
+        shape += " " + drawing;
+      }
+    }
+    drawLength = newDrawLength;
+
+    currentIdx = (currentIdx - 1 + drawShapes.length) % drawShapes.length;
+  }
+
+  if (trackIs2D) {
+    // shape closure
+    shape += "Z";
+  } else {
+    // bundle up the shape into a mesh
+    let { curveSegments, ...materialOptions } = _options3D;
+    let geometry = new THREE.ShapeGeometry(shape, curveSegments);
+    let material = new THREE.MeshBasicMaterial(materialOptions);
+    let mesh = new THREE.Mesh(geometry, material);
+    shape = mesh;
+  }
+
+  return shape;
+};
+
+const getIntersectionsWithCircle = (
+  origin,
+  direction,
+  circleCenter,
+  radius
+) => {
+  const intersections = [];
+  /*
+   *   CIRCLE LINE INTERSECTION
+   *   https://mathworld.wolfram.com/Circle-LineIntersection.html
+   */
+  let p1 = origin.clone().add(direction).sub(circleCenter);
+  let p2 = origin.clone().sub(circleCenter);
+  let d = p2.clone().sub(p1);
+  let dr = d.length();
+  let D = p1.x * p2.y - p2.x * p1.y;
+
+  let determinant = radius * radius * dr * dr - D * D;
+
+  if (determinant > 0) {
+    let x1 =
+      (D * d.y + Math.sign(d.y) * d.x * Math.sqrt(determinant)) / (dr * dr);
+    let x2 =
+      (D * d.y - Math.sign(d.y) * d.x * Math.sqrt(determinant)) / (dr * dr);
+
+    let y1 = (-D * d.x + Math.abs(d.y) * Math.sqrt(determinant)) / (dr * dr);
+    let y2 = (-D * d.x - Math.abs(d.y) * Math.sqrt(determinant)) / (dr * dr);
+
+    intersections.push(new Vector2(x1, y1).add(circleCenter));
+    intersections.push(new Vector2(x2, y2).add(circleCenter));
+  } else if (determinant === 0) {
+    let x = (D * d.y) / (dr * dr);
+    let y = (-D * d.x) / (dr * dr);
+
+    intersections.push(new Vector2(x, y).add(circleCenter));
+  }
+
+  return intersections;
+};
+
+/**
+ * Get the inside and outside intersection of right half circle
+ */
+const intersectLineRightHalfCircle = (origin, direction) => {
+  const intersectionsOuter = getIntersectionsWithCircle(
+    origin,
+    direction,
+    C1_OUTER,
+    RADIUS_OUTER
+  )
+    .filter((entry) => entry.x >= C1.x)
+    .reduce((prev, curr) => {
+      // check if curr is closer to origin
+      if (
+        !prev ||
+        curr.clone().sub(origin).length < prev.clone().sub(origin).length
+      ) {
+        return curr;
+      }
+      return prev;
+    }, null);
+
+  const intersectionsInner = getIntersectionsWithCircle(
+    origin,
+    direction,
+    C1,
+    RADIUS_INNER
+  )
+    .filter((entry) => entry.x >= C1.x)
+    .reduce((prev, curr) => {
+      // check if curr is closer to origin
+      if (
+        !prev ||
+        curr.clone().sub(origin).length < prev.clone().sub(origin).length
+      ) {
+        return curr;
+      }
+      return prev;
+    }, null);
+
+  return {
+    inside: intersectionsInner,
+    outside: intersectionsOuter,
+  };
+};
+
+/**
+ * Get the inside and outside intersection of left half circle
+ */
+const intersectLineLeftHalfCircle = (origin, direction) => {
+  const intersectionsOuter = getIntersectionsWithCircle(
+    origin,
+    direction,
+    C2_OUTER,
+    RADIUS_OUTER
+  )
+    .filter((entry) => entry.x <= C2.x)
+    .reduce((prev, curr) => {
+      // check if curr is closer to origin
+      if (
+        !prev ||
+        curr.clone().sub(origin).length < prev.clone().sub(origin).length
+      ) {
+        return curr;
+      }
+      return prev;
+    }, null);
+
+  const intersectionsInner = getIntersectionsWithCircle(
+    origin,
+    direction,
+    C2,
+    RADIUS_INNER
+  )
+    .filter((entry) => entry.x <= C2.x)
+    .reduce((prev, curr) => {
+      // check if curr is closer to origin
+      if (
+        !prev ||
+        curr.clone().sub(origin).length < prev.clone().sub(origin).length
+      ) {
+        return curr;
+      }
+      return prev;
+    }, null);
+
+  return {
+    inside: intersectionsInner,
+    outside: intersectionsOuter,
+  };
+};
+
+const intersectLines = (line1origin, line1dir, line2origin, line2dir) => {
+  const P1 = line1origin;
+  const P2 = line1origin.clone().add(line1dir);
+  const P3 = line2origin;
+  const P4 = line2origin.clone().add(line2dir);
+  const x =
+    ((P1.x * P2.y - P1.y * P2.x) * (P3.x - P4.x) -
+      (P1.x - P2.x) * (P3.x * P4.y - P3.y * P4.x)) /
+    ((P1.x - P2.x) * (P3.y - P4.y) - (P1.y - P2.y) * (P3.x - P4.x));
+  const y =
+    ((P1.x * P2.y - P1.y * P2.x) * (P3.y - P4.y) -
+      (P1.y - P2.y) * (P3.x * P4.y - P3.y * P4.x)) /
+    ((P1.x - P2.x) * (P3.y - P4.y) - (P1.y - P2.y) * (P3.x - P4.x));
+
+  const intersection = new Vector2(x, y);
+  return intersection;
+};
+
+const intersectLineStraightAwaysTop = (origin, direction) => {
+  const yOuterTopC1 = F_OUTER_TOP(C1.x);
+  const yOuterTopC2 = F_OUTER_TOP(C2.x);
+  const intersectionTop = intersectLines(
+    origin,
+    direction,
+    new Vector2(C1.x, yOuterTopC1),
+    new Vector2(C2.x - C1.x, yOuterTopC2 - yOuterTopC1)
+  );
+
+  const intersectionBottom = intersectLines(
+    origin,
+    direction,
+    LINE1.p1,
+    LINE1.p2.clone().sub(LINE1.p1)
+  );
+
+  console.dir({
+    intersectionTop,
+    intersectionBottom,
+  });
+
+  return {
+    top:
+      intersectionTop.x < C1.x && intersectionTop.x > C2.x
+        ? intersectionTop
+        : null,
+    bottom:
+      intersectionBottom.x < C1.x && intersectionBottom.x > C2.x
+        ? intersectionBottom
+        : null,
+  };
+};
+
+const intersectLineStraightAwaysBottom = (origin, direction) => {
+  const yOuterBottomC1 = F_OUTER_BOTTOM(C1.x);
+  const yOuterBottomC2 = F_OUTER_BOTTOM(C2.x);
+  const intersectionTop = intersectLines(
+    origin,
+    direction,
+    LINE2.p1,
+    LINE2.p2.clone().sub(LINE2.p1)
+  );
+
+  const intersectionBottom = intersectLines(
+    origin,
+    direction,
+    new Vector2(C1.x, yOuterBottomC1),
+    new Vector2(C2.x - C1.x, yOuterBottomC2 - yOuterBottomC2)
+  );
+
+  return {
+    top:
+      intersectionTop.x < C1.x && intersectionTop.x > C2.x
+        ? intersectionTop
+        : null,
+    bottom:
+      intersectionBottom.x < C1.x && intersectionBottom.x > C2.x
+        ? intersectionBottom
+        : null,
+  };
+};
+
+const intersectLinesUsingPivotDistance = (pivotDistances) => {
+  return pivotDistances.map((pivotDistance) => {
+    let distance = pivotDistance % MEASUREMENT_LENGTH;
+    while (distance < 0) {
+      distance += MEASUREMENT_LENGTH;
+    }
+
+    if (distance < CIRCUMFERENCE_HALF_CIRCLE) {
+      // first half circle
+
+      let angle = pivotDistance / MEASUREMENT_RADIUS;
+      angle = -angle + Math.PI / 2; // correct orientiation
+      const [inside, outside] = angleToLineFirstHalfCircle(angle);
+      return {
+        inside,
+        outside,
+      };
+    }
+
+    if (distance < CIRCUMFERENCE_HALF_CIRCLE + LINE_DIST) {
+      // first straightaway
+      distance -= CIRCUMFERENCE_HALF_CIRCLE;
+      let outside = new Vector2(
+        C1_OUTER.x - distance,
+        F_OUTER_TOP(C1_OUTER.x - distance)
+      );
+      let inside = new Vector2(C1.x - distance, -RADIUS_INNER);
+      return {
+        inside,
+        outside,
+      };
+    }
+
+    if (distance < 2 * CIRCUMFERENCE_HALF_CIRCLE + LINE_DIST) {
+      // half circle left
+      distance -= CIRCUMFERENCE_HALF_CIRCLE + LINE_DIST;
+      let angle = distance / MEASUREMENT_RADIUS;
+      angle = -angle + Math.PI / 2 + Math.PI; // correct orientiation
+      let [inside, outside] = angleToLineSecondHalfCircle(angle);
+      return {
+        inside,
+        outside,
+      };
+    }
+
+    if (distance <= 2 * CIRCUMFERENCE_HALF_CIRCLE + 2 * LINE_DIST) {
+      // straightaway bottom
+      distance -= 2 * CIRCUMFERENCE_HALF_CIRCLE + LINE_DIST;
+      let outside = new Vector2(
+        C2_OUTER.x + distance,
+        F_OUTER_BOTTOM(C2_OUTER.x + distance)
+      );
+      let inside = new Vector2(C2.x + distance, RADIUS_INNER);
+      return {
+        inside,
+        outside,
+      };
+    }
+  });
+};
+
 const angleToLineFirstHalfCircle = (angle) => {
   let ret;
   let direction = new Vector2(Math.cos(angle), Math.sin(angle));
@@ -674,10 +1526,10 @@ const angleToLineFirstHalfCircle = (angle) => {
   // console.log('D: ', D);
 
   if (determinant !== 0) {
-    const sgn = (x) => (x < 0 ? -1 : 1);
-
-    let x1 = (D * d.y + sgn(d.y) * d.x * Math.sqrt(determinant)) / (dr * dr);
-    let x2 = (D * d.y - sgn(d.y) * d.x * Math.sqrt(determinant)) / (dr * dr);
+    let x1 =
+      (D * d.y + Math.sign(d.y) * d.x * Math.sqrt(determinant)) / (dr * dr);
+    let x2 =
+      (D * d.y - Math.sign(d.y) * d.x * Math.sqrt(determinant)) / (dr * dr);
 
     let y1 = (-D * d.x + Math.abs(d.y) * Math.sqrt(determinant)) / (dr * dr);
     let y2 = (-D * d.x - Math.abs(d.y) * Math.sqrt(determinant)) / (dr * dr);
@@ -724,10 +1576,10 @@ const angleToLineSecondHalfCircle = (angle) => {
   // console.log('D: ', D);
 
   if (determinant !== 0) {
-    const sgn = (x) => (x < 0 ? -1 : 1);
-
-    let x1 = (D * d.y + sgn(d.y) * d.x * Math.sqrt(determinant)) / (dr * dr);
-    let x2 = (D * d.y - sgn(d.y) * d.x * Math.sqrt(determinant)) / (dr * dr);
+    let x1 =
+      (D * d.y + Math.sign(d.y) * d.x * Math.sqrt(determinant)) / (dr * dr);
+    let x2 =
+      (D * d.y - Math.sign(d.y) * d.x * Math.sqrt(determinant)) / (dr * dr);
 
     let y1 = (-D * d.x + Math.abs(d.y) * Math.sqrt(determinant)) / (dr * dr);
     let y2 = (-D * d.x - Math.abs(d.y) * Math.sqrt(determinant)) / (dr * dr);
@@ -756,11 +1608,30 @@ const angleSVGTo3DSecondCircle = (angle) => {
   return (angle * Math.PI) / 180 + Math.PI / 2;
 };
 
+const drawLine = ({ p1, p2, path3D, moveTo = false }) => {
+  if (path3D) {
+    if (moveTo) path3D.moveTo(p1.x, -p1.y);
+    path3D.lineTo(p2.x, -p2.y);
+  } else {
+    return (moveTo ? `M${p1.x},${p1.y}` : "") + `L${p2.x},${p2.y}`;
+  }
+};
+
 const drawShapes = [
   {
     part: "First Half Circle",
     length: CIRCUMFERENCE_HALF_CIRCLE,
-    drawOuterLine({ start, startNeedsDrawing, end, path3D }) {
+    drawOuterLine(props) {
+      const {
+        start,
+        startNeedsDrawing,
+        startingPoints,
+        end,
+        endingPoints,
+        path3D,
+      } = props;
+      console.log("First Half Circle");
+      console.dir(props);
       let angle = start / MEASUREMENT_RADIUS;
       angle = -angle + Math.PI / 2; // correct orientiation
       let data = "";
@@ -769,11 +1640,12 @@ const drawShapes = [
         let [pInner, pOuter] = angleToLineFirstHalfCircle(angle);
 
         if (pOuter && pOuter.x > C1_OUTER.x) {
-          if (path3D) {
-            path3D.moveTo(pInner.x, -pInner.y).lineTo(pOuter.x, -pOuter.y);
-          } else {
-            data = `M${pInner.x},${pInner.y}L${pOuter.x},${pOuter.y}`;
-          }
+          data += drawLine({
+            p1: pInner,
+            p2: pOuter,
+            path3D,
+            moveTo: true,
+          });
         } else {
           console.log("didn't find an intersection");
         }
@@ -802,11 +1674,11 @@ const drawShapes = [
         }
 
         // draw inward line
-        if (path3D) {
-          path3D.lineTo(pInner.x, -pInner.y);
-        } else {
-          data += ` L${pInner.x},${pInner.y}`;
-        }
+        data += drawLine({
+          p1: pOuter,
+          p2: pInner,
+          path3D,
+        });
       } else {
         let endAngle = (start / MEASUREMENT_RADIUS) * (180 / Math.PI);
         // draw remaining arc
@@ -895,28 +1767,28 @@ const drawShapes = [
         );
         let pStartInner = new Vector2(C1.x - start, -RADIUS_INNER);
 
-        if (path3D) {
-          path3D
-            .moveTo(pStartInner.x, -pStartInner.y)
-            .lineTo(pStart.x, -pStart.y);
-        } else {
-          data = `M${pStartInner.x},${pStartInner.y}L${pStart.x},${pStart.y}`;
-        }
+        data += drawLine({
+          p1: pStartInner,
+          p2: pStart,
+          path3D,
+          moveTo: true,
+        });
       }
 
-      if (path3D) {
-        path3D.lineTo(pEnd.x, -pEnd.y);
-      } else {
-        data += ` L${pEnd.x},${pEnd.y}`;
-      }
+      data += drawLine({
+        p1: null,
+        p2: pEnd,
+        path3D,
+      });
 
       if (end) {
         let pEndInner = new Vector2(C1_OUTER.x - xEnd, -RADIUS_INNER);
-        if (path3D) {
-          path3D.lineTo(pEndInner.x, -pEndInner.y);
-        } else {
-          data += ` L${pEndInner.x},${pEndInner.y}`;
-        }
+
+        data += drawLine({
+          p1: null,
+          p2: pEndInner,
+          path3D,
+        });
       }
 
       return data;
@@ -927,11 +1799,11 @@ const drawShapes = [
       // console.log('end: ', end)
       let pEnd = new Vector2(C1.x - end, -RADIUS_INNER);
 
-      if (path3D) {
-        path3D.lineTo(pEnd.x, -pEnd.y);
-        return;
-      }
-      return ` L${pEnd.x},${pEnd.y}`;
+      return drawLine({
+        p1: null,
+        p2: pEnd,
+        path3D,
+      });
     },
   },
   {
@@ -946,11 +1818,12 @@ const drawShapes = [
         let [pInner, pOuter] = angleToLineSecondHalfCircle(angle);
 
         if (pOuter && pOuter.x < C2_OUTER.x) {
-          if (path3D) {
-            path3D.moveTo(pInner.x, -pInner.y).lineTo(pOuter.x, -pOuter.y);
-          } else {
-            data = `M${pInner.x},${pInner.y}L${pOuter.x},${pOuter.y}`;
-          }
+          data += drawLine({
+            p1: pInner,
+            p2: pOuter,
+            path3D,
+            moveTo: true,
+          });
         } else {
           console.log("didn't find an intersection");
         }
@@ -979,11 +1852,11 @@ const drawShapes = [
         }
 
         // draw inward line
-        if (path3D) {
-          path3D.lineTo(pInner.x, -pInner.y);
-        } else {
-          data += ` L${pInner.x},${pInner.y}`;
-        }
+        data += drawLine({
+          p1: null,
+          p2: pInner,
+          path3D,
+        });
       } else {
         let endAngle = (start / MEASUREMENT_RADIUS) * (180 / Math.PI);
         // draw remaining arc
@@ -1075,20 +1948,19 @@ const drawShapes = [
         );
         let pStartInner = new Vector2(C2.x + start, RADIUS_INNER);
 
-        if (path3D) {
-          path3D
-            .moveTo(pStartInner.x, -pStartInner.y)
-            .lineTo(pStart.x, -pStart.y);
-        } else {
-          data = `M${pStartInner.x},${pStartInner.y}L${pStart.x},${pStart.y}`;
-        }
+        data += drawLine({
+          p1: pStartInner,
+          p2: pStart,
+          path3D,
+          moveTo: true,
+        });
       }
 
-      if (path3D) {
-        path3D.lineTo(pEnd.x, -pEnd.y);
-      } else {
-        data += ` L${pEnd.x},${pEnd.y}`;
-      }
+      data += drawLine({
+        p1: null,
+        p2: pEnd,
+        path3D,
+      });
 
       // console.log('start: ', start);
       // console.log('end: ', end);
@@ -1096,11 +1968,11 @@ const drawShapes = [
         let pEndInner = new Vector2(C2_OUTER.x + xEnd, RADIUS_INNER);
         // console.log('pEndInner', pEndInner);
 
-        if (path3D) {
-          path3D.lineTo(pEndInner.x, -pEndInner.y);
-        } else {
-          data += ` L${pEndInner.x},${pEndInner.y}`;
-        }
+        data += drawLine({
+          p1: null,
+          p2: pEndInner,
+          path3D,
+        });
       }
 
       return data;
@@ -1111,10 +1983,11 @@ const drawShapes = [
       // console.log('end: ', end)
       let pEnd = new Vector2(C2.x + end, RADIUS_INNER);
 
-      if (path3D) {
-        return path3D.lineTo(pEnd.x, -pEnd.y);
-      }
-      return ` L${pEnd.x},${pEnd.y}`;
+      return drawLine({
+        p1: null,
+        p2: pEnd,
+        path3D,
+      });
     },
   },
 ];

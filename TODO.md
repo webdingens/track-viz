@@ -54,6 +54,7 @@
 - Setting: Orthographic Camera (just perspective camera should be fine)
 - add Buttons for predefined camera positions: view on start, corner views, WFTDA standard camera position
   - for which controls?
+- recreate bug that Ellie had, where Models and Helmets intersected and wouldn't be displayed correctly anymore
 
 #### Controls
 
