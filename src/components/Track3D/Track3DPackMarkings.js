@@ -31,6 +31,10 @@ class Track3DMarkings extends React.PureComponent {
     this.packShape.renderOrder = 4;
     this.props.scene.add(this.packShape);
 
+    {
+      /** TODO: add pack measuring method */
+    }
+
     // create engagement zone shape and add to scene
     let engagementZoneBounds = [
       packBounds[0] - ENGAGEMENT_ZONE_DISTANCE_TO_PACK,

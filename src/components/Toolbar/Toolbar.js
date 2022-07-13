@@ -9,6 +9,7 @@ import {
   setTrackEditorVisibility,
   setTrack3DVisibility,
   selectGeneralSettings,
+  setSetting,
 } from "../../app/reducers/settingsGeneralSlice";
 
 import {
@@ -84,6 +85,22 @@ const Toolbar = () => {
                 }}
               >
                 Split View
+              </button>
+            </li>
+            <li>
+              <button
+                className={styles.button}
+                onClick={() => {
+                  dispatch(
+                    setSetting({
+                      key: "settingsVisible",
+                      value: true,
+                    })
+                  );
+                  setState({ open: false });
+                }}
+              >
+                Settings
               </button>
             </li>
           </ul>

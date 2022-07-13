@@ -66,3 +66,9 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `npm run build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+
+## Preview Pack Computation Methods
+
+[Rectangle (WFTDA)](https://trackviz.webdingens.de/?showRefLane=0&showPackEndRectangles=1&packMeasuringMethod=rectangle&showEngagementZoneEndRectangles=1&showPackMethodDuringRectangleMethod=rectangle)
+
+[Sector (NURDS)](https://trackviz.webdingens.de/?showRefLane=0&packMeasuringMethod=sector)

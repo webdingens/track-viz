@@ -2,10 +2,29 @@ $color: #ffa489;
 
 $color2: #333467;
 
-.pack path {
-  stroke: transparentize($color, .2);
-  stroke-width: .05;
-  fill: transparentize($color, .5);
+$color3: #6803ff;
+
+.pack {
+  path {
+    stroke: transparentize($color, .2);
+    stroke-width: .05;
+    fill: transparentize($color, .5);
+  }
+
+  &--overlay path {
+    stroke: $color3;
+    opacity: .4;
+    stroke-width: .05;
+    fill: url(#pack-pattern);
+  }
+}
+
+.box {
+  path {
+    stroke: $color2;
+    stroke-width: .05;
+    fill: none;
+  }
 }
 
 .engagementZone path {
@@ -14,9 +33,28 @@ $color2: #333467;
   fill: transparentize($color, .7);
 }
 
-.packRectangle path {
-  stroke: $color2;
-  opacity: .6;
-  stroke-width: .05;
-  fill: url(#rectangle-pack-pattern);
+.packRectangle {
+  path {
+    stroke: transparentize($color, .2);
+    stroke-width: .05;
+    fill: transparentize($color, .5);
+  }
+  &--overlay path {
+    stroke: $color3;
+    opacity: .4;
+    stroke-width: .05;
+    fill: url(#pack-pattern);
+  }
+}
+
+.closeDistance {
+  path {
+    fill: transparentize(#3cd32b, .9);
+  }
+}
+
+.farDistance {
+  path {
+    fill: transparentize(#cf0c0c, .9);
+  }
 }

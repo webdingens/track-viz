@@ -21,6 +21,9 @@
 - add another redux slice for internal states, so we don't export that and don't load initial states either
 - i10n
 - Github Project Board testen: https://docs.github.com/en/issues/organizing-your-work-with-project-boards/managing-project-boards/about-project-boards
+- add settings view
+- add track measuring options
+- continue fixing pack functions to determine the inPlay Properties
 
 ### Track Editor
 
@@ -43,6 +46,16 @@
 - align with 3d camera position (like with gps navigation and look ahead, makes editing easier during split view)
 - Setting: Show/Hide Pack and Engagement Area (Cycle Nub)
 - Setting: Pre-Start mode, with blockers having to be on track, between jammer and pivot line
+- Add Focus Option:
+  - Ability to Draw a Rectangle around a part of the editor
+  - Ability to zoom into rectangle (icon inside rectangle top right corner)
+  - Ability to remove rectangle (icon outside rectangle, top right corner, X/Close)
+  - Ability to export zoomed in mode
+- Change drag on touch to have a minimum width/height around skater
+  - choose closest skater if two skaters are close
+  - don't just use the radius of the skater, which might be too small on mobile devices
+  - define what is too small
+  - make decision of touch area a setting option (larger radius)
 
 ### 3D View
 
@@ -55,6 +68,7 @@
 - add Buttons for predefined camera positions: view on start, corner views, WFTDA standard camera position
   - for which controls?
 - recreate bug that Ellie had, where Models and Helmets intersected and wouldn't be displayed correctly anymore
+- add track markings for rectangle
 
 #### Controls
 

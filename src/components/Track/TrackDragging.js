@@ -11,7 +11,7 @@ import {
   setSkaters,
   selectCurrentSkatersWDP,
 } from "../../app/reducers/currentTrackSlice";
-
+import { selectGeneralSettings } from "../../app/reducers/settingsGeneralSlice";
 import { selectTrackOrientation } from "../../app/reducers/settingsTrackSlice";
 
 require("../../utils/composedPathPolyfill");
@@ -423,8 +423,9 @@ class TrackDragging extends React.Component {
 //  React Redux Connection
 //
 const mapStateToProps = (state) => {
+  const settings = selectGeneralSettings(state);
   return {
-    skaters: selectCurrentSkatersWDP(state),
+    skaters: selectCurrentSkatersWDP(state, settings.packMeasuringMethod),
     trackOrientation: selectTrackOrientation(state),
   };
 };

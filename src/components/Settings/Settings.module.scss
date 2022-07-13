@@ -1,0 +1,90 @@
+.settings {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  max-width: 450px;
+  width: calc(100% - 40px);
+  max-height: 100vh;
+  min-height: 200px;
+  padding: 16px;
+  overflow: auto;
+
+  transform: translate(-50%, -50%);
+
+  background: #fff;
+
+  border: 1px solid #333;
+
+  border-radius: 5px;
+  z-index: 10;
+}
+
+.closeButton {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 5px;
+
+  font-size: 27px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  svg {
+    display: block;
+  }
+}
+
+.headline {
+  font-size: 18px;
+  line-height: 1.25;
+  font-weight: 700;
+
+  margin-bottom: .5em;
+}
+
+.tabs {
+  ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.tab {
+  padding: .2em 1em;
+  line-height: 1.5em;
+  border-radius: 3em;
+  border: 2px solid transparent;
+  font-size: 12px;
+  font-weight: 700;
+
+  &:hover,
+  &:focus-visible,
+  &--active {
+    border-color: #333;
+  }
+}
+
+.section {
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.section h1 {
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 700;
+}
+
+.section > p {
+  font-weight: 400;
+}

@@ -1,14 +1,32 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { loadSlice, cleanupSlice } from "../storePersistence";
+import {
+  loadSlice,
+  cleanupSlice,
+  loadSettingsFromQueryString,
+} from "../storePersistence";
+import { PACK_MEASURING_METHODS } from "../../utils/packFunctions";
 
 const defaultSettings = {
   trackEditorVisible: true,
   track3DVisible: false,
-  sequenceEditorVisible: true,
+  sequenceEditorVisible: false,
+  settingsVisible: false,
+
+  // options
+
+  // pack
+  packMeasuringMethod: PACK_MEASURING_METHODS.SECTOR,
+  showEngagementZoneOtherMethod: false,
+  showPackMethodDuringRectangleMethod: PACK_MEASURING_METHODS.SECTOR,
+  showEngagementZoneAllSkaterRectangles: false,
+  showEngagementZoneEndRectangles: false,
+  showPackEndRectangles: true,
+  showAllClosestBlockerRectangles: false,
 };
 
 let initialState = cleanupSlice(loadSlice("settings.general"), defaultSettings);
+loadSettingsFromQueryString(initialState);
 
 export const settingsGeneralSlice = createSlice({
   name: "settingsGeneral",
@@ -23,6 +41,10 @@ export const settingsGeneralSlice = createSlice({
     setSequenceEditorVisibility: (state, action) => {
       state.sequenceEditorVisible = action.payload;
     },
+    setSetting: (state, action) => {
+      const { key, value } = action.payload;
+      state[key] = value;
+    },
     reset: (state) => {
       for (let key in state) {
         delete state[key];
@@ -36,6 +58,7 @@ export const {
   setTrackEditorVisibility,
   setTrack3DVisibility,
   setSequenceEditorVisibility,
+  setSetting,
   reset,
 } = settingsGeneralSlice.actions;
 
