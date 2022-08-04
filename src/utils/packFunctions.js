@@ -545,11 +545,18 @@ const isSkaterInEngagementZone = (
     let frontAngleSkater = new Vector2(skater.x, skater.y)
       .sub(engagementZoneFront.inside)
       .angle();
+    let frontAngleOutside = engagementZoneBack.outside
+      .clone()
+      .sub(engagementZoneFront.inside)
+      .angle();
     while (frontAngle2 < frontAngle1) {
       frontAngle2 += Math.PI * 2;
     }
     while (frontAngleSkater < frontAngle1) {
       frontAngleSkater += Math.PI * 2;
+    }
+    while (frontAngleOutside < frontAngle1) {
+      frontAngleOutside += Math.PI * 2;
     }
 
     let backAngle1 = engagementZoneBack.outside
@@ -563,20 +570,81 @@ const isSkaterInEngagementZone = (
     let backAngleSkater = new Vector2(skater.x, skater.y)
       .sub(engagementZoneBack.inside)
       .angle();
+    let backAngleOutside = engagementZoneFront.outside
+      .clone()
+      .sub(engagementZoneBack.inside)
+      .angle();
     while (backAngle1 < backAngle2) {
       backAngle1 += Math.PI * 2;
     }
     while (backAngleSkater < backAngle2) {
       backAngleSkater += Math.PI * 2;
     }
+    while (backAngleOutside < backAngle2) {
+      backAngleOutside += Math.PI * 2;
+    }
 
     // check if the skaters are on the right side by using the angles
 
-    const isInAngleRangeFront =
+    const isInAngleRangeFrontInside =
       frontAngleSkater > frontAngle1 && frontAngleSkater < frontAngle2;
 
-    const isInAngleRangeBack =
+    const isInAngleRangeBackInside =
       backAngleSkater < backAngle1 && backAngleSkater > backAngle2;
+
+    const isInAngleRangeFrontAdjacent =
+      frontAngleOutside > frontAngle1 && frontAngleOutside < frontAngle2;
+    const isInAngleRangeBackAdjacent =
+      backAngleOutside < backAngle1 && backAngleOutside > backAngle2;
+
+    if (isInAngleRangeFrontAdjacent && isInAngleRangeBackAdjacent) {
+      return isInAngleRangeFrontInside && isInAngleRangeBackInside;
+    }
+
+    // same with outside points of opposing ends
+    let frontAngle1Outside = engagementZoneFront.outside
+      .clone()
+      .sub(engagementZoneFront.inside)
+      .angle();
+    let frontAngle2Outside = engagementZoneBack.outside
+      .clone()
+      .sub(engagementZoneFront.inside)
+      .angle();
+    let frontAngleSkaterOutside = new Vector2(skater.x, skater.y)
+      .sub(engagementZoneFront.inside)
+      .angle();
+    while (frontAngle2Outside < frontAngle1Outside) {
+      frontAngle2Outside += Math.PI * 2;
+    }
+    while (frontAngleSkaterOutside < frontAngle1Outside) {
+      frontAngleSkaterOutside += Math.PI * 2;
+    }
+
+    let backAngle1Outside = engagementZoneBack.outside
+      .clone()
+      .sub(engagementZoneBack.inside)
+      .angle();
+    let backAngle2Outside = engagementZoneFront.outside
+      .clone()
+      .sub(engagementZoneBack.inside)
+      .angle();
+    let backAngleSkaterOutside = new Vector2(skater.x, skater.y)
+      .sub(engagementZoneBack.inside)
+      .angle();
+    while (backAngle1Outside < backAngle2Outside) {
+      backAngle1Outside += Math.PI * 2;
+    }
+    while (backAngleSkaterOutside < backAngle2Outside) {
+      backAngleSkaterOutside += Math.PI * 2;
+    }
+
+    const isInAngleRangeFrontOutside =
+      frontAngleSkaterOutside > frontAngle1Outside &&
+      frontAngleSkaterOutside < frontAngle2Outside;
+
+    const isInAngleRangeBackOutside =
+      backAngleSkaterOutside < backAngle1Outside &&
+      backAngleSkaterOutside > backAngle2Outside;
 
     // if (skater.id === 4)
     //   console.dir({
@@ -597,7 +665,10 @@ const isSkaterInEngagementZone = (
     //   isInAngleRangeBack
     // );
 
-    return isInAngleRangeFront && isInAngleRangeBack;
+    return (
+      (isInAngleRangeFrontInside && isInAngleRangeBackOutside) ||
+      (isInAngleRangeFrontOutside && isInAngleRangeBackInside)
+    );
   }
   return false;
 };
@@ -606,17 +677,17 @@ export const getSkatersWDPInPlayPackSkater = (
   skaters,
   { method = PACK_MEASURING_METHODS.SECTOR } = {}
 ) => {
+  const pack = getPack(skaters, { method });
+  let packBoundaries;
+  if (pack) {
+    packBoundaries =
+      method === PACK_MEASURING_METHODS.SECTOR
+        ? getSortedPackBoundaries(pack)
+        : getSortedOutermostSkaters(pack);
+  }
+
   return skaters.map((skater) => {
     let ret = _.cloneDeep(skater);
-
-    const pack = getPack(skaters, { method });
-    let packBoundaries;
-    if (pack) {
-      packBoundaries =
-        method === PACK_MEASURING_METHODS.SECTOR
-          ? getSortedPackBoundaries(pack)
-          : getSortedOutermostSkaters(pack);
-    }
 
     if (skater.isJammer) {
       ret.inPlay = skater.inBounds;

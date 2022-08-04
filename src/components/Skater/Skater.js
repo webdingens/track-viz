@@ -66,6 +66,40 @@ const Skater = (props) => {
             />
           </>
         ) : null}
+        <g
+          className={classNames({
+            [styles.statusWrapper]: true,
+            "js-status-icon": true,
+          })}
+          transform={`rotate(${-rotation - trackOrientation})`}
+        >
+          <g transform="translate(.22, -.22)">
+            <text
+              className={classNames({
+                [styles.status]: true,
+                [styles.statusOutOfPlay]: true,
+              })}
+              textAnchor="start"
+              fontSize=".35"
+              x="0"
+              y="0"
+            >
+              OOP
+            </text>
+            <text
+              className={classNames({
+                [styles.status]: true,
+                [styles.statusOutOfBounds]: true,
+              })}
+              textAnchor="start"
+              fontSize=".35"
+              x="0"
+              y="0"
+            >
+              OOB
+            </text>
+          </g>
+        </g>
       </SkaterDragWrappers>
     </g>
   );

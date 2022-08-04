@@ -32,6 +32,15 @@
 .jammerStar {
 }
 
+.statusWrapper {
+  pointer-events: none;
+}
+
+.status {
+  display: none;
+  filter: drop-shadow(0, 0, .2,#fff);
+}
+
 .skater {
   pointer-events: all;
   .rotationHandle {
@@ -40,31 +49,24 @@
   }
 
   &--has-focus {
-    .skaterBackground,
-    .jammerOutline,
-    .pivotOutline,
-    .shield {
-      stroke: blueviolet;
-    }
     .rotationHandle {
       display: initial;
     }
   }
 
-  &--pack-skater {
-    .skaterBackground,
-    .pivotOutline {
-      stroke: purple;
+  $root: &;
+
+  &--in-bounds:not(#{$root}--in-play) {
+    .statusOutOfPlay {
+      display: initial;
+      fill: #f00;
     }
   }
 
-  $root: &;
-
-  &:not(#{$root}--in-play),
   &:not(#{$root}--in-bounds) {
-    .skaterBackground,
-    .pivotOutline {
-      stroke: red;
+    .statusOutOfBounds {
+      display: initial;
+      fill: #f00;
     }
   }
 }

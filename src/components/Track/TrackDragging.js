@@ -199,6 +199,12 @@ class TrackDragging extends React.Component {
         rotate: -draggable.rotation - instance.props.trackOrientation,
       });
     }
+    let statusIcon =
+      instance.skaterNodes[idx].querySelectorAll(".js-status-icon")[0];
+    gsap.set(statusIcon, {
+      svgOrigin: "0, 0",
+      rotate: -draggable.rotation - instance.props.trackOrientation,
+    });
 
     instance.storeDragRotation(instance);
   }

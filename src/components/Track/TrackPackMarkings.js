@@ -9,18 +9,18 @@ import { selectCurrentSkatersWDPPivotLineDistance } from "../../app/reducers/cur
 import { selectGeneralSettings } from "../../app/reducers/settingsGeneralSlice";
 
 import {
-  getSortedPackBoundaries,
-  getPack,
-  getSortedOutermostSkaters,
-  getEngagementZoneIntersectionsRectangle,
-  getPointOnParallelLineOfLastSkaterRectangle,
-  getPackIntersectionsRectangle,
-  getPivotLineDistance,
-  PACK_MEASURING_METHODS,
   computePartialTrackShape,
-  getTwoOutermostSkatersInBothDirection,
   ENGAGEMENT_ZONE_DISTANCE_TO_PACK,
   getDistanceOfTwoSkaters,
+  getEngagementZoneIntersectionsRectangle,
+  getPack,
+  getPackIntersectionsRectangle,
+  getPivotLineDistance,
+  getPointOnParallelLineOfLastSkaterRectangle,
+  getSortedOutermostSkaters,
+  getSortedPackBoundaries,
+  getTwoOutermostSkatersInBothDirection,
+  PACK_MEASURING_METHODS,
 } from "../../utils/packFunctions";
 
 import styles from "./TrackPackMarkings.module.scss";
