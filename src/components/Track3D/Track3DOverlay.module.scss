@@ -213,3 +213,16 @@
 .rangeSliderLabel {
   display: block;
 }
+
+.menuSelectTitle {
+  margin-bottom: .2em;
+}
+
+.menuSelect {
+  padding: 0.3em 0.4em;
+
+  option {
+    padding: 0.3em 0.4em;
+    line-height: 1.5;
+  }
+}
