@@ -1,10 +1,9 @@
 /**
  * Base Class unifying Controls behaviour
-*/
+ */
 
 class ControlsBase {
   constructor(options) {
-    
     this.options = options;
   }
 
@@ -14,10 +13,12 @@ class ControlsBase {
 
   requestAnimate() {
     if (this.animationRequest) return;
-    this.animationRequest = requestAnimationFrame( this.animate );
+    this.animationRequest = requestAnimationFrame(this.animate);
   }
 
-  syncProps(prevProps, nextProps) {}
+  syncProps(prevProps, nextProps) {
+    this.requestAnimate();
+  }
 
   update() {}
 

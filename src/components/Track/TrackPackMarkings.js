@@ -10,7 +10,6 @@ import { selectGeneralSettings } from "../../app/reducers/settingsGeneralSlice";
 
 import {
   computePartialTrackShape,
-  ENGAGEMENT_ZONE_DISTANCE_TO_PACK,
   getDistanceOfTwoSkaters,
   getEngagementZoneIntersectionsRectangle,
   getPack,
@@ -20,6 +19,7 @@ import {
   getSortedOutermostSkaters,
   getSortedPackBoundaries,
   getTwoOutermostSkatersInBothDirection,
+  ENGAGEMENT_ZONE_DISTANCE_TO_PACK,
   PACK_MEASURING_METHODS,
 } from "../../utils/packFunctions";
 

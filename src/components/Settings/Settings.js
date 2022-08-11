@@ -1,10 +1,21 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import classNames from "classnames";
 import {
   selectGeneralSettings,
   setSetting,
 } from "../../app/reducers/settingsGeneralSlice";
+
+import {
+  selectTrack3DSettings,
+  setSetting as setTrack3DSetting,
+  EYE_HEIGHT_MIN,
+  EYE_HEIGHT_MAX,
+  EYE_HEIGHT_STEP,
+  GAMEPAD_THRESHOLD_MIN,
+  GAMEPAD_THRESHOLD_MAX,
+  GAMEPAD_THRESHOLD_STEP,
+} from "../../app/reducers/settingsTrack3DSlice";
 
 import { PACK_MEASURING_METHODS } from "../../utils/packFunctions";
 
@@ -14,138 +25,9 @@ import styles from "./Settings.module.scss";
 
 const Settings = () => {
   const settings = useSelector(selectGeneralSettings);
+  const settingsTrack3D = useSelector(selectTrack3DSettings);
   const dispatch = useDispatch();
   const [currentTab, setCurrentTab] = useState(1);
-
-  const outputContainer = useRef();
-
-  // useEffect(() => {
-  //   const haveEvents = "ongamepadconnected" in window;
-  //   const controllers = {};
-
-  //   function connecthandler(e) {
-  //     addgamepad(e.gamepad);
-  //   }
-
-  //   function addgamepad(gamepad) {
-  //     controllers[gamepad.index] = gamepad;
-  //     rendergamepad(gamepad);
-  //   }
-
-  //   function rendergamepad(gamepad) {
-  //     const d = document.createElement("div");
-  //     d.setAttribute("id", `controller${gamepad.index}`);
-
-  //     const t = document.createElement("h1");
-  //     t.textContent = `gamepad: ${gamepad.id}`;
-  //     d.appendChild(t);
-
-  //     const b = document.createElement("div");
-  //     b.className = "buttons";
-  //     for (let i = 0; i < gamepad.buttons.length; i++) {
-  //       const e = document.createElement("span");
-  //       e.className = "button";
-  //       e.textContent = i;
-  //       b.appendChild(e);
-  //     }
-
-  //     d.appendChild(b);
-
-  //     const a = document.createElement("div");
-  //     a.className = "axes";
-
-  //     for (let i = 0; i < gamepad.axes.length; i++) {
-  //       const p = document.createElement("progress");
-  //       p.className = "axis";
-  //       p.setAttribute("max", "2");
-  //       p.setAttribute("value", "1");
-  //       p.textContent = i;
-  //       a.appendChild(p);
-  //     }
-
-  //     d.appendChild(a);
-
-  //     // See https://github.com/luser/gamepadtest/blob/master/index.html
-  //     const start = document.getElementById("start");
-  //     if (start) {
-  //       start.style.display = "none";
-  //     }
-
-  //     outputContainer.current.appendChild(d);
-  //     requestAnimationFrame(updateStatus);
-  //   }
-
-  //   function disconnecthandler(e) {
-  //     removegamepad(e.gamepad);
-  //   }
-
-  //   function removegamepad(gamepad) {
-  //     const d = document.getElementById(`controller${gamepad.index}`);
-  //     outputContainer.current.removeChild(d);
-  //     delete controllers[gamepad.index];
-  //   }
-
-  //   function updateStatus() {
-  //     if (!haveEvents) {
-  //       scangamepads();
-  //     }
-
-  //     for (const j in controllers) {
-  //       const controller = controllers[j];
-  //       const d = document.getElementById(`controller${j}`);
-  //       const buttons = d.getElementsByClassName("button");
-
-  //       for (let i = 0; i < controller.buttons.length; i++) {
-  //         const b = buttons[i];
-  //         let val = controller.buttons[i];
-  //         let pressed = val === 1.0;
-  //         if (typeof val === "object") {
-  //           pressed = val.pressed;
-  //           val = val.value;
-  //         }
-
-  //         const pct = `${Math.round(val * 100)}%`;
-  //         b.style.backgroundSize = `${pct} ${pct}`;
-
-  //         if (pressed) {
-  //           b.className = "button pressed";
-  //         } else {
-  //           b.className = "button";
-  //         }
-  //       }
-
-  //       const axes = d.getElementsByClassName("axis");
-  //       for (let i = 0; i < controller.axes.length; i++) {
-  //         const a = axes[i];
-  //         a.textContent = `${i}: ${controller.axes[i].toFixed(4)}`;
-  //         a.setAttribute("value", controller.axes[i] + 1);
-  //       }
-  //     }
-
-  //     requestAnimationFrame(updateStatus);
-  //   }
-
-  //   function scangamepads() {
-  //     const gamepads = navigator.getGamepads();
-  //     for (const gamepad of gamepads) {
-  //       if (gamepad) {
-  //         // Can be null if disconnected during the session
-  //         if (gamepad.index in controllers) {
-  //           controllers[gamepad.index] = gamepad;
-  //         } else {
-  //           addgamepad(gamepad);
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   window.addEventListener("gamepadconnected", connecthandler);
-  //   window.addEventListener("gamepaddisconnected", disconnecthandler);
-
-  //   if (!haveEvents) {
-  //     setInterval(scangamepads, 500);
-  //   }
-  // }, []);
 
   if (!settings.settingsVisible) return null;
 
@@ -260,7 +142,7 @@ const Settings = () => {
             </label>
           </div>
           <hr />
-          <p>Engagement Zone Overlay</p>
+          <p>Engagement Zone Overlay (Track2D)</p>
           <div>
             <label>
               <input
@@ -327,7 +209,7 @@ const Settings = () => {
           {settings.packMeasuringMethod === PACK_MEASURING_METHODS.RECTANGLE ? (
             <>
               <hr />
-              <p>Pack Overlay</p>
+              <p>Pack Overlay (Track2D)</p>
               {/* <div>
                 <label>
                   <input
@@ -416,7 +298,48 @@ const Settings = () => {
       {currentTab === 1 ? (
         <section className={styles.section}>
           <h1>Controls</h1>
-          <div ref={outputContainer}></div>
+          <div>
+            <label>
+              <p>Eyeheight</p>
+              <input
+                type="range"
+                min={EYE_HEIGHT_MIN}
+                max={EYE_HEIGHT_MAX}
+                step={EYE_HEIGHT_STEP}
+                value={settingsTrack3D.eyeHeight}
+                onChange={(evt) => {
+                  dispatch(
+                    setTrack3DSetting({
+                      key: "eyeHeight",
+                      value: parseFloat(evt.target.value),
+                    })
+                  );
+                }}
+              />
+              {settingsTrack3D.eyeHeight.toFixed(1)}
+            </label>
+          </div>
+          <div>
+            <label>
+              <p>Gamepad Axes Threshold</p>
+              <input
+                type="range"
+                min={GAMEPAD_THRESHOLD_MIN}
+                max={GAMEPAD_THRESHOLD_MAX}
+                step={GAMEPAD_THRESHOLD_STEP}
+                value={settingsTrack3D.gamepadThreshold}
+                onChange={(evt) => {
+                  dispatch(
+                    setTrack3DSetting({
+                      key: "gamepadThreshold",
+                      value: parseFloat(evt.target.value),
+                    })
+                  );
+                }}
+              />
+              {settingsTrack3D.gamepadThreshold.toFixed(2)}
+            </label>
+          </div>
         </section>
       ) : null}
     </div>

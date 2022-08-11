@@ -1,21 +1,22 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import _ from 'lodash';
+import React from "react";
+import { connect } from "react-redux";
+import _ from "lodash";
 
-import Track3DMarkings from './Track3DMarkings';
-import Track3DPackMarkings from './Track3DPackMarkings';
-import Track3DSkaters from './Track3DSkaters';
-import Track3DFloor from './Track3DFloor';
-import PointerLockInstructions from '../PointerLockInstructions/PointerLockInstructions';
-import VRButton from '../VRButton/VRButton';
-import Track3DOverlay from './Track3DOverlay';
-import Track3DWalls from './Track3DWalls';
+import Track3DMarkings from "./Track3DMarkings";
+import Track3DPackMarkings from "./Track3DPackMarkings";
+import Track3DSkaters from "./Track3DSkaters";
+import Track3DFloor from "./Track3DFloor";
+import PointerLockInstructions from "../PointerLockInstructions/PointerLockInstructions";
+import VRButton from "../VRButton/VRButton";
+import Track3DOverlay from "./Track3DOverlay";
+import Track3DWalls from "./Track3DWalls";
 
-import { selectGeneralSettings } from '../../app/reducers/settingsGeneralSlice';
+import { selectGeneralSettings } from "../../app/reducers/settingsGeneralSlice";
 import {
   setCamera,
   setControls,
   setVRModeEnabled,
+  setSetting as setTrack3DSetting,
   selectTrack3DCamera,
   selectTrack3DControls,
   selectTrack3DVRModeEnabled,
@@ -24,28 +25,30 @@ import {
   selectTrack3DMapControlsDampingEnabled,
   selectTrack3DGraphicsQuality,
   selectTrack3DShowWalls,
-} from '../../app/reducers/settingsTrack3DSlice';
+  selectTrack3DSettings,
+} from "../../app/reducers/settingsTrack3DSlice";
 
-import ControlsMap from './controls/ControlsMap';
-import ControlsDrag from './controls/ControlsDrag';
-import ControlsFirstPerson from './controls/ControlsFirstPerson';
-import ControlsXR from './controls/ControlsXR';
+import ControlsMap from "./controls/ControlsMap";
+import ControlsDrag from "./controls/ControlsDrag";
+import ControlsFirstPerson from "./controls/ControlsFirstPerson";
+import ControlsXR from "./controls/ControlsXR";
+import ControlsGamepad from "./controls/ControlsGamepad";
 // import Track3DSceneExportButton from './Track3DSceneExportButton';
 
 class Track3DDynamic extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
       firstPersonControlsActive: false,
       controlsInitialized: false,
-    }
+    };
 
     // TODO: rename props from parent and connect
     // to not use underscore from parent
     this.scene = props._scene;
     this.camera = props._camera;
-    this.renderer= props.renderer;
+    this.renderer = props.renderer;
 
     this.requestAnimate = this.requestAnimate.bind(this);
     this.onResize = this.onResize.bind(this);
@@ -53,12 +56,10 @@ class Track3DDynamic extends React.Component {
     this.onXRSessionEnded = this.onXRSessionEnded.bind(this);
     this.onXRSessionStarted = this.onXRSessionStarted.bind(this);
 
-    window.track3d = this;  // For debugging purposes, make this available to window
-
+    window.track3d = this; // For debugging purposes, make this available to window
   }
 
   componentDidMount() {
-
     this.updateCameraProps(this.props);
     this.setupControls(this.props.controlMode);
     this.initWebXR();
@@ -67,13 +68,13 @@ class Track3DDynamic extends React.Component {
     this.requestAnimate();
 
     // add event listeners
-    window.addEventListener('resize', this.onResize);
+    window.addEventListener("resize", this.onResize);
   }
 
   /*
-  * Don't update if unnecessary things from setting.general changed
-  * Still needed?
-  */
+   * Don't update if unnecessary things from setting.general changed
+   * Still needed?
+   */
   shouldComponentUpdate(nextProps, nextState) {
     this.syncWithNextProps(nextProps);
 
@@ -82,10 +83,26 @@ class Track3DDynamic extends React.Component {
       this.updateRendererSize(nextProps);
       this.requestAnimate();
     }
+    if (
+      this.props.settings.general.trackEditorVisible !==
+      nextProps.settings.general.trackEditorVisible
+    ) {
+      // wait for dom update (two panel layout is further up in the tree)
+      requestAnimationFrame(() => this.onResize());
+    }
 
-    if (this.state.firstPersonControlsActive !== nextState.firstPersonControlsActive) return true;
-    if (this.state.controlsInitialized !== nextState.controlsInitialized) return true;
+    if (
+      this.state.firstPersonControlsActive !==
+      nextState.firstPersonControlsActive
+    ) {
+      return true;
+    }
+
+    if (this.state.controlsInitialized !== nextState.controlsInitialized)
+      return true;
+
     if (this.didControlModeChange(nextProps)) return true;
+
     if (this.props.showWalls !== nextProps.showWalls) return true;
 
     return false;
@@ -103,7 +120,7 @@ class Track3DDynamic extends React.Component {
     this.destroyControls(this.props.controlMode);
 
     // remove event listeners
-    window.removeEventListener('resize', this.onResize);
+    window.removeEventListener("resize", this.onResize);
   }
 
   //
@@ -121,6 +138,7 @@ class Track3DDynamic extends React.Component {
     }
 
     if (this.controls) this.controls.syncProps(this.props, nextProps);
+    if (this.controlsXR) this.controlsXR.syncProps(this.props, nextProps);
 
     if (this.didControlModeChange(nextProps)) {
       this.destroyControls(this.props.controlMode);
@@ -132,7 +150,6 @@ class Track3DDynamic extends React.Component {
       this.requestAnimate();
     }
 
-
     // start/stop xr session if toggled
     if (this.didVRModeEnabledChange(nextProps)) {
       if (nextProps.vrModeEnabled) {
@@ -142,7 +159,6 @@ class Track3DDynamic extends React.Component {
       }
     }
   }
-
 
   //
   //
@@ -157,7 +173,14 @@ class Track3DDynamic extends React.Component {
    * @returns {boolean}
    */
   didEditorVisibilitiesChange(props) {
-    return this.props.settings.general.trackEditorVisible !== props.settings.general.trackEditorVisible || this.props.settings.general.track3DVisible !== props.settings.general.track3DVisible || this.props.settings.general.sequenceEditorVisible !== props.settings.general.sequenceEditorVisible;
+    return (
+      this.props.settings.general.trackEditorVisible !==
+        props.settings.general.trackEditorVisible ||
+      this.props.settings.general.track3DVisible !==
+        props.settings.general.track3DVisible ||
+      this.props.settings.general.sequenceEditorVisible !==
+        props.settings.general.sequenceEditorVisible
+    );
   }
 
   /**
@@ -167,12 +190,11 @@ class Track3DDynamic extends React.Component {
    * @returns {boolean}
    */
   didCameraChange(props) {
-    let val = _.difference(
-      this.props.camera.position,
-      props.camera.position).length > 0
-      || _.difference(
-        this.props.camera.rotation,
-        props.camera.rotation).length > 0;
+    let val =
+      _.difference(this.props.camera.position, props.camera.position).length >
+        0 ||
+      _.difference(this.props.camera.rotation, props.camera.rotation).length >
+        0;
     return val;
   }
 
@@ -186,7 +208,7 @@ class Track3DDynamic extends React.Component {
     rot.map((el, idx) => {
       if (idx < 3 && isNaN(el)) return 0;
       return el;
-    })
+    });
     this.camera.rotation.fromArray(rot);
   }
 
@@ -200,7 +222,6 @@ class Track3DDynamic extends React.Component {
     return this.props.controlMode !== props.controlMode;
   }
 
-
   /**
    *  Check if vrModeEnabled is different in props
    *
@@ -211,14 +232,13 @@ class Track3DDynamic extends React.Component {
     return this.props.vrModeEnabled !== props.vrModeEnabled;
   }
 
-
   //
   //
   //      CONTROLS
   //
   //
   switchToControls(controlMode) {
-    switch(controlMode) {
+    switch (controlMode) {
       case CONTROL_MODES.MAP:
         ControlsMap.switchTo({ props: this.props });
         break;
@@ -228,7 +248,7 @@ class Track3DDynamic extends React.Component {
   }
 
   setupControls(controlMode) {
-    switch(controlMode) {
+    switch (controlMode) {
       case CONTROL_MODES.MAP:
         this.setupMapControls();
         break;
@@ -238,12 +258,15 @@ class Track3DDynamic extends React.Component {
       case CONTROL_MODES.DRAG:
         this.setupDragControls();
         break;
+      case CONTROL_MODES.GAMEPAD:
+        this.setupGamepadControls();
+        break;
       default:
         break;
     }
 
     this.setState({
-      controlsInitialized: controlMode
+      controlsInitialized: controlMode,
     });
   }
 
@@ -251,7 +274,6 @@ class Track3DDynamic extends React.Component {
     if (this.controls) this.controls.destroy();
     this.controls = null;
   }
-
 
   /**
    * Map Controls Setup (from the three.js examples)
@@ -262,17 +284,16 @@ class Track3DDynamic extends React.Component {
       return;
     }
     if (this.controls) {
-      throw new Error('Controls still initialized');
+      throw new Error("Controls still initialized");
     }
 
     this.controls = new ControlsMap({
       renderer: this.renderer,
       camera: this.camera,
       context: this,
-    })
+    });
     this.controls.update();
   }
-
 
   /**
    * Setup First Person Controls using Three.js Pointer Lock Controls
@@ -281,7 +302,7 @@ class Track3DDynamic extends React.Component {
     // redux dev double render
     if (this.controls && this.controls instanceof ControlsFirstPerson) return;
     if (this.controls) {
-      throw new Error('Controls still initialized');
+      throw new Error("Controls still initialized");
     }
 
     this.controls = new ControlsFirstPerson({
@@ -291,28 +312,42 @@ class Track3DDynamic extends React.Component {
     });
   }
 
-
   setupDragControls() {
     // redux dev double render debug
     if (this.controls && this.controls instanceof ControlsDrag) {
       return;
     }
     if (this.controls) {
-      throw new Error('Controls still initialized');
+      throw new Error("Controls still initialized");
     }
 
     this.controls = new ControlsDrag({
       renderer: this.renderer,
       camera: this.camera,
       context: this,
-    })
+    });
   }
 
+  setupGamepadControls() {
+    // redux dev double render debug
+    if (this.controls && this.controls instanceof ControlsGamepad) {
+      return;
+    }
+    if (this.controls) {
+      throw new Error("Controls still initialized");
+    }
+
+    this.controls = new ControlsGamepad({
+      renderer: this.renderer,
+      camera: this.camera,
+      context: this,
+      props: this.props,
+    });
+  }
 
   requestAnimate() {
     if (this.controls) this.controls.requestAnimate();
   }
-
 
   initWebXR() {
     // Web XR
@@ -320,7 +355,6 @@ class Track3DDynamic extends React.Component {
     // this.renderer.xr.setReferenceSpaceType( 'local' );
     this.currentXRSession = null;
   }
-
 
   /**
    * Animation for when we started a VR Session
@@ -332,12 +366,12 @@ class Track3DDynamic extends React.Component {
       camera: this.camera,
       context: this,
       session,
-      onSessionEnded: this.onXRSessionEnded
+      onSessionEnded: this.onXRSessionEnded,
+      props: this.props,
     });
     this.currentXRSession = session;
     this.xrSessionRequested = false;
   }
-
 
   onXRSessionEnded() {
     this.controlsXR = null;
@@ -350,25 +384,24 @@ class Track3DDynamic extends React.Component {
     this.requestAnimate();
   }
 
-
   startXRSession() {
-    if ( this.currentXRSession === null && !this.xrSessionRequested) {
+    if (this.currentXRSession === null && !this.xrSessionRequested) {
       // features need to be requested on session start
       let sessionInit = {
-        optionalFeatures: [ 'local-floor', 'bounded-floor' ]
+        optionalFeatures: ["local-floor", "bounded-floor"],
       };
-      navigator.xr.requestSession( 'immersive-vr', sessionInit ).then( this.onXRSessionStarted );
+      navigator.xr
+        .requestSession("immersive-vr", sessionInit)
+        .then(this.onXRSessionStarted);
       // navigator.xr.requestSession( 'immersive-vr' ).then( this.onXRSessionStarted );
       this.xrSessionRequested = true;
     }
   }
 
-
   stopXRSession() {
     if (this.currentXRSession === null) return;
     this.currentXRSession.end();
   }
-
 
   updateCamera() {
     if (this.camera && this.renderer) {
@@ -378,7 +411,6 @@ class Track3DDynamic extends React.Component {
       this.camera.updateProjectionMatrix();
     }
   }
-
 
   updateRendererSize(props) {
     if (this.renderer) {
@@ -393,19 +425,16 @@ class Track3DDynamic extends React.Component {
     }
   }
 
-
   onResize() {
     this.updateCamera();
     this.updateRendererSize(this.props);
-    
+
     this.requestAnimate();
   }
-
 
   onSubcomponentUpdated() {
     this.requestAnimate();
   }
-
 
   render() {
     return (
@@ -433,30 +462,32 @@ class Track3DDynamic extends React.Component {
           scene={this.scene}
           onSkaterUpdated={this.onSubcomponentUpdated}
         />
-        { !this.state.firstPersonControlsActive ? (
+        {!this.state.firstPersonControlsActive ? (
           <VRButton renderer={this.renderer} />
-        ) : null }
+        ) : null}
 
-        { (this.state.controlsInitialized === CONTROL_MODES.FIRST_PERSON &&
-          !this.state.firstPersonControlsActive) ? (
-          <PointerLockInstructions onClick={this.controls.enterFirstPersonControls} />
-        ) : null }
+        {this.state.controlsInitialized === CONTROL_MODES.FIRST_PERSON &&
+        !this.state.firstPersonControlsActive ? (
+          <PointerLockInstructions
+            onClick={this.controls.enterFirstPersonControls}
+          />
+        ) : null}
 
-        { !this.state.firstPersonControlsActive ? (
+        {!this.state.firstPersonControlsActive ? (
           <Track3DOverlay renderer={this.renderer} />
-        ) : null }
+        ) : null}
 
         {/* <Track3DSceneExportButton scene={this.scene} /> */}
       </>
-    )
+    );
   }
 }
-
 
 const mapStateToProps = (state) => {
   return {
     settings: {
       general: selectGeneralSettings(state),
+      track3D: selectTrack3DSettings(state),
     },
     camera: selectTrack3DCamera(state),
     controls: selectTrack3DControls(state),
@@ -465,17 +496,17 @@ const mapStateToProps = (state) => {
     mapControlsDampingEnabled: selectTrack3DMapControlsDampingEnabled(state),
     graphicsQuality: selectTrack3DGraphicsQuality(state),
     showWalls: selectTrack3DShowWalls(state),
-  }
-}
-
+  };
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setCamera: ({ position, rotation }) => dispatch(setCamera({ position, rotation })),
+    setCamera: ({ position, rotation }) =>
+      dispatch(setCamera({ position, rotation })),
     setControls: ({ target }) => dispatch(setControls({ target })),
-    setVRModeEnabled: (val) => dispatch(setVRModeEnabled(val))
-  }
+    setVRModeEnabled: (val) => dispatch(setVRModeEnabled(val)),
+    setTrack3DSetting: (val) => dispatch(setTrack3DSetting(val)),
+  };
 };
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(Track3DDynamic);

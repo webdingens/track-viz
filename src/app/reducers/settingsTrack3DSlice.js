@@ -11,10 +11,19 @@ const defaultControls = {
   target: [0, 0, 0],
 };
 
+export const EYE_HEIGHT_MIN = 0.7;
+export const EYE_HEIGHT_MAX = 2.5;
+export const EYE_HEIGHT_STEP = 0.1;
+
+export const GAMEPAD_THRESHOLD_MIN = 0;
+export const GAMEPAD_THRESHOLD_MAX = 0.5;
+export const GAMEPAD_THRESHOLD_STEP = 0.01;
+
 export const CONTROL_MODES = {
   FIRST_PERSON: "First Person",
   MAP: "Map",
   DRAG: "Drag",
+  GAMEPAD: "Gamepad",
 };
 
 export const MODEL_TYPES = {
@@ -36,6 +45,8 @@ const defaultSettings = {
   useModelType: MODEL_TYPES.HELMET,
   showWalls: false,
   useTextures: false,
+  eyeHeight: 1.7,
+  gamepadThreshold: 0.3,
 };
 
 let initialState = cleanupSlice(loadSlice("settings.track3D"), defaultSettings);
@@ -78,6 +89,10 @@ export const settingsTrack3DSlice = createSlice({
     setUseTextures: (state, action) => {
       state.useTextures = action.payload;
     },
+    setSetting: (state, action) => {
+      const { key, value } = action.payload;
+      state[key] = value;
+    },
     reset: (state) => {
       state = { ...defaultSettings };
     },
@@ -102,6 +117,7 @@ export const {
   setUseModelType,
   setShowWalls,
   setUseTextures,
+  setSetting,
 } = settingsTrack3DSlice.actions;
 
 // The function below is called a selector and allows us to select a value from

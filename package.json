@@ -11,6 +11,7 @@
     "classnames": "^2.2.6",
     "focus-visible": "^5.1.0",
     "gsap": "^3.2.6",
+    "joypad.js": "^2.3.2",
     "lodash": "^4.17.15",
     "node-sass": "^4.13.1",
     "react": "^16.13.1",
@@ -35,7 +36,7 @@
     "eslint-plugin-react-hooks": "4.2.0"
   },
   "scripts": {
-    "start": "HTTPS=true react-scripts start",
+    "start": "HTTPS=true HOST=0.0.0.0 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
