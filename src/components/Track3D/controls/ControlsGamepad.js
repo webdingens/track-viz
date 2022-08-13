@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import _ from "lodash";
 
 import ControlsBase from "./ControlsBase";
 import GamepadManager from "./gamepad/GamepadManager";
@@ -28,6 +29,10 @@ class ControlsGamepad extends ControlsBase {
     this.requestAnimate = this.requestAnimate.bind(this);
     this.onButtonPress = this.onButtonPress.bind(this);
     this.controlLoop = this.controlLoop.bind(this);
+    this._storeCamera = _.throttle(this._storeCamera.bind(this), 50, {
+      leading: false,
+      trailing: true,
+    });
 
     this.vec = new THREE.Vector3();
 
@@ -82,6 +87,14 @@ class ControlsGamepad extends ControlsBase {
     this.props = nextProps;
   }
 
+  _storeCamera() {
+    // persist camera/controls changes to the store
+    this.context.props.setCamera({
+      position: this.camera.position.toArray(),
+      rotation: this.camera.rotation.toArray(),
+    });
+  }
+
   onButtonPress(e) {
     switch (e.detail.index) {
       case 3: // reduce eye height (X)
@@ -116,6 +129,7 @@ class ControlsGamepad extends ControlsBase {
     this.renderer.render(this.context.scene, this.camera);
 
     this.animationRequest = null;
+    this._storeCamera();
   }
 
   moveForward(distance) {
@@ -183,22 +197,7 @@ class ControlsGamepad extends ControlsBase {
 
         if (axesActive[1]) cfp.velocity.z -= cfp.direction.z * 80.0 * delta;
         if (axesActive[0]) cfp.velocity.x -= cfp.direction.x * 80.0 * delta;
-      }
 
-      this.moveRight(-cfp.velocity.x * delta);
-      this.moveForward(-cfp.velocity.z * delta);
-
-      this.camera.position.y += cfp.velocity.y * delta;
-
-      if (this.camera.position.y < this.eyeHeight) {
-        cfp.velocity.y = 0;
-        this.camera.position.y = this.eyeHeight;
-
-        cfp.canJump = true;
-      }
-
-      // update camera rotation
-      if (gamepad) {
         if (axesActive[2] || axesActive[3]) {
           let dirX = axesActive[2] ? gamepad.axes[2] : 0;
           if (dirX < 0) {
@@ -222,6 +221,22 @@ class ControlsGamepad extends ControlsBase {
         }
       }
 
+      this.moveRight(-cfp.velocity.x * delta);
+      this.moveForward(-cfp.velocity.z * delta);
+
+      this.camera.position.y += cfp.velocity.y * delta;
+
+      if (this.camera.position.y !== this.eyeHeight && cfp.canJump) {
+        this.camera.position.y = this.eyeHeight;
+      }
+
+      if (this.camera.position.y < this.eyeHeight) {
+        cfp.velocity.y = 0;
+        this.camera.position.y = this.eyeHeight;
+
+        cfp.canJump = true;
+      }
+
       cfp.prevTime = time;
       this.needsUpdate = false;
 
@@ -231,6 +246,7 @@ class ControlsGamepad extends ControlsBase {
   }
 
   destroy() {
+    this._storeCamera.flush();
     this.onButtonPressUnsubscribe();
     if (this.animationRequest) {
       cancelAnimationFrame(this.animationRequest);

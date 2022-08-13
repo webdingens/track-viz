@@ -1,6 +1,7 @@
 .skater-A {
   .skaterBackground {
-    fill: #ff0000;
+    // fill: #ff0000;
+    fill: var(--color-red);
     stroke: #000;
     stroke-width: .05;
   }
@@ -8,7 +9,8 @@
 
 .skater-B {
   .skaterBackground {
-    fill: #008000;
+    // fill: #008000;
+    fill: var(--color-green);
     stroke: #000;
     stroke-width: .05;
   }

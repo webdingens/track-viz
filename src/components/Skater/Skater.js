@@ -42,8 +42,7 @@ const Skater = (props) => {
               [styles.blockerNumber]: true,
               "js-blocker-number": true,
             })}
-            x="-.07em"
-            y=".35em"
+            y=".32em"
             fontSize=".4"
             textAnchor="middle"
             transform={`rotate(${-rotation - trackOrientation})`}

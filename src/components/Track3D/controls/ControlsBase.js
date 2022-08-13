@@ -16,9 +16,7 @@ class ControlsBase {
     this.animationRequest = requestAnimationFrame(this.animate);
   }
 
-  syncProps(prevProps, nextProps) {
-    this.requestAnimate();
-  }
+  syncProps(prevProps, nextProps) {}
 
   update() {}
 

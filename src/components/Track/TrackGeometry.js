@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import TrackMarkings from "./TrackMarkings";
 import TrackPackMarkings from "./TrackPackMarkings";
 import TrackSkaters from "./TrackSkaters";
+import Track3DCamera from "./Track3DCamera";
 
 import {
   selectTrackOrientation,
@@ -44,6 +45,8 @@ const TrackGeometry = (props) => {
         <TrackMarkings
           showRefLane={props.isPreview ? false : props.showRefLane}
         />
+
+        <Track3DCamera />
 
         <TrackSkaters {...props} />
       </g>

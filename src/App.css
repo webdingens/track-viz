@@ -2,3 +2,8 @@
   text-align: center;
   height: 100%;
 }
+
+:root {
+  --color-red: #E20007;
+  --color-green: #098F2C;
+}

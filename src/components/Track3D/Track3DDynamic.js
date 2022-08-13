@@ -309,6 +309,7 @@ class Track3DDynamic extends React.Component {
       renderer: this.renderer,
       camera: this.camera,
       context: this,
+      props: this.props,
     });
   }
 

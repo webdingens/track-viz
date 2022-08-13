@@ -1,10 +1,9 @@
+import * as THREE from "three";
+import _ from "lodash";
+
 import ControlsBase from "./ControlsBase";
 
-import * as THREE from "three";
-
 import { PointerLockControls } from "./threejs/PointerLockControls";
-
-const EYE_HEIGHT = 1.7; // TODO load from settings
 
 // TODO: move things from context to options
 // TODO: use dispatch in controls instead of using the props actions
@@ -13,7 +12,7 @@ class ControlsFirstPerson extends ControlsBase {
   constructor(options) {
     super(options);
 
-    let { renderer, camera, context } = options;
+    let { renderer, camera, context, props } = options;
     this.camera = camera;
     this.renderer = renderer;
     this.context = context;
@@ -24,6 +23,12 @@ class ControlsFirstPerson extends ControlsBase {
     this.enterFirstPersonControls = this.enterFirstPersonControls.bind(this);
     this.onKeyDownFP = this.onKeyDownFP.bind(this);
     this.onKeyUpFP = this.onKeyUpFP.bind(this);
+    this._storeCamera = _.throttle(this._storeCamera.bind(this), 50, {
+      leading: false,
+      trailing: true,
+    });
+
+    this.eyeHeight = props.settings.track3D.eyeHeight;
 
     this.setupControls();
   }
@@ -31,7 +36,7 @@ class ControlsFirstPerson extends ControlsBase {
   setupControls() {
     // set to ground level
     let newCameraPosition = this.camera.position.toArray();
-    newCameraPosition[1] = EYE_HEIGHT;
+    newCameraPosition[1] = this.eyeHeight;
     this.camera.position.fromArray(newCameraPosition);
 
     this.controls = new PointerLockControls(
@@ -58,6 +63,28 @@ class ControlsFirstPerson extends ControlsBase {
       direction: new THREE.Vector3(),
       keysDown: 0,
     };
+  }
+
+  syncProps(prevProps, nextProps) {
+    this.eyeHeight = nextProps.settings.track3D.eyeHeight;
+    if (
+      prevProps.settings.track3D.eyeHeight !==
+      nextProps.settings.track3D.eyeHeight
+    ) {
+      this.controlsFP.velocity.y = 0;
+      this.camera.position.y = this.eyeHeight;
+      this.controlsFP.canJump = true;
+      this.renderer.render(this.context.scene, this.camera);
+    }
+    this.props = nextProps;
+  }
+
+  _storeCamera() {
+    // persist camera/controls changes to the store
+    this.context.props.setCamera({
+      position: this.camera.position.toArray(),
+      rotation: this.camera.rotation.toArray(),
+    });
   }
 
   onFirstPersonLock = () => {
@@ -103,8 +130,7 @@ class ControlsFirstPerson extends ControlsBase {
     }
 
     this.renderer.render(this.context.scene, this.camera);
-
-    this.animationRequest = null;
+    this._storeCamera();
   }
 
   updateFirstPersonControlsBasedOnKeys() {
@@ -142,9 +168,9 @@ class ControlsFirstPerson extends ControlsBase {
 
       this.controls.getObject().position.y += cfp.velocity.y * delta; // new behavior
 
-      if (this.controls.getObject().position.y < EYE_HEIGHT) {
+      if (this.controls.getObject().position.y < this.eyeHeight) {
         cfp.velocity.y = 0;
-        this.controls.getObject().position.y = EYE_HEIGHT;
+        this.controls.getObject().position.y = this.eyeHeight;
 
         cfp.canJump = true;
       }
@@ -219,6 +245,7 @@ class ControlsFirstPerson extends ControlsBase {
   }
 
   destroy() {
+    this._storeCamera.flush();
     this.controls.dispose();
     this.controls = null;
 

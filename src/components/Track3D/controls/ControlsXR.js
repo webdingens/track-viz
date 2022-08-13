@@ -170,7 +170,6 @@ class ControlsXR extends ControlsBase {
               });
               break;
             case 0: // space
-              console.log("jump");
               if (this.controlsFP.canJump === true)
                 this.controlsFP.velocity.y += 20;
               this.controlsFP.canJump = false;
