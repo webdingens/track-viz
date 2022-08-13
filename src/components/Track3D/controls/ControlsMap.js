@@ -12,8 +12,6 @@ import { setTouchEnabledDevice } from "../../../app/reducers/currentTransientsSl
 // TODO: move things from context to options
 // TODO: use dispatch in controls instead of using the props actions
 
-const EYE_HEIGHT = 1.7;
-
 class ControlsMap extends ControlsBase {
   constructor(options) {
     super(options);
