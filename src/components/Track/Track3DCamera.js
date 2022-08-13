@@ -12,7 +12,7 @@ const Track3DCamera = (props) => {
   }) rotate(${(-camera.rotation[2] * 180) / Math.PI - 90})`;
   return (
     <g transform={transform}>
-      <FiArrowRightCircle size={0.6} />
+      <FiArrowRightCircle size={0.6} x={-0.3} y={-0.3} />
     </g>
   );
 };
