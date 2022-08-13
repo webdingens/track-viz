@@ -29,6 +29,8 @@ class ControlsGamepad extends ControlsBase {
     this.onButtonPress = this.onButtonPress.bind(this);
     this.controlLoop = this.controlLoop.bind(this);
 
+    this.vec = new THREE.Vector3();
+
     this.eyeHeight = props.settings.track3D.eyeHeight;
     this.axisThreshold = props.settings.track3D.gamepadThreshold;
 
@@ -105,7 +107,7 @@ class ControlsGamepad extends ControlsBase {
 
   controlLoop() {
     this.controlLoopRequest = requestAnimationFrame(this.controlLoop);
-    if (this.updateFirstPersonControlsBasedOnKeys()) {
+    if (this.handleInput()) {
       this.animate();
     }
   }
@@ -118,25 +120,24 @@ class ControlsGamepad extends ControlsBase {
 
   moveForward(distance) {
     // from threejs pointer lock controls
-    const vec = new THREE.Vector3();
-    vec.setFromMatrixColumn(this.camera.matrix, 0);
-    vec.crossVectors(this.camera.up, vec);
-    this.camera.position.addScaledVector(vec, distance);
+    this.vec.setFromMatrixColumn(this.camera.matrix, 0);
+    this.vec.crossVectors(this.camera.up, this.vec);
+    this.camera.position.addScaledVector(this.vec, distance);
   }
 
   moveRight(distance) {
     // from threejs pointer lock controls
-    const vec = new THREE.Vector3();
-    vec.setFromMatrixColumn(this.camera.matrix, 0);
-    this.camera.position.addScaledVector(vec, distance);
+    this.vec.setFromMatrixColumn(this.camera.matrix, 0);
+    this.camera.position.addScaledVector(this.vec, distance);
   }
 
-  updateFirstPersonControlsBasedOnKeys() {
-    let cfp = this.controlsFP;
+  handleInput() {
+    const cfp = this.controlsFP;
 
     const gamepad = GamepadManager.getActiveGamepad();
     cfp.buttonActive = GamepadManager.isButtonActive(gamepad);
     cfp.axisActive = GamepadManager.isAxisActive(gamepad);
+    let axesActive;
 
     if (
       cfp.buttonActive ||
@@ -157,8 +158,6 @@ class ControlsGamepad extends ControlsBase {
       cfp.velocity.z -= cfp.velocity.z * counterForce;
 
       cfp.velocity.y -= 9.8 * 10.0 * delta; // 100.0 = mass
-
-      let axesActive;
 
       if (gamepad) {
         axesActive = gamepad.axes.map(
@@ -198,7 +197,7 @@ class ControlsGamepad extends ControlsBase {
         cfp.canJump = true;
       }
 
-      // update camera
+      // update camera rotation
       if (gamepad) {
         if (axesActive[2] || axesActive[3]) {
           let dirX = axesActive[2] ? gamepad.axes[2] : 0;

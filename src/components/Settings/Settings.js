@@ -27,7 +27,7 @@ const Settings = () => {
   const settings = useSelector(selectGeneralSettings);
   const settingsTrack3D = useSelector(selectTrack3DSettings);
   const dispatch = useDispatch();
-  const [currentTab, setCurrentTab] = useState(1);
+  const [currentTab, setCurrentTab] = useState(0);
 
   if (!settings.settingsVisible) return null;
 

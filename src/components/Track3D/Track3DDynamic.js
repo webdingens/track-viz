@@ -374,6 +374,7 @@ class Track3DDynamic extends React.Component {
   }
 
   onXRSessionEnded() {
+    console.log("ended");
     this.controlsXR = null;
     this.currentXRSession = null;
     this.props.setVRModeEnabled(false);
