@@ -1,25 +1,32 @@
-import * as THREE from 'three';
-import _ from 'lodash';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils';
+import * as THREE from "three";
+import _ from "lodash";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils";
 
 let modelA;
 let modelB;
 let modelHelmet;
-const helmetPaths = ['A.pivot', 'A.jammer', 'A.blocker', 'B.pivot', 'B.jammer', 'B.blocker'];
+const helmetPaths = [
+  "A.pivot",
+  "A.jammer",
+  "A.blocker",
+  "B.pivot",
+  "B.jammer",
+  "B.blocker",
+];
 let helmetTextures = {
   A: {
-    pivot: 'capRedPivot',
-    jammer: 'capRedJammer',
-    blocker: 'capRedBlocker'
+    pivot: "capRedPivot",
+    jammer: "capRedJammer",
+    blocker: "capRedBlocker",
   },
   B: {
-    pivot: 'capGreenPivot',
-    jammer: 'capGreenJammer',
-    blocker: 'capGreenBlocker'
-  }
-}
-let helmets = {}
+    pivot: "capGreenPivot",
+    jammer: "capGreenJammer",
+    blocker: "capGreenBlocker",
+  },
+};
+let helmets = {};
 
 let textureLoader = new THREE.TextureLoader();
 let modelLoader = new GLTFLoader();
@@ -28,12 +35,12 @@ let skaterModelRequest;
 
 const requestModels = () => {
   if (skaterModelRequest) return skaterModelRequest;
-  
+
   skaterModelRequest = new Promise((resolve, reject) => {
     let skaterRequests = [
-      (new Promise((resolve, reject) => {
+      new Promise((resolve, reject) => {
         modelLoader.load(
-          'models/Skater1B/Skater1B.gltf',
+          "models/Skater1B/Skater1B.gltf",
           (gltf) => {
             modelA = gltf.scene.children[0];
             // remove partial culling of stuff
@@ -44,31 +51,38 @@ const requestModels = () => {
           },
           null,
           reject
-        )
-      })).then(() => new Promise((resolve, reject) => {
-        textureLoader.load(
-          window.location.href + 'models/Skater1B/textures/female_casualsuit02_diffuse_red.png',
-          (texture) => {
-            let materialIdx = _.findIndex(modelA.children, (child) => child.name === 'Skater1_bFemale_casualsuit02')
-            let material = modelA.children[materialIdx].material;
-            let img = material.map;
-            material.map = texture;
-            material.map.needsUpdate = true;
-            material.map.flipY = false;
-            material.needsUpdate = true;
-            img.dispose();
+        );
+      }).then(
+        () =>
+          new Promise((resolve, reject) => {
+            textureLoader.load(
+              window.location.href +
+                "models/Skater1B/textures/female_casualsuit02_diffuse_red.png",
+              (texture) => {
+                let materialIdx = _.findIndex(
+                  modelA.children,
+                  (child) => child.name === "Skater1_bFemale_casualsuit02"
+                );
+                let material = modelA.children[materialIdx].material;
+                let img = material.map;
+                material.map = texture;
+                material.map.needsUpdate = true;
+                material.map.flipY = false;
+                material.needsUpdate = true;
+                img.dispose();
 
-            modelA.children[materialIdx].material = material;
+                modelA.children[materialIdx].material = material;
 
-            resolve();
-          },
-          null,
-          (evt) => reject(evt.message)
-        )
-      })),
-      (new Promise((resolve, reject) => {
+                resolve();
+              },
+              null,
+              (evt) => reject(evt.message)
+            );
+          })
+      ),
+      new Promise((resolve, reject) => {
         modelLoader.load(
-          'models/Skater1B/Skater1B.gltf',
+          "models/Skater1B/Skater1B.gltf",
           (gltf) => {
             modelB = gltf.scene.children[0];
             // remove partial culling of stuff
@@ -79,16 +93,14 @@ const requestModels = () => {
           },
           null,
           reject
-        )
-      }))
-    ]
-    Promise.all(skaterRequests)
-      .then(resolve).catch(reject);
-
-  })
+        );
+      }),
+    ];
+    Promise.all(skaterRequests).then(resolve).catch(reject);
+  });
 
   return skaterModelRequest;
-}
+};
 
 let helmetModelRequest;
 const requestHelmets = () => {
@@ -98,38 +110,45 @@ const requestHelmets = () => {
     let helmetRequests = [];
 
     helmetPaths.forEach((objPath) => {
-      helmetRequests.push(new Promise((resolve, reject) => {
-        textureLoader.load(
-          window.location.href + 'models/Helmet/textures/'+_.get(helmetTextures, objPath)+'.png',
-          (texture) => {
-            _.set(helmetTextures, objPath, texture);
+      helmetRequests.push(
+        new Promise((resolve, reject) => {
+          textureLoader.load(
+            window.location.href +
+              "models/Helmet/textures/" +
+              _.get(helmetTextures, objPath) +
+              ".png",
+            (texture) => {
+              _.set(helmetTextures, objPath, texture);
 
+              resolve();
+            },
+            null,
+            (evt) => reject(evt.message)
+          );
+        })
+      );
+    });
+    helmetRequests.push(
+      new Promise((resolve, reject) => {
+        modelLoader.load(
+          "models/Helmet/Helmet.gltf",
+          (gltf) => {
+            modelHelmet = gltf.scene.children[0];
             resolve();
           },
           null,
-          (evt) => reject(evt.message)
-        )
-      }))
-    });
-    helmetRequests.push(new Promise((resolve, reject) => {
-      modelLoader.load(
-        'models/Helmet/Helmet.gltf',
-        (gltf) => {
-          modelHelmet = gltf.scene.children[0];
-          resolve();
-        },
-        null,
-        reject
-      )
-    }));
+          reject
+        );
+      })
+    );
 
     Promise.all(helmetRequests)
       .then(generateHelmetModels)
-      .then(resolve).catch(reject);
-
+      .then(resolve)
+      .catch(reject);
   });
   return helmetModelRequest;
-}
+};
 
 const generateHelmetModels = () => {
   helmetPaths.forEach((objPath) => {
@@ -142,34 +161,38 @@ const generateHelmetModels = () => {
     material.needsUpdate = true;
 
     _.set(helmets, objPath, helmet);
-  })
-}
+  });
+};
 
-export const loadHelmet = (skater) => new Promise((resolve, reject) => {
-  requestHelmets().then(() => {
-    let objPath = skater.team + '.';
-    if (skater.isJammer) {
-      objPath += 'jammer'
-    } else if(skater.isPivot) {
-      objPath += 'pivot'
-    } else {
-      objPath += 'blocker'
-    }
-    resolve(_.get(helmets, objPath).clone())
-  }).catch(reject);
-})
+export const loadHelmet = (skater) =>
+  new Promise((resolve, reject) => {
+    requestHelmets()
+      .then(() => {
+        let objPath = skater.team + ".";
+        if (skater.isJammer) {
+          objPath += "jammer";
+        } else if (skater.isPivot) {
+          objPath += "pivot";
+        } else {
+          objPath += "blocker";
+        }
+        resolve(_.get(helmets, objPath).clone());
+      })
+      .catch(reject);
+  });
 
-export const loadModel = (team) => new Promise((resolve, reject) => {
-  if (team === 'B' && modelB) return resolve(SkeletonUtils.clone(modelB));
-  if (team === 'A' && modelA) return resolve(SkeletonUtils.clone(modelA));
+export const loadModel = (team) =>
+  new Promise((resolve) => {
+    if (team === "B" && modelB) return resolve(SkeletonUtils.clone(modelB));
+    if (team === "A" && modelA) return resolve(SkeletonUtils.clone(modelA));
 
-  requestModels().then(() => {
-    if (team === 'A') {
-      return resolve(SkeletonUtils.clone(modelA));
-    } else {
-      return resolve(SkeletonUtils.clone(modelB));
-    }
-  })
-})
+    requestModels().then(() => {
+      if (team === "A") {
+        return resolve(SkeletonUtils.clone(modelA));
+      } else {
+        return resolve(SkeletonUtils.clone(modelB));
+      }
+    });
+  });
 
-export default { loadModel }
+export default { loadModel };

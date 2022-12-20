@@ -16,6 +16,7 @@ class ControlsBase {
     this.animationRequest = requestAnimationFrame(this.animate);
   }
 
+  // eslint-disable-next-line no-unused-vars
   syncProps(prevProps, nextProps) {}
 
   update() {}

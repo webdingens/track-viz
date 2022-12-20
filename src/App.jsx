@@ -4,7 +4,7 @@ import "./App.css";
 import Toolbar from "./components/Toolbar/Toolbar";
 import SplitView from "./components/SplitView/SplitView";
 import Settings from "./components/Settings/Settings";
-require("focus-visible");
+import "focus-visible";
 
 function App() {
   return (

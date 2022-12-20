@@ -1,8 +1,8 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import TrackDragging from "../Track/TrackDragging";
-import TrackOverlay from "../Track/TrackOverlay";
+import TrackDragging from "./TrackDragging";
+import TrackOverlay from "./TrackOverlay";
 
 import styles from "./Track.module.scss";
 import TrackAnimating from "./TrackAnimating";

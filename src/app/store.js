@@ -1,12 +1,12 @@
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import currentTrackReducer from './reducers/currentTrackSlice';
-import currentSequenceReducer from './reducers/currentSequenceSlice';
-import currentTransientsReducer from './reducers/currentTransientsSlice';
-import animatingTrackReducer from './reducers/animatingTrackSlice';
-import settingsGeneralReducer from './reducers/settingsGeneralSlice';
-import settingsTrack from './reducers/settingsTrackSlice';
-import settingsTrack3D from './reducers/settingsTrack3DSlice';
-import startPersistingStore from './storePersistence';
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import currentTrackReducer from "./reducers/currentTrackSlice";
+import currentSequenceReducer from "./reducers/currentSequenceSlice";
+import currentTransientsReducer from "./reducers/currentTransientsSlice";
+import animatingTrackReducer from "./reducers/animatingTrackSlice";
+import settingsGeneralReducer from "./reducers/settingsGeneralSlice";
+import settingsTrack from "./reducers/settingsTrackSlice";
+import settingsTrack3D from "./reducers/settingsTrack3DSlice";
+import startPersistingStore from "./storePersistence";
 
 let store = configureStore({
   reducer: {
@@ -17,8 +17,8 @@ let store = configureStore({
     settings: combineReducers({
       general: settingsGeneralReducer,
       track: settingsTrack,
-      track3D: settingsTrack3D
-    })
+      track3D: settingsTrack3D,
+    }),
   },
 });
 

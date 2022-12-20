@@ -1,26 +1,19 @@
-import * as THREE from 'three';
-import _ from 'lodash';
+import * as THREE from "three";
+import _ from "lodash";
 
-import ControlsBase from './ControlsBase';
-import store from '../../../app/store';
+import ControlsBase from "./ControlsBase";
+import store from "../../../app/store";
 
-import {
-  updateSkater,
-} from '../../../app/reducers/currentTrackSlice';
+import { updateSkater } from "../../../app/reducers/currentTrackSlice";
 
-import {
-  setUserIsInteractingWithTrack3D,
-} from '../../../app/reducers/currentTransientsSlice';
+import { setUserIsInteractingWithTrack3D } from "../../../app/reducers/currentTransientsSlice";
 
-
-import { DragControls } from './threejs/DragControls';
+import { DragControls } from "./threejs/DragControls";
 
 // TODO: move things from context to options
 // TODO: use dispatch in controls instead of using the props actions
 
-const DRAGGABLES = [
-  'Skater3D'
-];
+const DRAGGABLES = ["Skater3D"];
 
 class ControlsDrag extends ControlsBase {
   constructor(options) {
@@ -42,19 +35,23 @@ class ControlsDrag extends ControlsBase {
   }
 
   getDragObjects() {
-    let draggableObjects =  _.filter(this.context.scene.children, (o) => DRAGGABLES.indexOf(o.name) !== -1);
+    let draggableObjects = _.filter(
+      this.context.scene.children,
+      (o) => DRAGGABLES.indexOf(o.name) !== -1
+    );
 
     let boundingElements = [];
     draggableObjects.forEach((obj) => {
-      let _boundingElements = obj.children.filter((o) => o.name === 'Bounding Element');
+      let _boundingElements = obj.children.filter(
+        (o) => o.name === "Bounding Element"
+      );
       boundingElements.push(..._boundingElements);
-    })
+    });
 
     return boundingElements;
   }
 
   setupControls() {
-
     this.objects = this.getDragObjects();
 
     this.enableSelection = false;
@@ -63,19 +60,23 @@ class ControlsDrag extends ControlsBase {
     this.raycaster = new THREE.Raycaster();
     this.group = new THREE.Group();
 
-    this.controls = new DragControls([...this.objects], this.camera, this.renderer.domElement);
+    this.controls = new DragControls(
+      [...this.objects],
+      this.camera,
+      this.renderer.domElement
+    );
 
-    this.controls.addEventListener('drag', this.onDrag, false);
-    this.controls.addEventListener('dragstart', this.onDragStart, false);
-    this.controls.addEventListener('dragend', this.onDragEnd, false);
-    this.controls.addEventListener('hoveron', this.requestAnimate, false);
-    this.controls.addEventListener('hoveroff', this.requestAnimate, false);
+    this.controls.addEventListener("drag", this.onDrag, false);
+    this.controls.addEventListener("dragstart", this.onDragStart, false);
+    this.controls.addEventListener("dragend", this.onDragEnd, false);
+    this.controls.addEventListener("hoveron", this.requestAnimate, false);
+    this.controls.addEventListener("hoveroff", this.requestAnimate, false);
 
     this.requestAnimate();
   }
 
   updateSkater() {
-    if (this.currentSkater) store.dispatch(updateSkater(this.currentSkater))
+    if (this.currentSkater) store.dispatch(updateSkater(this.currentSkater));
     this.requestAnimate();
   }
 
@@ -84,31 +85,31 @@ class ControlsDrag extends ControlsBase {
       id: object.skaterId,
       x: object.position.x,
       y: object.position.z,
-    }
+    };
 
     this.updateSkaterThrottled();
   }
 
   onDragStart() {
-    store.dispatch(setUserIsInteractingWithTrack3D(true))
+    store.dispatch(setUserIsInteractingWithTrack3D(true));
   }
 
   onDragEnd() {
-    store.dispatch(setUserIsInteractingWithTrack3D(false))
+    store.dispatch(setUserIsInteractingWithTrack3D(false));
   }
 
   animate() {
-    this.renderer.render( this.context.scene, this.camera );
+    this.renderer.render(this.context.scene, this.camera);
 
     this.animationRequest = null;
   }
 
   destroy() {
-    this.controls.removeEventListener('drag', this.requestAnimate);
-    this.controls.removeEventListener('dragstart', this.onDragStart);
-    this.controls.removeEventListener('dragend', this.onDragEnd);
-    this.controls.removeEventListener('hoveron', this.requestAnimate);
-    this.controls.removeEventListener('hoveroff', this.requestAnimate);
+    this.controls.removeEventListener("drag", this.requestAnimate);
+    this.controls.removeEventListener("dragstart", this.onDragStart);
+    this.controls.removeEventListener("dragend", this.onDragEnd);
+    this.controls.removeEventListener("hoveron", this.requestAnimate);
+    this.controls.removeEventListener("hoveroff", this.requestAnimate);
 
     this.controls.dispose();
     this.controls = null;

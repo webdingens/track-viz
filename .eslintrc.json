@@ -3,28 +3,16 @@
     "eslint:recommended",
     "plugin:import/errors",
     "plugin:react/recommended",
-    "plugin:jsx-a11y/recommended",
     "plugin:react-hooks/recommended",
+    "plugin:jsx-a11y/recommended",
     "prettier"
   ],
-  "rules": {
-    "react/prop-types": 0,
-    "react/react-in-jsx-scope": 0,
-  },
-  "plugins": [
-    "react",
-    "import",
-    "jsx-a11y"
-  ],
-  "parser": "@babel/eslint-parser",
+  "plugins": ["react", "import", "jsx-a11y"],
   "parserOptions": {
-    "ecmaVersion": 2020,
+    "ecmaVersion": 2022,
     "sourceType": "module",
     "ecmaFeatures": {
       "jsx": true
-    },
-    "babelOptions": {
-      "configFile": "./.babelrc"
     }
   },
   "env": {
@@ -32,9 +20,18 @@
     "browser": true,
     "node": true
   },
+  "rules": {
+    "react/prop-types": "off",
+    "react/react-in-jsx-scope": "off"
+  },
   "settings": {
     "react": {
       "version": "detect"
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx"]
+      }
     }
   }
 }

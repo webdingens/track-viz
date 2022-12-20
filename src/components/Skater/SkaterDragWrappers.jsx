@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
-import styles from './Skater.module.scss';
-import classNames from 'classnames';
+import styles from "./Skater.module.scss";
+import classNames from "classnames";
 
 class SkaterDragWrappers extends React.Component {
   shouldComponentUpdate(nextProps) {
@@ -21,13 +21,12 @@ class SkaterDragWrappers extends React.Component {
           transform={`rotate(${this.props.rotation})`}
           data-idx={this.props.idx}
         >
-          <g className="js-skater-body-wrapper">
-            {this.props.children}
-          </g>
+          <g className="js-skater-body-wrapper">{this.props.children}</g>
 
-          <g className={classNames({
+          <g
+            className={classNames({
               [styles.rotationHandle]: true,
-              'js-rotation-handle': true
+              "js-rotation-handle": true,
             })}
             transform="translate(.7, 0)"
           >
@@ -35,7 +34,7 @@ class SkaterDragWrappers extends React.Component {
           </g>
         </g>
       </g>
-    )
+    );
   }
 }
 

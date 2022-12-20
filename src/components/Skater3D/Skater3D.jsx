@@ -1,6 +1,8 @@
 import React from "react";
 import * as THREE from "three";
 import { connect } from "react-redux";
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 
 import {
   selectTrack3DUseModelType,
@@ -134,9 +136,9 @@ class Skater3D extends React.Component {
     this.skaterModel = model;
 
     if (this.props.isJammer || this.props.isPivot) {
-      const loader = new THREE.FontLoader();
+      const loader = new FontLoader();
       loader.load("fonts/helvetiker_regular.typeface.json", (font) => {
-        geometry = new THREE.TextGeometry(this.props.isJammer ? "J" : "P", {
+        geometry = new TextGeometry(this.props.isJammer ? "J" : "P", {
           font: font,
           size: 0.3,
           height: 0.01,

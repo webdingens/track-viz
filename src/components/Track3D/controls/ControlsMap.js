@@ -57,7 +57,7 @@ class ControlsMap extends ControlsBase {
     points.push(new THREE.Vector3(0, 0, 0));
     points.push(new THREE.Vector3(0, 10, 0));
 
-    let lineGeometry = new THREE.Geometry().setFromPoints(points);
+    let lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
 
     let line = new THREE.Line(lineGeometry, lineMaterial);
 

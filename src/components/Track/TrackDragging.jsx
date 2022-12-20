@@ -14,7 +14,7 @@ import {
 import { selectGeneralSettings } from "../../app/reducers/settingsGeneralSlice";
 import { selectTrackOrientation } from "../../app/reducers/settingsTrackSlice";
 
-require("../../utils/composedPathPolyfill");
+import "../../utils/composedPathPolyfill";
 
 gsap.registerPlugin(Draggable);
 
@@ -84,7 +84,7 @@ class TrackDragging extends React.Component {
     this.trackContainer.current.addEventListener("click", this.onClickBody);
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate() {
     this.draggables.forEach((draggable, idx) => {
       let skater = this.props.skaters[idx];
       if (
@@ -110,7 +110,7 @@ class TrackDragging extends React.Component {
   componentWillUnmount() {
     document.body.removeEventListener("click", this.onClickBody);
 
-    this.draggables.forEach((draggable, idx) => {
+    this.draggables.forEach((draggable) => {
       draggable.moveDraggable.kill();
       draggable.rotateDraggable.kill();
     });
@@ -132,7 +132,7 @@ class TrackDragging extends React.Component {
     if (!skaterAlreadyHasFocus) skaters[idx].hasFocus = true;
 
     // disable rotation drag from all, add to clicked
-    instance.draggables.forEach((draggable, i) => {
+    instance.draggables.forEach((draggable) => {
       draggable.moveDraggable.enable();
       draggable.rotateDraggable.disable();
     });
@@ -241,7 +241,7 @@ class TrackDragging extends React.Component {
   }
 
   onClickBody(evt) {
-    this.debugMath(evt);
+    // this.debugMath(evt);
 
     let path = evt.path || (evt.composedPath && evt.composedPath());
 

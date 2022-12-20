@@ -6,7 +6,7 @@ import { selectTrack3DCamera } from "../../app/reducers/settingsTrack3DSlice";
 
 import { FiArrowRightCircle } from "react-icons/fi";
 
-const Track3DCamera = (props) => {
+const Track3DCamera = () => {
   const camera = useSelector(selectTrack3DCamera);
   let euler = new THREE.Euler().fromArray(camera.rotation);
   euler.reorder("YXZ");

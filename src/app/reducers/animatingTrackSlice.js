@@ -1,15 +1,15 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export const defaultAnimatingTrack = {
   refs: [],
   skaters: [],
   frame: 0,
-}
+};
 
 let initialState = defaultAnimatingTrack;
 
 export const animatingTrackSlice = createSlice({
-  name: 'animatingTrack',
+  name: "animatingTrack",
   initialState: initialState,
   reducers: {
     setAnimatingTrack: (state, action) => {
@@ -26,6 +26,6 @@ export const { setAnimatingTrack } = animatingTrackSlice.actions;
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 
-export const selectAnimatingTrack = state => state.animatingTrack;
+export const selectAnimatingTrack = (state) => state.animatingTrack;
 
 export default animatingTrackSlice.reducer;

@@ -1,21 +1,21 @@
-import { createSlice } from '@reduxjs/toolkit';
-import PropTypes from 'prop-types';
+import { createSlice } from "@reduxjs/toolkit";
+import PropTypes from "prop-types";
 
-import { defaultSkaters } from '../../data/defaultSkaters.json';
+import { defaultSkaters } from "../../data/defaultSkaters.json";
 
 export const skaterPropTypes = PropTypes.exact({
   id: PropTypes.number.isRequired,
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired,
   rotation: PropTypes.number.isRequired,
-  team: PropTypes.oneOf(['A', 'B']).isRequired,
+  team: PropTypes.oneOf(["A", "B"]).isRequired,
   hasFocus: PropTypes.bool,
   isPivot: PropTypes.bool,
-  isJammer: PropTypes.bool
+  isJammer: PropTypes.bool,
 });
 
 export const skatersSlice = createSlice({
-  name: 'skaters',
+  name: "skaters",
   initialState: {
     value: defaultSkaters,
   },
@@ -32,6 +32,6 @@ export const { update } = skatersSlice.actions;
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 
-export const selectSkaters = state => state.skaters.value;
+export const selectSkaters = (state) => state.skaters.value;
 
 export default skatersSlice.reducer;
