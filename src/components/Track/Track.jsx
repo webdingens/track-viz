@@ -11,7 +11,7 @@ import {
   selectAnimationState,
 } from "../../app/reducers/currentSequenceSlice";
 
-const Track = () => {
+function Track() {
   const animationState = useSelector(selectAnimationState);
   const trackIsAnimating = [
     ANIMATION_STATE.PLAYING,
@@ -25,6 +25,6 @@ const Track = () => {
       <TrackOverlay />
     </div>
   );
-};
+}
 
 export default Track;

@@ -5,9 +5,9 @@ import TrackGeometry from "./TrackGeometry";
 
 import { selectAnimatingTrack } from "../../app/reducers/animatingTrackSlice";
 
-const TrackAnimating = () => {
+function TrackAnimating() {
   const animatingTrack = useSelector(selectAnimatingTrack);
   return <TrackGeometry skaters={animatingTrack.skaters} updatePack={true} />;
-};
+}
 
 export default TrackAnimating;

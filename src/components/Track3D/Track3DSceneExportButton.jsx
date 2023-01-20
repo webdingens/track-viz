@@ -44,7 +44,6 @@ class Track3DSceneExportButton extends React.Component {
     return (
       <button
         onClick={() => this.onClick()}
-        download="TrackVizScene.gltf"
         style={{
           position: "absolute",
           top: "50%",

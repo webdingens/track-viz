@@ -24,7 +24,10 @@ export const currentTransientsSlice = createSlice({
       state.touchOnRotateModeButton = action.payload;
     },
     reset: (state) => {
-      state = defaultTransients;
+      for (let key in state) {
+        delete state[key];
+      }
+      Object.assign(state, defaultTransients);
     },
   },
 });

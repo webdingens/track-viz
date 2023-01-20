@@ -37,6 +37,7 @@ const defaultSettings = {
   camera: defaultCamera,
   controlMode: CONTROL_MODES.MAP,
   controls: defaultControls,
+  // TODO: initial value should be undefined as we haven't checked it yet
   vrSupport: true, // should support VR
   vrModeEnabled: false,
   vrSessionRunning: false,
@@ -49,6 +50,7 @@ const defaultSettings = {
   gamepadThreshold: 0.3,
 };
 
+// TODO: add ignore vr properties by using Object assign
 let initialState = cleanupSlice(loadSlice("settings.track3D"), defaultSettings);
 initialState.vrModeEnabled = false; // don't start in VR Mode
 
@@ -94,7 +96,10 @@ export const settingsTrack3DSlice = createSlice({
       state[key] = value;
     },
     reset: (state) => {
-      state = { ...defaultSettings };
+      for (let key in state) {
+        delete state[key];
+      }
+      Object.assign(state, defaultSettings);
     },
     resetCamera: (state) => {
       // TODO: check if we need to have two different
@@ -131,6 +136,7 @@ export const selectTrack3DControlMode = (state) =>
 export const selectTrack3DControls = (state) => state.settings.track3D.controls;
 export const selectTrack3DVRSupport = (state) =>
   state.settings.track3D.vrSupport;
+// TODO: shouldn't be part of the localStorage
 export const selectTrack3DVRSessionRunning = (state) =>
   state.settings.track3D.vrSessionRunning;
 export const selectTrack3DVRModeEnabled = (state) =>

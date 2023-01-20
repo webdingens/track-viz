@@ -29,7 +29,7 @@ const getViewBox = (orientation = 0, showRefLane = true) => {
   }
 };
 
-const TrackGeometry = (props) => {
+function TrackGeometry(props) {
   return (
     <svg
       ref={props.trackContainerRef}
@@ -52,7 +52,7 @@ const TrackGeometry = (props) => {
       </g>
     </svg>
   );
-};
+}
 
 const mapStateToProps = (state) => {
   return {

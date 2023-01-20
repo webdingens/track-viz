@@ -195,7 +195,7 @@ class ControlsXR extends ControlsBase {
 
     // if we don't have an active gamepad but buttons were pressed previously
     if (!gamepad && this.buttonsPressed) {
-      this.buttonsPressed.forEach((button, idx) => {
+      this.buttonsPressed.forEach((button) => {
         if (button.pressed) {
           // button_release
         }

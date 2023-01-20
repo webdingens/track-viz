@@ -24,6 +24,7 @@
 - add settings view
 - add track measuring options
 - continue fixing pack functions to determine the inPlay Properties
+- setup tests the same way as penalty box math
 
 ### Track Editor
 
@@ -51,11 +52,20 @@
   - Ability to zoom into rectangle (icon inside rectangle top right corner)
   - Ability to remove rectangle (icon outside rectangle, top right corner, X/Close)
   - Ability to export zoomed in mode
+  - Ability to scroll to out of view parts
 - Change drag on touch to have a minimum width/height around skater
   - choose closest skater if two skaters are close
   - don't just use the radius of the skater, which might be too small on mobile devices
   - define what is too small
   - make decision of touch area a setting option (larger radius)
+
+### Library Mode
+
+- Loading of JSON either loads single scene into Track Editor or:
+- Loading of JSON loads multiple Sequences into the app and adds a Navigation (e.g. Dropdown or Modal) to the header
+- Sequence can be thought of as a gallery, with optional transitions between the skaters
+- Add protocol to load JSON files on android ()
+- add install option (service worker?) from vite plugins
 
 ### 3D View
 
@@ -137,6 +147,14 @@ X add POV camera / movement
 - create scenarios for testing pack refs
   - with countdown (just x seconds to determine where pack is)
   - add draw mode to draw a line on the floor, then users can accept or correct, after which the pack is shown
+
+### Casebook
+
+- multi step scenarios with slider or dot navigation
+- scenario navigation with everything visible
+- prompt mode (show the outcome only after clicking button)
+- random prompt mode (shuffle scenarios)
+- add the 
 
 ## Done
 

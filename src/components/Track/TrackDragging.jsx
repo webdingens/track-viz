@@ -19,18 +19,11 @@ import "../../utils/composedPathPolyfill";
 gsap.registerPlugin(Draggable);
 
 class TrackDragging extends React.Component {
-  constructor(props) {
-    super(props);
+  state = {
+    dragging: 0,
+  };
 
-    this.trackContainer = createRef();
-
-    this.state = {
-      dragging: 0,
-    };
-
-    this.onClickBody = this.onClickBody.bind(this);
-    this.decreaseDragging = this.decreaseDragging.bind(this);
-  }
+  trackContainer = createRef();
 
   componentDidMount() {
     this.initSkaterNodes();
@@ -230,7 +223,7 @@ class TrackDragging extends React.Component {
     instance.props.setSkaters(skaters);
   }
 
-  decreaseDragging() {
+  decreaseDragging = () => {
     let stillDragging = this.state.dragging - 1;
     if (stillDragging < 0)
       throw Error("stillDragging was negative, should be at least 0");
@@ -238,9 +231,9 @@ class TrackDragging extends React.Component {
     this.setState({
       dragging: stillDragging,
     });
-  }
+  };
 
-  onClickBody(evt) {
+  onClickBody = (evt) => {
     // this.debugMath(evt);
 
     let path = evt.path || (evt.composedPath && evt.composedPath());
@@ -274,7 +267,7 @@ class TrackDragging extends React.Component {
       let el = path[i];
       if (el.classList.contains("js-skater")) break;
     }
-  }
+  };
 
   debugMath(evt) {
     if (!this.clickpoints) this.clickpoints = [];

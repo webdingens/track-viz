@@ -33,7 +33,10 @@ export const settingsTrackSlice = createSlice({
       state.showRefLane = action.payload;
     },
     reset: (state) => {
-      state = { ...defaultSettings };
+      for (let key in state) {
+        delete state[key];
+      }
+      Object.assign(state, defaultSettings);
     },
   },
 });
