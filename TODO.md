@@ -13,18 +13,25 @@
 - add option for camera height for smaller/taller skaters (benefits?)
 - add side by side 3D option / split screen, with camera as an entity on the track editor so we can move it around (having a still image from a stream/game, what is it that we see? this? maybe not -> move skaters around a bit -> yes more like this)
 - add feature description (or make the GUI self explanatory)
+  - or add a documentation, like for the scoreboard
 - mobile view
 - add testing options
   - engagement zone markings moving around the track, with or without skaters
   - random scenarios/loaded scenarios with question: where is the pack? then reveal
 - ignore certain fields from export (e.g. splitViewRerender, anything that is viewing related)
+  - add option to export current workspace that keeps the current view
 - add another redux slice for internal states, so we don't export that and don't load initial states either
 - i10n
-- Github Project Board testen: https://docs.github.com/en/issues/organizing-your-work-with-project-boards/managing-project-boards/about-project-boards
+- Github Project Board testen: <https://docs.github.com/en/issues/organizing-your-work-with-project-boards/managing-project-boards/about-project-boards>
 - add settings view
 - add track measuring options
 - continue fixing pack functions to determine the inPlay Properties
 - setup tests the same way as penalty box math
+- allow setting of colors of current scenario
+- add option to randomize colors
+  - needs on / off switch and randomize button
+  - casebook descriptions need to use the placeholders
+    - maybe add a backdrop copy of the text with transparent text and if the placeholders are found surround them with spans and add a background to them
 
 ### Track Editor
 
@@ -58,14 +65,6 @@
   - don't just use the radius of the skater, which might be too small on mobile devices
   - define what is too small
   - make decision of touch area a setting option (larger radius)
-
-### Library Mode
-
-- Loading of JSON either loads single scene into Track Editor or:
-- Loading of JSON loads multiple Sequences into the app and adds a Navigation (e.g. Dropdown or Modal) to the header
-- Sequence can be thought of as a gallery, with optional transitions between the skaters
-- Add protocol to load JSON files on android ()
-- add install option (service worker?) from vite plugins
 
 ### 3D View
 
@@ -114,6 +113,25 @@ X add POV camera / movement
 - add gamepad/controller controls? Don't have any :(
 - Setting: I am using Google Cardboard and want to use my custom Eye Level instead
   -> set reference space to local in initWebXR and set camera default position to eye level setting in ControlsXR
+
+### Library
+
+- Loading of JSON either loads single scene into Track Editor or:
+- Loading of JSON loads multiple Sequences into the app and adds a Navigation (e.g. Dropdown or Modal) to the header
+- Sequence can be thought of as a gallery, with optional transitions between the skaters
+- Add protocol to load JSON files on android ()
+- add install option (service worker?) from vite plugins
+- create new library button (helptext: preserves current track situation)
+- keep current scenario as unsaved
+
+#### Library Edit Mode
+
+- add Button to switch to Edit Mode and close it
+- adds edit buttons to library entries
+- adds add new button
+- shows sequence editor at bottom?
+- allow changing of colors
+  - needs hue adjustments for 3d model textures
 
 ### Sequence Editor
 
@@ -212,9 +230,9 @@ X add VR Option so we can look around the scene
 X add Controls so we can run around in the scene
 X copy over current camera state to vr scene
 
-## Sequence Editor
+## Done: Sequence Editor
 
 X Setting: Open/Close Editor
 X check if multiple small tracks beside each other triggers phobia of holes -> only for irregular patterns of holes
 
-### Timeline
+### Done: Timeline

@@ -1,12 +1,12 @@
-import React from "react";
 import SkaterDragWrappers from "./SkaterDragWrappers";
 import { useSelector } from "react-redux";
 
 import styles from "./Skater.module.scss";
+
 import classNames from "classnames";
 import { selectTrackOrientation } from "../../app/reducers/settingsTrackSlice";
 
-const Skater = (props) => {
+const Skater = (props: SkaterProps) => {
   const trackOrientation = useSelector(selectTrackOrientation);
   let {
     team,
@@ -18,18 +18,18 @@ const Skater = (props) => {
     isJammer = false,
     inBounds = false,
     inPlay = false,
-    packSkater = false,
+    packSkater = false, // TODO: can this be removed? when is this used? overlaps with inPlay
   } = props;
 
   return (
     <g
       className={classNames({
         [styles.skater]: true,
-        [styles[`skater-${team}`]]: true,
+        [styles["skater-A"]]: team === 'A',
+        [styles["skater-B"]]: team === 'B',
         [styles["skater--has-focus"]]: hasFocus,
         [styles["skater--in-bounds"]]: inBounds,
-        [styles["skater--in-play"]]: inPlay,
-        [styles["skater--pack-skater"]]: packSkater,
+        [styles["skater--in-play"]]: inPlay
       })}
       data-idx={idx}
     >
@@ -58,8 +58,8 @@ const Skater = (props) => {
         ) : null}
         {isJammer ? (
           <>
+            {/* Jammer Star */}
             <path
-              className={styles.jammerStar}
               d="m55,237 74-228 74,228L9,96h240"
               transform={`rotate(-${trackOrientation}) translate(-.23, -.23) scale(.0018)`}
             />
@@ -105,3 +105,24 @@ const Skater = (props) => {
 };
 
 export default Skater;
+
+export type SkaterType = {
+  team: string
+  rotation: number
+  x: number
+  y: number
+  id: number
+  hasFocus: boolean
+  isPivot: boolean
+  isJammer: boolean
+  inBounds: boolean
+  inPlay: boolean
+  packSkater: boolean
+}
+
+export type SkaterProps = SkaterType & {
+  key: number
+  idx: number
+  label: string
+  preventDragUpdate: boolean
+}

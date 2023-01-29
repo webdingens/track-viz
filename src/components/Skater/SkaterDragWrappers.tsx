@@ -1,10 +1,14 @@
-import React from "react";
+import React, { PropsWithChildren } from "react";
 
 import styles from "./Skater.module.scss";
 import classNames from "classnames";
 
-class SkaterDragWrappers extends React.Component {
-  shouldComponentUpdate(nextProps) {
+import {SkaterProps} from "./Skater"
+
+type SkaterDragWrappersProps = PropsWithChildren<SkaterProps>
+
+class SkaterDragWrappers extends React.Component<SkaterDragWrappersProps> {
+  shouldComponentUpdate(nextProps: SkaterDragWrappersProps) {
     if (nextProps.preventDragUpdate) return false;
     return true;
   }
