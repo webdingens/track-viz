@@ -167,7 +167,7 @@ export const getSkatersWDPPivotLineDistance = (skaters) => {
  *   Get close skaters
  *   return tuple of id
  */
-export const getClosestSkaters = (
+export const getCloseSkaters = (
   skaters,
   { method = PACK_MEASURING_METHODS.SECTOR } = {}
 ) => {
@@ -196,7 +196,7 @@ const groupBlockers = (
 ) => {
   let ret = [];
   let skaters = blockers; //_.cloneDeep(blockers);
-  let closeSkaters = getClosestSkaters(skaters, { method });
+  let closeSkaters = getCloseSkaters(skaters, { method });
 
   let toGroup = closeSkaters;
 

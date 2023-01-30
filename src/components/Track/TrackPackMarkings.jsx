@@ -1,4 +1,3 @@
-import React from "react";
 import PropTypes from "prop-types";
 import { connect, useSelector } from "react-redux";
 import SVGTextures from "react-svg-textures";
@@ -21,6 +20,7 @@ import {
   getTwoOutermostSkatersInBothDirection,
   ENGAGEMENT_ZONE_DISTANCE_TO_PACK,
   PACK_MEASURING_METHODS,
+  MEASUREMENT_LENGTH,
 } from "../../utils/packFunctions";
 
 import styles from "./TrackPackMarkings.module.scss";
@@ -259,17 +259,89 @@ const TrackPackMarkings = ({ useSkaters, storeSkaters }) => {
     const blockers = skaters.filter(
       (skater) => !skater.isJammer && skater.inBounds
     );
-    blockers.sort((a, b) => a.pivotLineDist - b.pivotLineDist);
-    const closestSkaters = [];
-    for (let i = 0; i < blockers.length; i++) {
-      closestSkaters.push([blockers[i], blockers[(i + 1) % blockers.length]]);
+    const getDirection = (blockerA, blockerB) => {
+      let dist = blockerB.pivotLineDist - blockerA.pivotLineDist;
+      while (dist < MEASUREMENT_LENGTH / 2) {
+        dist += MEASUREMENT_LENGTH;
+      }
+      while (dist > MEASUREMENT_LENGTH / 2) {
+        dist -= MEASUREMENT_LENGTH;
+      }
+      return Math.sign(dist);
+    };
+
+    // compute edges with shortest direction and distance
+    const distanceEdges = [];
+    for (let i = 0; i < blockers.length - 1; i++) {
+      for (let j = i + 1; j < blockers.length; j++) {
+        distanceEdges.push([
+          i,
+          j,
+          getDistanceOfTwoSkaters(blockers[i], blockers[j], {
+            method: PACK_MEASURING_METHODS.RECTANGLE,
+          }),
+          getDirection(blockers[i], blockers[j]),
+        ]);
+      }
     }
-    closestBlockerRectangles = closestSkaters
-      .map((skaterPair) => {
-        const distance = getDistanceOfTwoSkaters(skaterPair[0], skaterPair[1], {
-          method: PACK_MEASURING_METHODS.RECTANGLE,
-        });
-        const intersections = getPackIntersectionsRectangle(skaterPair);
+    // sort by distance
+    distanceEdges.sort((a, b) => a[2] - b[2]);
+
+    const closestNeighbors = [];
+    for (let i = 0; i < blockers.length; i++) {
+      let closestDist = MEASUREMENT_LENGTH + 10;
+      let closestDir = MEASUREMENT_LENGTH + 10;
+      let closest = null;
+      let secondClosestDist = MEASUREMENT_LENGTH + 10;
+      let secondClosest = null;
+
+      let edges = distanceEdges.filter(([a, b]) => {
+        return a === i || b === i;
+      });
+
+      for (let edge of edges) {
+        const [a, b, distance, edgeDir] = edge;
+        const node = a === i ? b : a;
+        const dir = a === i ? -1 * edgeDir : edgeDir;
+
+        // finds a closest edge first, because of sorting
+        if (closest === null) {
+          closest = node;
+          closestDist = distance;
+          closestDir = dir;
+          continue;
+        }
+
+        if (secondClosest === null || secondClosestDist > distance) {
+          // only allow either 0 distance edges or something that is from the opposing side
+          if (distance === 0 || dir === -1 * closestDir) {
+            secondClosestDist = distance;
+            secondClosest = node;
+          }
+        }
+      }
+
+      if (closestDist !== 0 && closest !== null) {
+        const match = closestNeighbors.find(
+          ([a, b]) => a === closest && b === i
+        );
+        if (!match) closestNeighbors.push([i, closest, closestDist]);
+      }
+      if (secondClosestDist !== 0 && secondClosest !== null) {
+        const match = closestNeighbors.find(
+          ([a, b]) => a === secondClosest && b === i
+        );
+        if (!match)
+          closestNeighbors.push([i, secondClosest, secondClosestDist]);
+      }
+    }
+
+    closestBlockerRectangles = closestNeighbors
+      .map(([i, j, distance]) => {
+        const intersections = getPackIntersectionsRectangle([
+          blockers[i],
+          blockers[j],
+        ]);
         if (distance > 7) return false;
         return {
           intersections: [intersections.back, intersections.front],
