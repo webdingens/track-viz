@@ -1,6 +1,6 @@
-import React from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 
@@ -11,102 +11,102 @@ import {
 
 import { loadModel, loadHelmet } from "./modelLoader/modelLoader";
 
-class Skater3D extends React.Component {
-  componentDidMount() {
-    if (!this.props.scene) return;
+function Skater3D(props) {
+  const skater = useRef(null);
+  const skaterModel = useRef(null);
+  const skaterPositionModel = useRef(null);
+  const shadow = useRef(null);
+  const useModelType = useSelector(selectTrack3DUseModelType);
+  const mountCount = useRef(0);
 
-    this.skater = new THREE.Group();
-    this.skater.name = "Skater3D";
-    this.skater.renderOrder = 6;
-    this.skater.skaterId = this.props.id;
+  // init on mount
+  useEffect(() => {
+    if (!props.scene) return;
 
-    this.renderSkater();
-  }
+    skater.current = new THREE.Group();
+    skater.current.name = "Skater3D";
+    skater.current.renderOrder = 6;
+    skater.current.skaterId = props.id;
 
-  shouldComponentUpdate(nextProps) {
-    if (nextProps.userIsInteracting) return false;
-    return true;
-  }
+    mountCount.current++;
 
-  componentDidUpdate(prevProps) {
-    let needsRender = false;
-    if (
-      this.props.x !== prevProps.x ||
-      this.props.y !== prevProps.y ||
-      this.props.rotation !== prevProps.rotation
-    ) {
-      needsRender = true;
-      this.updateSkaterFromProps();
-    }
+    return () => {
+      // remove skater rendered on mount
+      removeExistingSkater();
+      if (skater && props.scene) props.scene.remove(skater);
+    };
+  }, [props.scene]);
 
-    if (prevProps.useModelType !== this.props.useModelType) {
-      if (this.skaterModel) {
-        this.skater.remove(this.skaterModel);
-      }
-      if (this.skaterPositionModel) {
-        this.skater.remove(this.skaterPositionModel);
-      }
-      this.addSkater();
-      needsRender = true;
-    }
+  // Model Type Updated
+  useEffect(() => {
+    if (!props.scene) return;
+    removeExistingSkater();
+    renderSkater(mountCount.current);
+    props.onSkaterUpdated();
+  }, [useModelType, props.onSkaterUpdated, props.userIsInteracting]);
 
-    if (needsRender) this.props.onSkaterUpdated();
-  }
+  // location changed
+  useEffect(() => {
+    if (!props.scene) return;
+    if (props.userIsInteracting) return;
+    updateSkaterFromProps();
+    props.onSkaterUpdated();
+  }, [props.x, props.y, props.rotation, props.userIsInteracting]);
 
-  componentWillUnmount() {
-    if (this.skater && this.props.scene) this.props.scene.remove(this.skater);
-  }
-
-  updateSkaterFromProps() {
-    this.skater.position.set(this.props.x, 0, this.props.y);
-    this.skater.rotation.fromArray([
+  function updateSkaterFromProps() {
+    skater.current.position.set(props.x, 0, props.y);
+    skater.current.rotation.fromArray([
       0,
-      ((-this.props.rotation + 90) * Math.PI) / 180,
+      ((-props.rotation + 90) * Math.PI) / 180,
       0,
       "YXZ",
     ]);
   }
 
-  add3DModelSkater() {
-    Promise.all([loadModel(this.props.team), loadHelmet(this.props)]).then(
-      (retVals) => {
-        let skater = retVals[0];
-        let helmet = retVals[1];
-        if (!this) return;
+  async function add3DModelSkater(mc) {
+    console.log("addd");
+    console.log(mc);
+    const retVals = await Promise.all([
+      loadModel(props.team),
+      loadHelmet(props),
+    ]);
+    if (mc !== mountCount.current) return;
+    console.log(mc);
+    if (useModelType !== MODEL_TYPES.HUMAN) return;
+    let _skaterModel = retVals[0];
+    let _helmet = retVals[1];
 
-        helmet.position.set(0, 1.163, 0.32);
-        helmet.rotation.fromArray([-0.17, 0, 0]);
-        skater.add(helmet);
+    _helmet.position.set(0, 1.163, 0.32);
+    _helmet.rotation.fromArray([-0.17, 0, 0]);
+    _skaterModel.add(_helmet);
 
-        skater.name = "Skater3D Model";
+    _skaterModel.name = "Skater3D Model";
 
-        this.skater.add(skater);
-        this.skaterModel = skater;
+    skater.current.add(_skaterModel);
+    skaterModel.current = _skaterModel;
 
-        this.props.onSkaterUpdated();
-      }
-    );
+    props.onSkaterUpdated();
   }
 
-  addHelmetSkater() {
-    loadHelmet(this.props).then((helmet) => {
-      if (!this) return;
+  async function addHelmetSkater(mc) {
+    const helmet = await loadHelmet(props);
+    if (useModelType !== MODEL_TYPES.HELMET) return;
+    if (mc !== mountCount.current) return;
 
-      helmet.position.set(0, 0.85, 0);
-      helmet.scale.set(60 / 24, 60 / 24, 60 / 24);
-      helmet.name = "Skater3D Helmet";
+    helmet.position.set(0, 0.85, 0);
+    helmet.scale.set(60 / 24, 60 / 24, 60 / 24);
+    helmet.name = "Skater3D Helmet";
 
-      this.skater.add(helmet);
-      this.skaterModel = helmet;
+    skater.current.add(helmet);
+    skaterModel.current = helmet;
 
-      this.props.onSkaterUpdated();
-    });
+    props.onSkaterUpdated();
   }
 
-  addSphereSkater() {
+  function addSphereSkater() {
     let geometry = new THREE.SphereGeometry(0.3, 32, 32);
     let material = new THREE.MeshPhongMaterial({
-      color: this.props.team === "A" ? 0xff0000 : 0x008000,
+      color: props.team === "A" ? 0xff0000 : 0x008000,
       specular: 0x444444,
       shininess: 30,
     });
@@ -114,16 +114,16 @@ class Skater3D extends React.Component {
     model.position.set(0, 0.85, 0);
     model.name = "Skater3D Sphere";
 
-    this.skater.add(model);
-    this.skaterModel = model;
+    skater.current.add(model);
+    skaterModel.current = model;
 
-    this.props.onSkaterUpdated();
+    props.onSkaterUpdated();
   }
 
-  addCylinderSkater() {
+  async function addCylinderSkater(mc) {
     let geometry = new THREE.CylinderGeometry(0.3, 0.3, 1.2, 32, 32);
     let material = new THREE.MeshPhongMaterial({
-      color: this.props.team === "A" ? 0xff0000 : 0x008000,
+      color: props.team === "A" ? 0xff0000 : 0x008000,
       specular: 0x444444,
       shininess: 30,
     });
@@ -132,53 +132,58 @@ class Skater3D extends React.Component {
     model.position.set(0, 0.6, 0);
     model.name = "Skater3D Cylinder";
 
-    this.skater.add(model);
-    this.skaterModel = model;
+    skater.current.add(model);
+    skaterModel.current = model;
 
-    if (this.props.isJammer || this.props.isPivot) {
+    if (props.isJammer || props.isPivot) {
       const loader = new FontLoader();
-      loader.load("fonts/helvetiker_regular.typeface.json", (font) => {
-        geometry = new TextGeometry(this.props.isJammer ? "J" : "P", {
-          font: font,
-          size: 0.3,
-          height: 0.01,
+      await new Promise((resolve) => {
+        loader.load("fonts/helvetiker_regular.typeface.json", (font) => {
+          if (useModelType !== MODEL_TYPES.CYLINDER) return;
+          if (mc !== mountCount.current) return;
+          geometry = new TextGeometry(props.isJammer ? "J" : "P", {
+            font: font,
+            size: 0.3,
+            height: 0.01,
+          });
+          material = new THREE.MeshPhongMaterial({
+            color: 0x000000,
+            specular: 0x444444,
+            shininess: 0,
+          });
+          model = new THREE.Mesh(geometry, material);
+          model.position.set(0.1, 1.21, -0.12);
+          model.rotateX(-Math.PI / 2);
+          model.rotateZ(Math.PI);
+          model.name = "Skater Position";
+          skater.current.add(model);
+          skaterPositionModel.current = model;
+          resolve();
         });
-        material = new THREE.MeshPhongMaterial({
-          color: 0x000000,
-          specular: 0x444444,
-          shininess: 0,
-        });
-        model = new THREE.Mesh(geometry, material);
-        model.position.set(0.1, 1.21, -0.12);
-        model.rotateX(-Math.PI / 2);
-        model.rotateZ(Math.PI);
-        model.name = "Skater Position";
-        this.skater.add(model);
-        this.skaterPositionModel = model;
-        this.props.onSkaterUpdated();
       });
+      if (mc !== mountCount.current) return;
     }
 
-    this.props.onSkaterUpdated();
+    props.onSkaterUpdated();
   }
 
-  addShadow(target) {
+  function addShadow(target) {
     let geometry = new THREE.CircleGeometry(0.3, 32);
     let material = new THREE.MeshBasicMaterial({
       color: 0x222222,
       opacity: 0.2,
       transparent: true,
     });
-    this.shadow = new THREE.Mesh(geometry, material);
-    this.shadow.position.set(0, Math.random() * 0.001, 0);
-    this.shadow.rotateX((-90 * Math.PI) / 180);
-    this.shadow.name = "Skater3D Shadow";
-    this.shadow.renderOrder = 5;
+    shadow.current = new THREE.Mesh(geometry, material);
+    shadow.current.position.set(0, Math.random() * 0.001, 0);
+    shadow.current.rotateX((-90 * Math.PI) / 180);
+    shadow.current.name = "Skater3D Shadow";
+    shadow.current.renderOrder = 5;
 
-    target.add(this.shadow);
+    target.add(shadow.current);
   }
 
-  addBoundingElement(target) {
+  function addBoundingElement(target) {
     let geometry = new THREE.CylinderGeometry(0.3, 0.3, 0.9);
     let material = new THREE.MeshBasicMaterial({
       color: 0x738bff,
@@ -193,44 +198,50 @@ class Skater3D extends React.Component {
     target.add(mesh);
   }
 
-  addSkater() {
-    switch (this.props.useModelType) {
+  async function addSkater(mc) {
+    switch (useModelType) {
       case MODEL_TYPES.HUMAN:
-        this.add3DModelSkater();
+        await add3DModelSkater(mc);
         break;
       case MODEL_TYPES.HELMET:
-        this.addHelmetSkater();
+        await addHelmetSkater(mc);
         break;
       case MODEL_TYPES.SPHERE:
-        this.addSphereSkater();
+        addSphereSkater();
         break;
       case MODEL_TYPES.CYLINDER:
-        this.addCylinderSkater();
+        await addCylinderSkater(mc);
         break;
       default:
         break;
     }
   }
 
-  renderSkater() {
-    this.addSkater();
-    this.addShadow(this.skater);
-    this.addBoundingElement(this.skater);
-
-    this.updateSkaterFromProps();
-
-    this.props.scene.add(this.skater);
+  function removeExistingSkater() {
+    if (skaterModel.current) {
+      skater.current.remove(skaterModel.current);
+    }
+    if (skaterPositionModel.current) {
+      skater.current.remove(skaterPositionModel.current);
+    }
+    if (shadow.current) {
+      skater.current.remove(shadow.current);
+    }
   }
 
-  render() {
-    return <></>;
+  async function renderSkater(mc) {
+    removeExistingSkater();
+    await addSkater(mc);
+    if (mc !== mountCount.current) return;
+    addShadow(skater.current);
+    addBoundingElement(skater.current);
+
+    updateSkaterFromProps();
+
+    props.scene.add(skater.current);
   }
+
+  return <></>;
 }
 
-const mapStateToProps = (state) => {
-  return {
-    useModelType: selectTrack3DUseModelType(state),
-  };
-};
-
-export default connect(mapStateToProps)(Skater3D);
+export default Skater3D;

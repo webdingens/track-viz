@@ -11,7 +11,7 @@ class Skaters extends React.Component {
   render() {
     return (
       <>
-        {this.props.skaters.map((skater, i) => (
+        {this.props.skaters.map((skater) => (
           <Skater3D
             scene={this.props.scene}
             key={skater.id}
