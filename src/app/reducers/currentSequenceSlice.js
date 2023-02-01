@@ -67,7 +67,7 @@ export const currentSequenceSlice = createSlice({
 
       state.tracks[idx].id = getUniqueId(state);
     },
-    addTrack: (state, action) => {
+    addTrack: (state) => {
       state.tracks.push({
         empty: true,
         id: getUniqueId(state),

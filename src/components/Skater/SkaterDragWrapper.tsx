@@ -3,12 +3,12 @@ import React, { PropsWithChildren } from "react";
 import styles from "./Skater.module.scss";
 import classNames from "classnames";
 
-import {SkaterProps} from "./Skater"
+import { SkaterProps } from "./Skater";
 
-type SkaterDragWrappersProps = PropsWithChildren<SkaterProps>
+type SkaterDragWrapperProps = PropsWithChildren<SkaterProps>;
 
-class SkaterDragWrappers extends React.Component<SkaterDragWrappersProps> {
-  shouldComponentUpdate(nextProps: SkaterDragWrappersProps) {
+class SkaterDragWrapper extends React.Component<SkaterDragWrapperProps> {
+  shouldComponentUpdate(nextProps: SkaterDragWrapperProps) {
     if (nextProps.preventDragUpdate) return false;
     return true;
   }
@@ -42,4 +42,4 @@ class SkaterDragWrappers extends React.Component<SkaterDragWrappersProps> {
   }
 }
 
-export default SkaterDragWrappers;
+export default SkaterDragWrapper;

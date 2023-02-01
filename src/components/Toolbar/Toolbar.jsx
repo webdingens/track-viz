@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import classNames from "classnames";
 
@@ -6,9 +6,10 @@ import ImportField from "../ImportField/ImportField";
 import ExportButton from "../ExportButton/ExportButton";
 
 import {
-  setTrackEditorVisibility,
-  setTrack3DVisibility,
+  setLayoutMode,
   selectGeneralSettings,
+  selectLayoutMode,
+  LAYOUT_MODES,
   setSetting,
 } from "../../app/reducers/settingsGeneralSlice";
 
@@ -28,6 +29,7 @@ const Toolbar = () => {
 
   const settings = useSelector(selectGeneralSettings);
   const controlMode = useSelector(selectTrack3DControlMode);
+  const layoutMode = useSelector(selectLayoutMode);
   const dispatch = useDispatch();
 
   return (
@@ -47,14 +49,13 @@ const Toolbar = () => {
                 className={classNames({
                   [styles.button]: true,
                   [styles["button--active"]]:
-                    settings.trackEditorVisible && !settings.track3DVisible,
+                    layoutMode === LAYOUT_MODES.LAYOUT_TRACK,
                 })}
                 onClick={() => {
-                  dispatch(setTrackEditorVisibility(true));
-                  dispatch(setTrack3DVisibility(false));
+                  dispatch(setLayoutMode(LAYOUT_MODES.LAYOUT_TRACK));
                 }}
               >
-                Track Editor
+                Track
               </button>
             </li>
             <li>
@@ -62,14 +63,13 @@ const Toolbar = () => {
                 className={classNames({
                   [styles.button]: true,
                   [styles["button--active"]]:
-                    settings.track3DVisible && !settings.trackEditorVisible,
+                    layoutMode === LAYOUT_MODES.LAYOUT_3D,
                 })}
                 onClick={() => {
-                  dispatch(setTrackEditorVisibility(false));
-                  dispatch(setTrack3DVisibility(true));
+                  dispatch(setLayoutMode(LAYOUT_MODES.LAYOUT_3D));
                 }}
               >
-                3D View
+                3D
               </button>
             </li>
             <li>
@@ -77,14 +77,27 @@ const Toolbar = () => {
                 className={classNames({
                   [styles.button]: true,
                   [styles["button--active"]]:
-                    settings.trackEditorVisible && settings.track3DVisible,
+                    layoutMode === LAYOUT_MODES.LAYOUT_TRACK_3D,
                 })}
                 onClick={() => {
-                  dispatch(setTrackEditorVisibility(true));
-                  dispatch(setTrack3DVisibility(true));
+                  dispatch(setLayoutMode(LAYOUT_MODES.LAYOUT_TRACK_3D));
                 }}
               >
-                Split View
+                Track | 3D
+              </button>
+            </li>
+            <li>
+              <button
+                className={classNames({
+                  [styles.button]: true,
+                  [styles["button--active"]]:
+                    layoutMode === LAYOUT_MODES.LAYOUT_TRACK_LIBRARY,
+                })}
+                onClick={() => {
+                  dispatch(setLayoutMode(LAYOUT_MODES.LAYOUT_TRACK_LIBRARY));
+                }}
+              >
+                Track | Library
               </button>
             </li>
             <li>

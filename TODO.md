@@ -32,6 +32,7 @@
   - needs on / off switch and randomize button
   - casebook descriptions need to use the placeholders
     - maybe add a backdrop copy of the text with transparent text and if the placeholders are found surround them with spans and add a background to them
+- Darkmode
 
 ### Track Editor
 
@@ -122,7 +123,7 @@ X add POV camera / movement
 - Add protocol to load JSON files on android ()
 - add install option (service worker?) from vite plugins
 - create new library button (helptext: preserves current track situation)
-- keep current scenario as unsaved
+- keep current scenario as unsaved??
 
 #### Library Edit Mode
 
@@ -132,6 +133,8 @@ X add POV camera / movement
 - shows sequence editor at bottom?
 - allow changing of colors
   - needs hue adjustments for 3d model textures
+- keep edit state in redux, on save copy over to current library
+  - prevents loss of data
 
 ### Sequence Editor
 
@@ -172,7 +175,6 @@ X add POV camera / movement
 - scenario navigation with everything visible
 - prompt mode (show the outcome only after clicking button)
 - random prompt mode (shuffle scenarios)
-- add the 
 
 ## Done
 
@@ -194,6 +196,7 @@ X add inPlay derived property for Skaters
 X add buttons for changing the orientation (+90, 180, 270 degree)
 X Setting: Orientation
 X change font for blocker label
+X BUG: Pack markings are either drawn twice in some cases or the opacity changes. The pack needs to be a certain amount short for the background to be a certain color.
 
 ### Done: 3D View
 

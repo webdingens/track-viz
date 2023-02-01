@@ -47,7 +47,7 @@ const ImportField = () => {
     <div className={styles.ImportField}>
       <label>
         <span>
-          <FiUploadCloud /> Import Data (json)
+          <FiUploadCloud /> Import Track
         </span>
         <input type="file" accept="application/json" onChange={onChange} />
       </label>

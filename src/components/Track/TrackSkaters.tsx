@@ -1,11 +1,11 @@
 import { ReactElement } from "react";
-import Skater, {SkaterType} from "../Skater/Skater";
+import Skater from "../Skater/Skater";
+import { SkaterType } from "../../types/Skater";
 
 const TrackSkaters = (props: {
-  skaters: SkaterType[],
-  preventDragUpdate: boolean
+  skaters: SkaterType[];
+  preventDragUpdate: boolean;
 }) => {
-  console.log('lol')
   let skaters: ReactElement[] = [];
   let idxA = 0;
   let idxB = 0;

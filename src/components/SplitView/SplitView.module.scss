@@ -4,48 +4,68 @@
   flex-direction: column;
   height: 100%;
 
-  .viewColumns {
-    display: flex;
-    align-items: stretch;
-    flex: 1 0 auto;
-  }
-
-  .column {
-    flex: 1 0 auto;
-    width: 100%;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-
-    position: relative;
-
-    &:not(:last-child) {
-
-      &:after {
-        content: '';
-        background: #ddd;
-        position: absolute;
-        right: -2px;
-        width: 4px;
-        height: 100vh;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 1;
-      }
-    }
-  }
-
-  &--2 {
+  &--split {
     .column {
       width: 50%;
       flex: 1 0 auto;
     }
   }
 
+  &--library {
+    .column:nth-child(1) {
+      flex-shrink: 1;
+    }
+    .column:nth-child(2) {
+      width: 33%;
+      max-width: 450px;
+      flex: 1 0 33%;
+    }
+  }
+
   &.active {
     font-size: 200%;
   }
+}
+
+.viewColumns {
+  display: flex;
+  align-items: stretch;
+  flex: 1 0 auto;
+}
+
+.column {
+  flex: 1 0 auto;
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  position: relative;
+
+  &:not(:last-child) {
+
+    &:after {
+      content: '';
+      background: #ddd;
+      position: absolute;
+      right: -2px;
+      width: 4px;
+      height: 100vh;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+  }
+}
+
+.columnLibrary {
+  justify-content: flex-start;
+}
+
+.scrollWrapper {
+  max-height: 100vh;
+  overflow: auto;
 }
 
 .LowerSection {

@@ -1,10 +1,19 @@
-import SkaterDragWrappers from "./SkaterDragWrappers";
+import SkaterDragWrapper from "./SkaterDragWrapper";
 import { useSelector } from "react-redux";
 
 import styles from "./Skater.module.scss";
 
 import classNames from "classnames";
 import { selectTrackOrientation } from "../../app/reducers/settingsTrackSlice";
+
+import { SkaterType } from "../../types/Skater";
+
+export type SkaterProps = SkaterType & {
+  key: number;
+  idx: number;
+  label: string;
+  preventDragUpdate: boolean;
+};
 
 const Skater = (props: SkaterProps) => {
   const trackOrientation = useSelector(selectTrackOrientation);
@@ -25,15 +34,15 @@ const Skater = (props: SkaterProps) => {
     <g
       className={classNames({
         [styles.skater]: true,
-        [styles["skater-A"]]: team === 'A',
-        [styles["skater-B"]]: team === 'B',
+        [styles["skater-A"]]: team === "A",
+        [styles["skater-B"]]: team === "B",
         [styles["skater--has-focus"]]: hasFocus,
         [styles["skater--in-bounds"]]: inBounds,
-        [styles["skater--in-play"]]: inPlay
+        [styles["skater--in-play"]]: inPlay,
       })}
       data-idx={idx}
     >
-      <SkaterDragWrappers {...props}>
+      <SkaterDragWrapper {...props}>
         <path className={styles.shield} d="M.1,.3 A.3 .3 90 1 0 .1,-.3" />
         <circle className={styles.skaterBackground} r=".3" fill="green" />
         {label ? (
@@ -99,30 +108,9 @@ const Skater = (props: SkaterProps) => {
             </text>
           </g>
         </g>
-      </SkaterDragWrappers>
+      </SkaterDragWrapper>
     </g>
   );
 };
 
 export default Skater;
-
-export type SkaterType = {
-  team: string
-  rotation: number
-  x: number
-  y: number
-  id: number
-  hasFocus: boolean
-  isPivot: boolean
-  isJammer: boolean
-  inBounds: boolean
-  inPlay: boolean
-  packSkater: boolean
-}
-
-export type SkaterProps = SkaterType & {
-  key: number
-  idx: number
-  label: string
-  preventDragUpdate: boolean
-}

@@ -4,20 +4,22 @@ import currentSequenceReducer from "./reducers/currentSequenceSlice";
 import currentTransientsReducer from "./reducers/currentTransientsSlice";
 import animatingTrackReducer from "./reducers/animatingTrackSlice";
 import settingsGeneralReducer from "./reducers/settingsGeneralSlice";
-import settingsTrack from "./reducers/settingsTrackSlice";
-import settingsTrack3D from "./reducers/settingsTrack3DSlice";
+import settingsTrackReducer from "./reducers/settingsTrackSlice";
+import settingsTrack3DReducer from "./reducers/settingsTrack3DSlice";
+import currentLibraryReducer from "./reducers/currentLibrarySlice";
 import startPersistingStore from "./storePersistence";
 
 let store = configureStore({
   reducer: {
     currentTrack: currentTrackReducer,
     currentSequence: currentSequenceReducer,
+    currentLibrary: currentLibraryReducer,
     currentTransients: currentTransientsReducer,
     animatingTrack: animatingTrackReducer,
     settings: combineReducers({
       general: settingsGeneralReducer,
-      track: settingsTrack,
-      track3D: settingsTrack3D,
+      track: settingsTrackReducer,
+      track3D: settingsTrack3DReducer,
     }),
   },
 });

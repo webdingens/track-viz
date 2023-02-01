@@ -1,0 +1,28 @@
+.sequence {
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  hr {
+    margin-block: 2em;
+  }
+}
+
+.situationList {
+  > li {
+    padding: 0.5em;
+    border: 1px solid #aaa;
+    position: relative;
+
+    margin-top: 2em;
+  }
+}
+
+.situationIndex {
+  position: absolute;
+  bottom: 100%;
+  margin-bottom: 0.25em;
+  font-size: 12px;
+  opacity: 0.7;
+}

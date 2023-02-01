@@ -1,0 +1,36 @@
+.richtextEditor {
+  :global(.public-DraftStyleDefault-block) {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+  [data-block="true"]:first-child > * {
+    margin-top: 0;
+  }
+  [data-block="true"]:last-child > * {
+    margin-bottom: 0;
+  }
+
+  :global(.rdw-editor-toolbar),
+  :global(.rdw-option-wrapper),
+  :global(.rdw-dropdown-wrapper) {
+    border-color: #aaa;
+  }
+
+  :global(.rdw-emoji-modal) {
+    left: auto;
+    right: 5px;
+  }
+  :global(.public-DraftStyleDefault-ul) {
+    list-style-type: disc;
+  }
+
+  :global(.public-DraftStyleDefault-ul),
+  :global(.public-DraftStyleDefault-ol) {
+    padding-left: 0;
+  }
+}
+
+.editorContent {
+  border: 1px solid #aaa;
+  padding: 0.5em;
+}

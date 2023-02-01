@@ -7,11 +7,20 @@ import {
 } from "../storePersistence";
 import { PACK_MEASURING_METHODS } from "../../utils/packFunctions";
 
+export const LAYOUT_MODES = {
+  LAYOUT_TRACK: "LAYOUT_TRACK",
+  LAYOUT_3D: "LAYOUT_3D",
+  LAYOUT_TRACK_3D: "LAYOUT_TRACK_3D",
+  LAYOUT_TRACK_LIBRARY: "LAYOUT_TRACK_LIBRARY",
+};
+
 const defaultSettings = {
   trackEditorVisible: true,
   track3DVisible: false,
+  libraryVisible: false,
   sequenceEditorVisible: false,
   settingsVisible: false,
+  layoutMode: LAYOUT_MODES.LAYOUT_TRACK,
 
   // options
 
@@ -41,6 +50,31 @@ export const settingsGeneralSlice = createSlice({
     setSequenceEditorVisibility: (state, action) => {
       state.sequenceEditorVisible = action.payload;
     },
+    setLayoutMode: (state, action) => {
+      switch (action.payload) {
+        case LAYOUT_MODES.LAYOUT_TRACK:
+          state.trackEditorVisible = true;
+          state.track3DVisible = false;
+          state.libraryVisible = false;
+          break;
+        case LAYOUT_MODES.LAYOUT_3D:
+          state.trackEditorVisible = false;
+          state.track3DVisible = true;
+          state.libraryVisible = false;
+          break;
+        case LAYOUT_MODES.LAYOUT_TRACK_3D:
+          state.trackEditorVisible = true;
+          state.track3DVisible = true;
+          state.libraryVisible = false;
+          break;
+        case LAYOUT_MODES.LAYOUT_TRACK_LIBRARY:
+          state.trackEditorVisible = true;
+          state.track3DVisible = false;
+          state.libraryVisible = true;
+          break;
+      }
+      state.layoutMode = action.payload;
+    },
     setSetting: (state, action) => {
       const { key, value } = action.payload;
       state[key] = value;
@@ -57,6 +91,7 @@ export const settingsGeneralSlice = createSlice({
 export const {
   setTrackEditorVisibility,
   setTrack3DVisibility,
+  setLayoutMode,
   setSequenceEditorVisibility,
   setSetting,
   reset,
@@ -67,5 +102,7 @@ export const {
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 
 export const selectGeneralSettings = (state) => state.settings.general;
+
+export const selectLayoutMode = (state) => state.settings.general.layoutMode;
 
 export default settingsGeneralSlice.reducer;

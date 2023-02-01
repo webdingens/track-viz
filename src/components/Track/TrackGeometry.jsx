@@ -1,5 +1,5 @@
-import React from "react";
 import { connect } from "react-redux";
+import classNames from "classnames";
 
 import TrackMarkings from "./TrackMarkings";
 import TrackPackMarkings from "./TrackPackMarkings";
@@ -30,21 +30,28 @@ const getViewBox = (orientation = 0, showRefLane = true) => {
 };
 
 function TrackGeometry(props) {
+  const {
+    trackContainerRef,
+    className,
+    orientation,
+    showRefLane,
+    updatePack,
+    skaters,
+    isPreview,
+    style,
+  } = props;
   return (
     <svg
-      ref={props.trackContainerRef}
-      className={styles.svg}
-      viewBox={getViewBox(props.orientation, props.showRefLane)}
+      ref={trackContainerRef}
+      className={classNames(styles.svg, className ?? "")}
+      viewBox={getViewBox(orientation, showRefLane)}
       preserveAspectRatio="xMidYMid meet"
+      style={style}
     >
-      <g transform={`rotate(${props.orientation})`}>
-        <TrackPackMarkings
-          useSkaters={props.updatePack ? props.skaters : false}
-        />
+      <g transform={`rotate(${orientation})`}>
+        <TrackPackMarkings useSkaters={updatePack ? skaters : false} />
 
-        <TrackMarkings
-          showRefLane={props.isPreview ? false : props.showRefLane}
-        />
+        <TrackMarkings showRefLane={isPreview ? false : showRefLane} />
 
         <Track3DCamera />
 

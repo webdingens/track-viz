@@ -1,7 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import PropTypes from "prop-types";
 
-import defaultSkatersData from "../../data/defaultSkaters.json";
+import defaultSkatersData from "../../data/defaultSkaters";
+
+import { SkaterType } from "../../types/Skater";
 
 const defaultSkaters = defaultSkatersData.defaultSkaters as SkaterType[];
 
@@ -18,22 +20,6 @@ export const skaterPropTypes = PropTypes.exact({
   isJammer: PropTypes.bool,
 });
 
-type SkaterDataType = {
-  id: number
-  x: number
-  y: number
-  rotation: number
-  team: "A" | "B"
-  isPivot?: boolean
-  isJammer?: boolean
-}
-
-type SkaterStateType = {
-  hasFocus?: boolean
-}
-
-export type SkaterType = SkaterDataType & SkaterStateType
-
 export const skatersSlice = createSlice({
   name: "skaters",
   initialState: {
@@ -48,6 +34,7 @@ export const {} = skatersSlice.actions;
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 
-export const selectSkaters = (state: { skaters: { value: SkaterType[] }}) => state.skaters.value;
+export const selectSkaters = (state: { skaters: { value: SkaterType[] } }) =>
+  state.skaters.value;
 
 export default skatersSlice.reducer;

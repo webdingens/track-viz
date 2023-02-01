@@ -1,0 +1,12 @@
+.library {
+  padding: 1rem;
+  overflow: auto;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  margin-top: .75rem;
+
+  gap: 1em;
+}

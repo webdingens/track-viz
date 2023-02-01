@@ -1,10 +1,9 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useSelector } from "react-redux";
 import _ from "lodash";
+import sanitize from "sanitize-filename";
 
-import { FiDownloadCloud } from "react-icons/fi";
-
-import { selectCurrentTrack } from "../../app/reducers/currentTrackSlice";
+import { selectLibrary } from "../../app/reducers/currentLibrarySlice";
 import {
   EXPORT_VERSION,
   EXPORT_TYPES,
@@ -12,20 +11,20 @@ import {
 } from "../../app/io/export";
 import { useDataToBlobUrl } from "../../utils/hooks";
 
-import styles from "./ExportButton.module.scss";
+import styles from "./ExportLibraryButton.module.scss";
 
-const ExportButton = () => {
-  const currentTrack = useSelector(selectCurrentTrack);
+const ExportLibraryButton = ({ children }) => {
+  const storeData = useSelector(selectLibrary);
   const [updating, setUpdating] = useState(false);
-  const [url, setData] = useDataToBlobUrl(currentTrack);
+  const [url, setData] = useDataToBlobUrl(storeData);
   const debounced = useRef();
 
   const createUrl = useCallback(
-    (currentTrack) => {
-      let dataCopy = _.cloneDeep(currentTrack);
+    (storeData) => {
+      let dataCopy = _.cloneDeep(storeData);
 
       dataCopy.version = EXPORT_VERSION;
-      dataCopy.type = EXPORT_TYPES.SINGLE_TRACK;
+      dataCopy.type = EXPORT_TYPES.LIBRARY;
 
       setData(cleanupExportData(dataCopy));
       setUpdating(false);
@@ -40,26 +39,31 @@ const ExportButton = () => {
 
   useEffect(() => {
     setUpdating(true);
-    debounced.current = createUrlThrottled(currentTrack);
+    debounced.current = createUrlThrottled(storeData);
     return () => {
       if (debounced.current) debounced.current.cancel();
     };
-  }, [currentTrack, createUrlThrottled]);
+  }, [storeData, createUrlThrottled]);
 
   const href = updating ? "" : url;
+
+  const title = useMemo(() => {
+    if (!storeData.title) return null;
+    return sanitize(storeData.title);
+  }, [storeData.title]);
 
   return (
     <a
       href={href}
       className={styles.ExportButton}
-      download="TrackViz_TrackExport.json"
+      download={title ? `${title}.json` : "TrackViz_LibraryExport.json"}
       style={{
         cursor: updating ? "progress" : "",
       }}
     >
-      <FiDownloadCloud /> Export Track (Save Link As)
+      {children}
     </a>
   );
 };
 
-export default ExportButton;
+export default ExportLibraryButton;

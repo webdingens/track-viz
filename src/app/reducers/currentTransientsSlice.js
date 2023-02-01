@@ -5,6 +5,7 @@ export const defaultTransients = {
   touchEnabledDevice: false,
   mapControlsRotateMode: false,
   touchOnRotateModeButton: -1,
+  libraryInEditMode: false,
 };
 
 export const currentTransientsSlice = createSlice({
@@ -23,6 +24,9 @@ export const currentTransientsSlice = createSlice({
     setTouchOnRotateModeButton: (state, action) => {
       state.touchOnRotateModeButton = action.payload;
     },
+    setLibraryInEditMode: (state, action) => {
+      state.libraryInEditMode = action.payload;
+    },
     reset: (state) => {
       for (let key in state) {
         delete state[key];
@@ -37,6 +41,7 @@ export const {
   setTouchEnabledDevice,
   setMapControlsRotateMode,
   setTouchOnRotateModeButton,
+  setLibraryInEditMode,
   reset,
 } = currentTransientsSlice.actions;
 
@@ -49,5 +54,7 @@ export const selectMapControlsRotateMode = (state) =>
   state.currentTransients.mapControlsRotateMode;
 export const selectTouchOnRotateModeButton = (state) =>
   state.currentTransients.touchOnRotateModeButton;
+export const selectLibraryInEditMode = (state) =>
+  state.currentTransients.libraryInEditMode;
 
 export default currentTransientsSlice.reducer;

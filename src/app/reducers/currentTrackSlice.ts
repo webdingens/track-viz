@@ -1,6 +1,6 @@
 import { createSlice, createSelector } from "@reduxjs/toolkit";
 import _ from "lodash";
-import { defaultSkaters } from "../../data/defaultSkaters.json";
+import defaultSkaters from "../../data/defaultSkaters";
 import { loadSlice, cleanupSlice } from "../storePersistence";
 import {
   getSkatersWDPInBounds,
@@ -8,13 +8,17 @@ import {
   getSkatersWDPPivotLineDistance,
   PACK_MEASURING_METHODS,
 } from "../../utils/packFunctions";
+import { TrackData } from "../../types/LibraryData";
 
-export const defaultTrack = {
+export const defaultTrack: TrackData = {
   skaters: defaultSkaters,
   refs: [],
 };
 
-let initialState = cleanupSlice(loadSlice("currentTrack"), defaultTrack);
+let initialState: TrackData = cleanupSlice(
+  loadSlice("currentTrack") as TrackData,
+  defaultTrack
+);
 
 export const currentTrackSlice = createSlice({
   name: "currentTrack",
@@ -49,8 +53,13 @@ export const { setSkaters, setRefs, setCurrentTrack, updateSkater, reset } =
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 
-export const selectCurrentTrack = (state) => state.currentTrack;
-export const selectCurrentSkaters = (state) => state.currentTrack.skaters;
+type ReduxStateType = {
+  currentTrack: TrackData;
+};
+
+export const selectCurrentTrack = (state: ReduxStateType) => state.currentTrack;
+export const selectCurrentSkaters = (state: ReduxStateType) =>
+  state.currentTrack.skaters;
 
 /**
  * Current Skaters Reselection with InBounds
@@ -87,7 +96,7 @@ const selectCurrentSkatersWDPRectangle = createSelector(
     })
 );
 export const selectCurrentSkatersWDP = (
-  state,
+  state: ReduxStateType,
   method = PACK_MEASURING_METHODS.SECTOR
 ) => {
   if (method === PACK_MEASURING_METHODS.SECTOR) {
