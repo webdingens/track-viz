@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import classNames from "classnames";
 
 import Track from "../Track/Track";
-import SequenceEditor from "../SequenceEditor/SequenceEditor";
-import PlaybackControls from "../PlaybackControls/PlaybackControls";
+// import SequenceEditor from "../SequenceEditor/SequenceEditor";
+// import PlaybackControls from "../PlaybackControls/PlaybackControls";
 
 import {
   selectGeneralSettings,

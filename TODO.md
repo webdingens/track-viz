@@ -10,7 +10,6 @@
 - add cooperation mode (node server for live interaction? everyone with link?)
 - save options?
 - add options for skaters, like height and such for specific scenarios
-- add option for camera height for smaller/taller skaters (benefits?)
 - add side by side 3D option / split screen, with camera as an entity on the track editor so we can move it around (having a still image from a stream/game, what is it that we see? this? maybe not -> move skaters around a bit -> yes more like this)
 - add feature description (or make the GUI self explanatory)
   - or add a documentation, like for the scoreboard
@@ -33,6 +32,7 @@
   - casebook descriptions need to use the placeholders
     - maybe add a backdrop copy of the text with transparent text and if the placeholders are found surround them with spans and add a background to them
 - Darkmode
+- add install option (service worker?) from vite plugins
 
 ### Track Editor
 
@@ -79,6 +79,7 @@
   - for which controls?
 - recreate bug that Ellie had, where Models and Helmets intersected and wouldn't be displayed correctly anymore
 - add track markings for rectangle
+- add option for camera height for smaller/taller skaters (first person camera, VR camera?, gamepad already had a button for that)
 
 #### Controls
 
@@ -117,20 +118,16 @@ X add POV camera / movement
 
 ### Library
 
-- Loading of JSON either loads single scene into Track Editor or:
-- Loading of JSON loads multiple Sequences into the app and adds a Navigation (e.g. Dropdown or Modal) to the header
-- Sequence can be thought of as a gallery, with optional transitions between the skaters
-- Add protocol to load JSON files on android ()
-- add install option (service worker?) from vite plugins
+- add a Navigation (e.g. Dropdown or Modal) to the header (in Track or 3D Mode)
+- display sequences as a gallery, with optional transitions between the skaters
+- Add protocol to load JSON files on android ?
 - create new library button (helptext: preserves current track situation)
 - keep current scenario as unsaved??
 
 #### Library Edit Mode
 
-- add Button to switch to Edit Mode and close it
 - adds edit buttons to library entries
-- adds add new button
-- shows sequence editor at bottom?
+- add move situation up/down
 - allow changing of colors
   - needs hue adjustments for 3d model textures
 - keep edit state in redux, on save copy over to current library
@@ -232,6 +229,19 @@ X switch rendering loops when vrModeEnabled changed
 X add VR Option so we can look around the scene
 X add Controls so we can run around in the scene
 X copy over current camera state to vr scene
+
+### Done: Library
+
+X Loading of JSON either loads single scene into Track Editor or:
+  -> loads via separate button from the navigation
+X Loading of JSON loads multiple Sequences into the app
+
+#### Done: Library Edit Mode
+
+X add Button to switch to Edit Mode and close it
+X add the add new button (new Sequences, Scenarios etc.)
+X show sequence editor at bottom of the page
+  -> No directly on the side
 
 ## Done: Sequence Editor
 

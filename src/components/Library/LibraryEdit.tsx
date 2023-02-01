@@ -55,6 +55,7 @@ function LibraryEdit({
   return (
     <div>
       <h2>Library (Edit Mode)</h2>
+      <p>Do not reload page while in edit mode.</p>
       <section>
         <label htmlFor="library-title">Title</label>
         <input
