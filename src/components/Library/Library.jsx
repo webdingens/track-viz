@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   selectLibrary,
@@ -9,10 +9,11 @@ import {
   setLibraryInEditMode,
 } from "../../app/reducers/currentTransientsSlice";
 import LibraryView from "./LibraryView";
-import LibraryEdit from "./LibraryEdit";
 import styles from "./Library.module.scss";
 import ExportLibraryButton from "../ExportButton/ExportLibraryButton";
 import ImportLibraryField from "../ImportField/ImportLibraryField";
+
+const LibraryEdit = React.lazy(() => import("./LibraryEdit"));
 
 function Library() {
   const dispatch = useDispatch();

@@ -98,7 +98,8 @@ export type SkaterDataType = {
   team: "A" | "B";
   isPivot?: boolean;
   isJammer?: boolean;
-};
+} & Position &
+  Rotation;
 
 export type SkaterStateType = {
   hasFocus?: boolean;
@@ -117,6 +118,4 @@ export type SkaterLibraryDataType = {
 export type SkaterType = SkaterDataType &
   SkaterStateType &
   SkaterInferredDataType &
-  SkaterLibraryDataType &
-  Position &
-  Rotation;
+  SkaterLibraryDataType;

@@ -3,9 +3,9 @@ import PropTypes from "prop-types";
 
 import defaultSkatersData from "../../data/defaultSkaters";
 
-import { SkaterType } from "../../types/Skater";
+import { SkaterType } from "../../types/LibraryData";
 
-const defaultSkaters = defaultSkatersData.defaultSkaters as SkaterType[];
+const defaultSkaters = defaultSkatersData as SkaterType[];
 
 // TODO: do we need this? Only for importing/using imported values from an API (or older json files, files that might have been tempered with)
 // TODO: When does hasFocus come into play? Should be part of the currentTrackSlice

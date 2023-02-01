@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import Skater from "../Skater/Skater";
-import { SkaterType } from "../../types/Skater";
+import { SkaterType } from "../../types/LibraryData";
 
 const TrackSkaters = (props: {
   skaters: SkaterType[];

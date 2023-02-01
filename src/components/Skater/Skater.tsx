@@ -6,7 +6,7 @@ import styles from "./Skater.module.scss";
 import classNames from "classnames";
 import { selectTrackOrientation } from "../../app/reducers/settingsTrackSlice";
 
-import { SkaterType } from "../../types/Skater";
+import { SkaterType } from "../../types/LibraryData";
 
 export type SkaterProps = SkaterType & {
   key: number;

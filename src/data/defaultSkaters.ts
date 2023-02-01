@@ -1,4 +1,4 @@
-import { SkaterDataType } from "../types/Skater";
+import { SkaterDataType } from "../types/LibraryData";
 
 const defaultSkaters: SkaterDataType[] = [
   {
