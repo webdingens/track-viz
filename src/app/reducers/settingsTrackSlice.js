@@ -13,9 +13,21 @@ export const TRACK_ORIENTATIONS = {
   ORIENTATION_270_DEG: 270,
 };
 
+export const TRACK_VIEWS = {
+  FULL: "FULL",
+  TRACK: "TRACK",
+  START: "START",
+};
+
+export const VIEW_LABELS = {
+  FULL: "Full",
+  TRACK: "Track",
+  START: "Start",
+};
+
 const defaultSettings = {
   orientation: TRACK_ORIENTATIONS.ORIENTATION_0_DEG,
-  showRefLane: true,
+  view: TRACK_VIEWS.FULL,
 };
 
 let initialState = cleanupSlice(loadSlice("settings.track"), defaultSettings);
@@ -29,8 +41,9 @@ export const settingsTrackSlice = createSlice({
       if (Object.values(TRACK_ORIENTATIONS).indexOf(action.payload) !== -1)
         state.orientation = action.payload;
     },
-    setShowRefLane: (state, action) => {
-      state.showRefLane = action.payload;
+    setView: (state, action) => {
+      if (Object.values(TRACK_VIEWS).indexOf(action.payload) !== -1)
+        state.view = action.payload;
     },
     reset: (state) => {
       for (let key in state) {
@@ -41,8 +54,7 @@ export const settingsTrackSlice = createSlice({
   },
 });
 
-export const { setOrientation, setShowRefLane, reset } =
-  settingsTrackSlice.actions;
+export const { setOrientation, setView, reset } = settingsTrackSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
@@ -51,7 +63,6 @@ export const { setOrientation, setShowRefLane, reset } =
 export const selectTrackSettings = (state) => state.settings.track;
 export const selectTrackOrientation = (state) =>
   state.settings.track.orientation;
-export const selectTrackShowRefLane = (state) =>
-  state.settings.track.showRefLane;
+export const selectTrackView = (state) => state.settings.track.view;
 
 export default settingsTrackSlice.reducer;

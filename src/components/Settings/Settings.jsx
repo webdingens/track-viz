@@ -64,7 +64,7 @@ const Settings = () => {
                 setCurrentTab(0);
               }}
             >
-              Pack Computation
+              Colors
             </button>
           </li>
           <li>
@@ -77,7 +77,7 @@ const Settings = () => {
                 setCurrentTab(1);
               }}
             >
-              Controls
+              Controls / Height (3D)
             </button>
           </li>
           <li>
@@ -90,7 +90,7 @@ const Settings = () => {
                 setCurrentTab(2);
               }}
             >
-              Colors
+              Pack Computation
             </button>
           </li>
           {/* <li>
@@ -109,7 +109,89 @@ const Settings = () => {
         </ul>
       </nav>
 
-      {currentTab === 0 ? (
+      {currentTab === 0 && (
+        <section className={styles.section}>
+          <h2>Team Colors</h2>
+          <div>
+            <h3>Team A</h3>
+            <SwatchesPicker
+              onChangeComplete={(color) => {
+                dispatch(
+                  setSetting({
+                    key: "colorTeamA",
+                    value: color.hsl,
+                  })
+                );
+              }}
+              color={settings.colorTeamA}
+            />
+          </div>
+          <div>
+            <h3>Team B</h3>
+            <SwatchesPicker
+              onChangeComplete={(color) => {
+                dispatch(
+                  setSetting({
+                    key: "colorTeamB",
+                    value: color.hsl,
+                  })
+                );
+              }}
+              color={settings.colorTeamB}
+            />
+          </div>
+        </section>
+      )}
+
+      {currentTab === 1 && (
+        <section className={styles.section}>
+          <h1>Controls</h1>
+          <div>
+            <label>
+              <p>Eyeheight</p>
+              <input
+                type="range"
+                min={EYE_HEIGHT_MIN}
+                max={EYE_HEIGHT_MAX}
+                step={EYE_HEIGHT_STEP}
+                value={settingsTrack3D.eyeHeight}
+                onChange={(evt) => {
+                  dispatch(
+                    setTrack3DSetting({
+                      key: "eyeHeight",
+                      value: parseFloat(evt.target.value),
+                    })
+                  );
+                }}
+              />
+              {settingsTrack3D.eyeHeight.toFixed(1)}
+            </label>
+          </div>
+          <div>
+            <label>
+              <p>Gamepad Axes Threshold</p>
+              <input
+                type="range"
+                min={GAMEPAD_THRESHOLD_MIN}
+                max={GAMEPAD_THRESHOLD_MAX}
+                step={GAMEPAD_THRESHOLD_STEP}
+                value={settingsTrack3D.gamepadThreshold}
+                onChange={(evt) => {
+                  dispatch(
+                    setTrack3DSetting({
+                      key: "gamepadThreshold",
+                      value: parseFloat(evt.target.value),
+                    })
+                  );
+                }}
+              />
+              {settingsTrack3D.gamepadThreshold.toFixed(2)}
+            </label>
+          </div>
+        </section>
+      )}
+
+      {currentTab === 2 && (
         <section className={styles.section}>
           <h1>Pack Computation</h1>
           <p>Pack Computation Method</p>
@@ -308,89 +390,7 @@ const Settings = () => {
             </>
           ) : null}
         </section>
-      ) : null}
-
-      {currentTab === 1 ? (
-        <section className={styles.section}>
-          <h1>Controls</h1>
-          <div>
-            <label>
-              <p>Eyeheight</p>
-              <input
-                type="range"
-                min={EYE_HEIGHT_MIN}
-                max={EYE_HEIGHT_MAX}
-                step={EYE_HEIGHT_STEP}
-                value={settingsTrack3D.eyeHeight}
-                onChange={(evt) => {
-                  dispatch(
-                    setTrack3DSetting({
-                      key: "eyeHeight",
-                      value: parseFloat(evt.target.value),
-                    })
-                  );
-                }}
-              />
-              {settingsTrack3D.eyeHeight.toFixed(1)}
-            </label>
-          </div>
-          <div>
-            <label>
-              <p>Gamepad Axes Threshold</p>
-              <input
-                type="range"
-                min={GAMEPAD_THRESHOLD_MIN}
-                max={GAMEPAD_THRESHOLD_MAX}
-                step={GAMEPAD_THRESHOLD_STEP}
-                value={settingsTrack3D.gamepadThreshold}
-                onChange={(evt) => {
-                  dispatch(
-                    setTrack3DSetting({
-                      key: "gamepadThreshold",
-                      value: parseFloat(evt.target.value),
-                    })
-                  );
-                }}
-              />
-              {settingsTrack3D.gamepadThreshold.toFixed(2)}
-            </label>
-          </div>
-        </section>
-      ) : null}
-
-      {currentTab === 2 ? (
-        <section className={styles.section}>
-          <h1>Colors</h1>
-          <div>
-            <p>Team A</p>
-            <SwatchesPicker
-              onChangeComplete={(color) => {
-                dispatch(
-                  setSetting({
-                    key: "colorTeamA",
-                    value: color.hsl,
-                  })
-                );
-              }}
-              color={settings.colorTeamA}
-            />
-          </div>
-          <div>
-            <p>Team B</p>
-            <SwatchesPicker
-              onChangeComplete={(color) => {
-                dispatch(
-                  setSetting({
-                    key: "colorTeamB",
-                    value: color.hsl,
-                  })
-                );
-              }}
-              color={settings.colorTeamB}
-            />
-          </div>
-        </section>
-      ) : null}
+      )}
     </div>
   );
 };

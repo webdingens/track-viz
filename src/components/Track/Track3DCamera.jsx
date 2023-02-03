@@ -5,9 +5,15 @@ import * as THREE from "three";
 import { selectTrack3DCamera } from "../../app/reducers/settingsTrack3DSlice";
 
 import { FiArrowRightCircle } from "react-icons/fi";
+import {
+  LAYOUT_MODES,
+  selectLayoutMode,
+} from "../../app/reducers/settingsGeneralSlice";
 
 function Track3DCamera() {
+  const layout = useSelector(selectLayoutMode);
   const camera = useSelector(selectTrack3DCamera);
+  if (layout !== LAYOUT_MODES.LAYOUT_TRACK_3D) return null;
   let euler = new THREE.Euler().fromArray(camera.rotation);
   euler.reorder("YXZ");
   const transform = `translate(${camera.position[0]}, ${

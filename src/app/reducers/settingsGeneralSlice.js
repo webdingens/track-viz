@@ -25,12 +25,12 @@ const defaultSettings = {
   // options
 
   // pack
-  packMeasuringMethod: PACK_MEASURING_METHODS.SECTOR,
+  packMeasuringMethod: PACK_MEASURING_METHODS.RECTANGLE,
   showEngagementZoneOtherMethod: false,
   showPackMethodDuringRectangleMethod: PACK_MEASURING_METHODS.SECTOR,
   showEngagementZoneAllSkaterRectangles: false,
   showEngagementZoneEndRectangles: false,
-  showPackEndRectangles: true,
+  showPackEndRectangles: false,
   showAllClosestBlockerRectangles: false,
 
   // colors

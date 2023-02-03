@@ -24,3 +24,15 @@ ul.situationList {
     }
   }
 }
+
+.povTeam {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+}

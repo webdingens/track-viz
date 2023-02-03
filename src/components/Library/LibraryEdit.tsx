@@ -28,7 +28,7 @@ function LibraryEdit() {
 
   const onChangePovTeam = (evt: ChangeEvent<HTMLInputElement>) => {
     const value = evt.target.value;
-    if (value === "A" || value === "B") {
+    if (value === "A" || value === "B" || value === "None") {
       setCurrentPovTeam(value);
     } else {
       throw new Error("Wrong value provided");
@@ -90,6 +90,17 @@ function LibraryEdit() {
             title="Team B"
           />
           <CirclePreview team="B" />
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="povTeam"
+            value="None"
+            checked={currentPovTeam === "None"}
+            onChange={onChangePovTeam}
+            title="None"
+          />
+          None
         </label>
       </section>
       <section>

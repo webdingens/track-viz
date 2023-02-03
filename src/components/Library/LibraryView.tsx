@@ -28,6 +28,7 @@ import {
 } from "../../utils/packFunctions";
 import styles from "./LibraryView.module.scss";
 import "./AccordionStyles.module.scss";
+import CirclePreview from "../Skater/CirclePreview";
 
 function LibraryView() {
   const dispatch = useDispatch();
@@ -74,6 +75,15 @@ function LibraryView() {
       {!!data.description && (
         <section>
           <RichtextView content={data.description} />
+        </section>
+      )}
+      {data.povTeam && data.povTeam !== "None" && (
+        <section>
+          <p className={styles.povTeam}>
+            <strong>Point of view:</strong>{" "}
+            {data.povTeam === "A" && <CirclePreview team="A" />}
+            {data.povTeam === "B" && <CirclePreview team="B" />}
+          </p>
         </section>
       )}
       <section>

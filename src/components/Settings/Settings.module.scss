@@ -17,6 +17,14 @@
 
   border-radius: 5px;
   z-index: 10;
+
+  hr {
+    margin-block: 1.5rem;
+  }
+
+  :global(.swatches-picker) {
+    width: 100% !important;
+  }
 }
 
 .closeButton {
@@ -44,7 +52,7 @@
   line-height: 1.25;
   font-weight: 700;
 
-  margin-bottom: .5em;
+  margin-bottom: 0.5em;
 }
 
 .tabs {
@@ -59,7 +67,7 @@
 }
 
 .tab {
-  padding: .2em 1em;
+  padding: 0.2em 1em;
   line-height: 1.5em;
   border-radius: 3em;
   border: 2px solid transparent;

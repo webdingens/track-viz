@@ -4,6 +4,7 @@ import Toolbar from "./components/Toolbar/Toolbar";
 import SplitView from "./components/SplitView/SplitView";
 import Settings from "./components/Settings/Settings";
 import "focus-visible";
+import QueryLoader from "./components/Library/QueryLoader";
 
 function App() {
   return (
@@ -13,6 +14,8 @@ function App() {
       <Settings />
 
       <SplitView />
+
+      <QueryLoader />
     </div>
   );
 }

@@ -13,7 +13,7 @@ export type LibraryData = {
   [k: string]: any;
   title?: string;
   description?: string;
-  povTeam?: "A" | "B";
+  povTeam?: "A" | "B" | "None";
   sequences: Sequence[];
   colorLabels?: ColorLabels;
 };
