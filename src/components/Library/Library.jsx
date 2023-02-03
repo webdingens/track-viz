@@ -1,13 +1,17 @@
-import React, { useRef } from "react";
+import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   selectLibrary,
   setAll as setAllStore,
 } from "../../app/reducers/currentLibrarySlice";
 import {
+  selectEditedLibrary,
+  setAll as setAllEditedStore,
+} from "../../app/reducers/editedLibrarySlice";
+import {
   selectLibraryInEditMode,
   setLibraryInEditMode,
-} from "../../app/reducers/currentTransientsSlice";
+} from "../../app/reducers/interactionStateSlice";
 import LibraryView from "./LibraryView";
 import styles from "./Library.module.scss";
 import ExportLibraryButton from "../ExportButton/ExportLibraryButton";
@@ -18,16 +22,18 @@ const LibraryEdit = React.lazy(() => import("./LibraryEdit"));
 function Library() {
   const dispatch = useDispatch();
   const inEditMode = useSelector(selectLibraryInEditMode);
-  const LibraryEditRef = useRef(null);
 
   // data from store
   const libraryData = useSelector(selectLibrary);
+  const editedLibraryData = useSelector(selectEditedLibrary);
 
   // toggling edit mode, save when leaving edit mode
   const toggleSaveEditMode = () => {
     if (inEditMode) {
-      const library = LibraryEditRef.current?.getValue();
-      if (library) dispatch(setAllStore(library));
+      dispatch(setAllStore(editedLibraryData));
+    } else {
+      // sync currentLibrary to editedLibrary
+      dispatch(setAllEditedStore(libraryData));
     }
 
     dispatch(setLibraryInEditMode(!inEditMode));
@@ -40,11 +46,7 @@ function Library() {
 
   return (
     <div className={styles.library}>
-      {inEditMode ? (
-        <LibraryEdit data={libraryData} ref={LibraryEditRef} />
-      ) : (
-        <LibraryView data={libraryData} />
-      )}
+      {inEditMode ? <LibraryEdit /> : <LibraryView />}
       <div className={styles.controls}>
         <button type="button" onClick={toggleSaveEditMode}>
           {inEditMode ? "Save Library Changes" : "Edit Library"}

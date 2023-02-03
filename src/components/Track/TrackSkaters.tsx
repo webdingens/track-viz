@@ -1,30 +1,20 @@
-import { ReactElement } from "react";
 import Skater from "../Skater/Skater";
 import { SkaterType } from "../../types/LibraryData";
 
 const TrackSkaters = (props: {
   skaters: SkaterType[];
-  preventDragUpdate: boolean;
-}) => {
-  let skaters: ReactElement[] = [];
-  let idxA = 0;
-  let idxB = 0;
-  props.skaters.forEach((el, i) => {
-    let labelIdx = 0;
-    if (el.team === "A") labelIdx = ++idxA;
-    else labelIdx = ++idxB;
-    skaters.push(
+  preventDragUpdate?: boolean;
+}) => (
+  <>
+    {props.skaters.map((el, i) => (
       <Skater
         key={el.id}
         idx={i}
-        label={!(el.isJammer || el.isPivot) ? Number(labelIdx).toString() : ""}
-        preventDragUpdate={props.preventDragUpdate}
+        preventDragUpdate={props.preventDragUpdate ?? false}
         {...el}
       />
-    );
-  });
-
-  return skaters;
-};
+    ))}
+  </>
+);
 
 export default TrackSkaters;

@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { cleanupSlice, loadSlice } from "../storePersistence";
 
-export const defaultTransients = {
+export const defaultInteractionState = {
   userIsInteractingWithTrack3D: false,
   touchEnabledDevice: false,
   mapControlsRotateMode: false,
@@ -8,9 +9,24 @@ export const defaultTransients = {
   libraryInEditMode: false,
 };
 
-export const currentTransientsSlice = createSlice({
-  name: "currentTransients",
-  initialState: defaultTransients,
+let initialState = cleanupSlice(
+  loadSlice("interactionState"),
+  defaultInteractionState
+);
+
+const doNotLoadFields = [
+  "userIsInteractingWithTrack3D",
+  "mapControlsRotateMode",
+  "touchOnRotateModeButton",
+];
+
+doNotLoadFields.forEach(
+  (key) => initialState[key] === defaultInteractionState[key]
+);
+
+export const interactionStateSlice = createSlice({
+  name: "interactionState",
+  initialState: initialState || defaultInteractionState,
   reducers: {
     setUserIsInteractingWithTrack3D: (state, action) => {
       state.userIsInteractingWithTrack3D = action.payload;
@@ -31,7 +47,7 @@ export const currentTransientsSlice = createSlice({
       for (let key in state) {
         delete state[key];
       }
-      Object.assign(state, defaultTransients);
+      Object.assign(state, defaultInteractionState);
     },
   },
 });
@@ -43,18 +59,18 @@ export const {
   setTouchOnRotateModeButton,
   setLibraryInEditMode,
   reset,
-} = currentTransientsSlice.actions;
+} = interactionStateSlice.actions;
 
-export const selectCurrentTransients = (state) => state.currentTransients;
+export const selectCurrentTransients = (state) => state.interactionState;
 export const selectUserIsInteractingWithTrack3D = (state) =>
-  state.currentTransients.userIsInteractingWithTrack3D;
+  state.interactionState.userIsInteractingWithTrack3D;
 export const selectTouchEnabledDevice = (state) =>
-  state.currentTransients.touchEnabledDevice;
+  state.interactionState.touchEnabledDevice;
 export const selectMapControlsRotateMode = (state) =>
-  state.currentTransients.mapControlsRotateMode;
+  state.interactionState.mapControlsRotateMode;
 export const selectTouchOnRotateModeButton = (state) =>
-  state.currentTransients.touchOnRotateModeButton;
+  state.interactionState.touchOnRotateModeButton;
 export const selectLibraryInEditMode = (state) =>
-  state.currentTransients.libraryInEditMode;
+  state.interactionState.libraryInEditMode;
 
-export default currentTransientsSlice.reducer;
+export default interactionStateSlice.reducer;

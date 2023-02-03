@@ -8,7 +8,7 @@ import {
   setMapControlsRotateMode,
   selectMapControlsRotateMode,
   setTouchOnRotateModeButton,
-} from "../../app/reducers/currentTransientsSlice";
+} from "../../app/reducers/interactionStateSlice";
 
 import styles from "./Track3DMapControlButtons.module.scss";
 

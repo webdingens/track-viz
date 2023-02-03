@@ -34,6 +34,7 @@ function Skater3D(props) {
       // remove skater rendered on mount
       removeExistingSkater();
       if (skater && props.scene) props.scene.remove(skater);
+      mountCount.current++; // prevent rendering after unmount
     };
   }, [props.scene]);
 
@@ -64,14 +65,11 @@ function Skater3D(props) {
   }
 
   async function add3DModelSkater(mc) {
-    console.log("addd");
-    console.log(mc);
     const retVals = await Promise.all([
       loadModel(props.team),
       loadHelmet(props),
     ]);
     if (mc !== mountCount.current) return;
-    console.log(mc);
     if (useModelType !== MODEL_TYPES.HUMAN) return;
     let _skaterModel = retVals[0];
     let _helmet = retVals[1];

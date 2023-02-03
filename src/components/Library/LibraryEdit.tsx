@@ -1,56 +1,49 @@
+import { ChangeEvent, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  ChangeEvent,
-  ForwardedRef,
-  forwardRef,
-  PropsWithoutRef,
-  useImperativeHandle,
-  useState,
-} from "react";
+  selectEditedLibrary,
+  setAll as setAllEditedStore,
+} from "../../app/reducers/editedLibrarySlice";
 
 import { LibraryData } from "../../types/LibraryData";
 import RichtextEditor from "./RichtextEditor";
 import SequencesEditor from "./SequencesEditor";
 
-export type ForwardedRefType = {
-  getValue: () => LibraryData | null;
-};
+function LibraryEdit() {
+  const data = useSelector(selectEditedLibrary);
+  const dispatch = useDispatch();
 
-type LibraryEditProps = PropsWithoutRef<{
-  data: LibraryData;
-}>;
-
-function LibraryEdit({
-  data,
-  forwardedRef,
-}: LibraryEditProps & {
-  forwardedRef: ForwardedRef<ForwardedRefType>;
-}) {
   const [currentTitle, setCurrentTitle] = useState(data.title ?? "");
   const [currentDescription, setCurrentDescription] = useState(
     data.description ?? ""
   );
   const [currentSequences, setCurrentSequences] = useState(data.sequences);
+  const [currentPovTeam, setCurrentPovTeam] = useState(data.povTeam ?? "A");
 
   const onChangeTitle = (evt: ChangeEvent<HTMLInputElement>) => {
     const value = evt.target.value;
     setCurrentTitle(value);
   };
 
-  useImperativeHandle(forwardedRef, () => {
-    return {
-      getValue() {
-        const title = currentTitle;
-        const description = currentDescription;
-        const sequences = currentSequences;
-        return {
-          ...data,
-          title,
-          description,
-          sequences,
-        };
-      },
-    };
-  });
+  const onChangePovTeam = (evt: ChangeEvent<HTMLInputElement>) => {
+    const value = evt.target.value;
+    if (value === "A" || value === "B") {
+      setCurrentPovTeam(value);
+    } else {
+      throw new Error("Wrong value provided");
+    }
+  };
+
+  useEffect(() => {
+    dispatch(
+      setAllEditedStore({
+        title: currentTitle,
+        description: currentDescription,
+        sequences: currentSequences,
+        povTeam: currentPovTeam,
+      })
+    );
+  }, [currentTitle, currentDescription, currentSequences, currentPovTeam]);
 
   return (
     <div>
@@ -74,6 +67,29 @@ function LibraryEdit({
         />
       </section>
       <section>
+        <h3>Written from point of view of</h3>
+        <label>
+          <input
+            type="radio"
+            name="povTeam"
+            value="A"
+            checked={currentPovTeam === "A"}
+            onChange={onChangePovTeam}
+          />
+          Team <span>A</span>
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="povTeam"
+            value="B"
+            checked={currentPovTeam === "B"}
+            onChange={onChangePovTeam}
+          />
+          Team <span>B</span>
+        </label>
+      </section>
+      <section>
         <h3>Sequences</h3>
         <SequencesEditor
           sequences={currentSequences}
@@ -84,6 +100,4 @@ function LibraryEdit({
   );
 }
 
-export default forwardRef<ForwardedRefType, LibraryEditProps>((props, ref) => {
-  return <LibraryEdit {...props} forwardedRef={ref} />;
-});
+export default LibraryEdit;

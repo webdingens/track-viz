@@ -6,7 +6,7 @@ import store from "../../../app/store";
 
 import { updateSkater } from "../../../app/reducers/currentTrackSlice";
 
-import { setUserIsInteractingWithTrack3D } from "../../../app/reducers/currentTransientsSlice";
+import { setUserIsInteractingWithTrack3D } from "../../../app/reducers/interactionStateSlice";
 
 import { DragControls } from "./threejs/DragControls";
 

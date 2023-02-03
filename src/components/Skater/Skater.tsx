@@ -11,7 +11,6 @@ import { SkaterType } from "../../types/LibraryData";
 export type SkaterProps = SkaterType & {
   key: number;
   idx: number;
-  label: string;
   preventDragUpdate: boolean;
 };
 
@@ -21,13 +20,12 @@ const Skater = (props: SkaterProps) => {
     team,
     rotation,
     idx,
-    label,
     hasFocus = false,
     isPivot = false,
     isJammer = false,
     inBounds = false,
     inPlay = false,
-    packSkater = false, // TODO: can this be removed? when is this used? overlaps with inPlay
+    packSkater = false, // TODO: show some feedback to indicate this person is a pack skater?
   } = props;
 
   return (
@@ -45,20 +43,6 @@ const Skater = (props: SkaterProps) => {
       <SkaterDragWrapper {...props}>
         <path className={styles.shield} d="M.1,.3 A.3 .3 90 1 0 .1,-.3" />
         <circle className={styles.skaterBackground} r=".3" fill="green" />
-        {label ? (
-          <text
-            className={classNames({
-              [styles.blockerNumber]: true,
-              "js-blocker-number": true,
-            })}
-            y=".32em"
-            fontSize=".4"
-            textAnchor="middle"
-            transform={`rotate(${-rotation - trackOrientation})`}
-          >
-            {label}
-          </text>
-        ) : null}
         {isPivot ? (
           <>
             <path className={styles.pivotStripe} d="M-.3,0 L .3,0" />
@@ -69,6 +53,7 @@ const Skater = (props: SkaterProps) => {
           <>
             {/* Jammer Star */}
             <path
+              className={styles.jammerStar}
               d="m55,237 74-228 74,228L9,96h240"
               transform={`rotate(-${trackOrientation}) translate(-.23, -.23) scale(.0018)`}
             />

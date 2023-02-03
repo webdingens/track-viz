@@ -7,7 +7,7 @@ import store from "../../../app/store";
 // import { MapControls } from 'three/examples/jsm/controls/OrbitControls';
 import { MapControls } from "./threejs/OrbitControls";
 
-import { setTouchEnabledDevice } from "../../../app/reducers/currentTransientsSlice";
+import { setTouchEnabledDevice } from "../../../app/reducers/interactionStateSlice";
 
 // TODO: move things from context to options
 // TODO: use dispatch in controls instead of using the props actions

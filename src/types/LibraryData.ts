@@ -10,8 +10,10 @@ const colorLabels = {
 export type ColorLabels = typeof colorLabels;
 
 export type LibraryData = {
+  [k: string]: any;
   title?: string;
   description?: string;
+  povTeam?: "A" | "B";
   sequences: Sequence[];
   colorLabels?: ColorLabels;
 };
@@ -59,14 +61,6 @@ export type RefData = {
   Rotation;
 
 export type Settings = {
-  teams?: {
-    A: {
-      color: string;
-    };
-    B: {
-      color: string;
-    };
-  };
   track2D?: {
     view: "FULL" | "FIT" | "START";
   };
@@ -106,6 +100,7 @@ export type SkaterStateType = {
 };
 
 export type SkaterInferredDataType = {
+  pivotLineDist?: number;
   inBounds?: boolean;
   inPlay?: boolean;
   packSkater?: boolean;

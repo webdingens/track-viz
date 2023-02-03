@@ -1,4 +1,5 @@
-import { connect } from "react-redux";
+import { ForwardedRef, forwardRef, HTMLAttributes } from "react";
+import { useSelector } from "react-redux";
 import classNames from "classnames";
 
 import TrackMarkings from "./TrackMarkings";
@@ -13,6 +14,13 @@ import {
 } from "../../app/reducers/settingsTrackSlice";
 
 import styles from "./TrackGeometry.module.scss";
+import { SkaterType } from "../../types/LibraryData";
+
+type TrackGeometryProps = {
+  updatePack: boolean;
+  skaters: SkaterType[];
+  isPreview: boolean;
+} & HTMLAttributes<SVGElement>;
 
 const REF_LANE_WIDTH = 3.05;
 
@@ -29,25 +37,43 @@ const getViewBox = (orientation = 0, showRefLane = true) => {
   }
 };
 
-function TrackGeometry(props) {
+function TrackGeometry(
+  props: TrackGeometryProps & {
+    trackContainerRef: ForwardedRef<SVGSVGElement>;
+  }
+) {
   const {
     trackContainerRef,
     className,
-    orientation,
-    showRefLane,
     updatePack,
     skaters,
     isPreview,
     style,
   } = props;
+  const orientation = useSelector(selectTrackOrientation);
+  const showRefLane = useSelector(selectTrackShowRefLane);
+  const viewBox = getViewBox(orientation, showRefLane);
+  const [xy, wh] = viewBox.split(" ");
+  const [x, y] = xy.split(",");
+  const [w, h] = wh.split(",");
   return (
     <svg
       ref={trackContainerRef}
       className={classNames(styles.svg, className ?? "")}
-      viewBox={getViewBox(orientation, showRefLane)}
+      viewBox={viewBox}
       preserveAspectRatio="xMidYMid meet"
       style={style}
     >
+      <rect
+        className="js-boundary"
+        width={w}
+        height={h}
+        x={x}
+        y={y}
+        stroke="#ccc"
+        fill="none"
+        strokeWidth=".05"
+      />
       <g transform={`rotate(${orientation})`}>
         <TrackPackMarkings useSkaters={updatePack ? skaters : false} />
 
@@ -61,11 +87,11 @@ function TrackGeometry(props) {
   );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    orientation: selectTrackOrientation(state),
-    showRefLane: selectTrackShowRefLane(state),
-  };
-};
+const TrackGeometryWithRef = forwardRef<SVGSVGElement, TrackGeometryProps>(
+  (props, ref) => {
+    return <TrackGeometry {...props} trackContainerRef={ref} />;
+  }
+);
+TrackGeometryWithRef.displayName = "TrackGeometryWithRef";
 
-export default connect(mapStateToProps)(TrackGeometry);
+export default TrackGeometryWithRef;

@@ -1,4 +1,3 @@
-import { PropsWithoutRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import classNames from "classnames";
 import {
@@ -12,13 +11,14 @@ import {
 import { FiPlus, FiMinus } from "react-icons/fi";
 
 import {
-  LibraryData,
   Situation as SituationType,
+  SkaterDataType,
   SkaterType,
 } from "../../types/LibraryData";
 import RichtextView from "./RichtextView";
 import TrackGeometry from "../Track/TrackGeometry";
 import { setCurrentTrack } from "../../app/reducers/currentTrackSlice";
+import { selectLibrary } from "../../app/reducers/currentLibrarySlice";
 import { selectGeneralSettings } from "../../app/reducers/settingsGeneralSlice";
 import {
   getSkatersWDPInBounds,
@@ -29,11 +29,10 @@ import {
 import styles from "./LibraryView.module.scss";
 import "./AccordionStyles.module.scss";
 
-type LibraryViewProps = PropsWithoutRef<{ data: LibraryData }>;
-
-function LibraryView({ data }: LibraryViewProps) {
+function LibraryView() {
   const dispatch = useDispatch();
   const settings = useSelector(selectGeneralSettings);
+  const data = useSelector(selectLibrary);
 
   const onLoadToCurrentTrack = (situation: SituationType) => {
     dispatch(
@@ -47,7 +46,9 @@ function LibraryView({ data }: LibraryViewProps) {
   /**
    * Adding inBounds, pivotLineDist for pack computations. Imported skaters are missing these.
    */
-  const addDerivedPropertiesToSkaters = (skaters: SkaterType[]) => {
+  const addDerivedPropertiesToSkaters = (
+    skaters: SkaterDataType[]
+  ): SkaterType[] => {
     let ret = getSkatersWDPInBounds(skaters);
     ret = getSkatersWDPPivotLineDistance(ret);
     if (settings.packMeasuringMethod === PACK_MEASURING_METHODS.SECTOR) {

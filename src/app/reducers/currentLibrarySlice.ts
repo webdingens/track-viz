@@ -6,7 +6,20 @@ import { LibraryData } from "../../types/LibraryData";
 export const defaultLibrary: LibraryData = {
   title: "",
   description: "",
+  povTeam: "A",
   sequences: [],
+};
+
+export const libraryReducerFuctions = {
+  setAll: (state: LibraryData, action: { payload: {} }) => {
+    Object.assign(state, action.payload);
+  },
+  reset: (state: LibraryData) => {
+    for (let key in state) {
+      delete state[key];
+      Object.assign(state, defaultLibrary);
+    }
+  },
 };
 
 let initialState = cleanupSlice(
@@ -14,30 +27,13 @@ let initialState = cleanupSlice(
   defaultLibrary
 ) as LibraryData;
 
-export const currentTrackSlice = createSlice({
+export const currentLibrarySlice = createSlice({
   name: "currentLibrary",
   initialState: initialState || defaultLibrary,
-  reducers: {
-    setDescription: (state, action) => {
-      state.description = action.payload;
-    },
-    setSequences: (state, action) => {
-      state.sequences = action.payload;
-    },
-    setAll: (state, action) => {
-      state.description = action.payload.description;
-      state.sequences = action.payload.sequences;
-      state.title = action.payload.title;
-    },
-    reset: (state) => {
-      state.description = "";
-      state.sequences = [];
-    },
-  },
+  reducers: libraryReducerFuctions,
 });
 
-export const { setDescription, setSequences, setAll, reset } =
-  currentTrackSlice.actions;
+export const { setAll, reset } = currentLibrarySlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
@@ -45,9 +41,5 @@ export const { setDescription, setSequences, setAll, reset } =
 
 export const selectLibrary = (state: { currentLibrary: LibraryData }) =>
   state.currentLibrary;
-export const selectDescription = (state: { currentLibrary: LibraryData }) =>
-  state.currentLibrary.description;
-export const selectSequences = (state: { currentLibrary: LibraryData }) =>
-  state.currentLibrary.sequences;
 
-export default currentTrackSlice.reducer;
+export default currentLibrarySlice.reducer;

@@ -20,7 +20,7 @@ import store from "../../../../app/store";
 import {
   selectTouchOnRotateModeButton,
   selectMapControlsRotateMode,
-} from "../../../../app/reducers/currentTransientsSlice";
+} from "../../../../app/reducers/interactionStateSlice";
 
 // This set of controls performs orbiting, dollying (zooming), and panning.
 // Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).

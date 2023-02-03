@@ -3,7 +3,7 @@
     // fill: #ff0000;
     fill: var(--color-red);
     stroke: #000;
-    stroke-width: .05;
+    stroke-width: 0.05;
   }
 }
 
@@ -12,32 +12,34 @@
     // fill: #008000;
     fill: var(--color-green);
     stroke: #000;
-    stroke-width: .05;
+    stroke-width: 0.05;
   }
 }
 
 .blockerNumber {
-  font-family: 'Work Sans', sans-serif;
+  font-family: "Work Sans", sans-serif;
 }
 
 .pivotStripe {
-  stroke-width: .15;
+  stroke-width: 0.15;
   stroke: #fff;
+  pointer-events: none;
 }
 
 .pivotOutline {
   stroke: #000;
-  stroke-width: .05;
+  stroke-width: 0.05;
   fill: none;
 }
 
-.statusWrapper {
+.statusWrapper,
+.jammerStar {
   pointer-events: none;
 }
 
 .status {
   display: none;
-  filter: drop-shadow(0, 0, .2,#fff);
+  filter: drop-shadow(0, 0, 0.2, #fff);
 }
 
 .skater {
@@ -73,5 +75,7 @@
 .shield {
   fill: none;
   stroke: #000;
-  stroke-width: .04;
+  stroke-width: 0.04;
+
+  pointer-events: none;
 }

@@ -20,7 +20,7 @@ import {
 } from "../../app/reducers/settingsTrack3DSlice";
 
 import styles from "./Track3DOverlay.module.scss";
-import { selectTouchEnabledDevice } from "../../app/reducers/currentTransientsSlice";
+import { selectTouchEnabledDevice } from "../../app/reducers/interactionStateSlice";
 
 const Track3DOverlay = (props) => {
   const [open, setOpen] = useState(false);

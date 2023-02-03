@@ -1,4 +1,3 @@
-import React from "react";
 import { useSelector } from "react-redux";
 
 import TrackDragging from "./TrackDragging";
@@ -10,6 +9,7 @@ import {
   ANIMATION_STATE,
   selectAnimationState,
 } from "../../app/reducers/currentSequenceSlice";
+import SkaterAnnotations from "./SkaterAnnotations";
 
 function Track() {
   const animationState = useSelector(selectAnimationState);
@@ -21,8 +21,8 @@ function Track() {
   return (
     <div className={styles.track}>
       {trackIsAnimating ? <TrackAnimating /> : <TrackDragging />}
-
       <TrackOverlay />
+      <SkaterAnnotations />
     </div>
   );
 }

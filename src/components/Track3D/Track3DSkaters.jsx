@@ -5,7 +5,7 @@ import Skater3D from "../Skater3D/Skater3D";
 
 import { selectCurrentSkaters } from "../../app/reducers/currentTrackSlice";
 
-import { selectUserIsInteractingWithTrack3D } from "../../app/reducers/currentTransientsSlice";
+import { selectUserIsInteractingWithTrack3D } from "../../app/reducers/interactionStateSlice";
 
 class Skaters extends React.Component {
   render() {
