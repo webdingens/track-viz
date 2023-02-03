@@ -72,7 +72,10 @@ function Situation({ data, idPrefix, onUpdate }: SituationProps) {
   const onLoadToCurrentTrack = () => {
     dispatch(
       setCurrentTrack({
-        skaters: data.skaters,
+        skaters: data.skaters.map((skater) => ({
+          ...skater,
+          hasFocus: false,
+        })),
         refs: data.refs,
       })
     );

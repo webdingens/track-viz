@@ -37,7 +37,7 @@ const PartialTrackShapeSector = ({ bounds, overlay, engagementZone, pack }) => {
         [styles.engagementZone]: engagementZone,
       })}
     >
-      {overlay ? (
+      {!!overlay && (
         <Paths
           id="pack-pattern"
           d="woven"
@@ -46,7 +46,7 @@ const PartialTrackShapeSector = ({ bounds, overlay, engagementZone, pack }) => {
           size={0.5}
           orientation="diagonal"
         />
-      ) : null}
+      )}
       <path
         d={computePartialTrackShape({
           p1: bounds[0],
@@ -89,7 +89,7 @@ const PartialTrackShapeRectangle = ({
           [styles.farDistance]: distance && !closeDistance,
         })}
       >
-        {overlay ? (
+        {!!overlay && (
           <Paths
             id="pack-pattern"
             d="woven"
@@ -98,7 +98,7 @@ const PartialTrackShapeRectangle = ({
             size={0.5}
             orientation="diagonal"
           />
-        ) : null}
+        )}
 
         <path
           d={computePartialTrackShape({

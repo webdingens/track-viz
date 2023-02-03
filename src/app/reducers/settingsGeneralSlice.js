@@ -32,6 +32,20 @@ const defaultSettings = {
   showEngagementZoneEndRectangles: false,
   showPackEndRectangles: true,
   showAllClosestBlockerRectangles: false,
+
+  // colors
+  colorTeamA: {
+    h: 0,
+    s: 0.7345971563981044,
+    l: 0.4137254901960784,
+    a: 1,
+  },
+  colorTeamB: {
+    h: 122.79069767441861,
+    s: 0.43434343434343436,
+    l: 0.38823529411764707,
+    a: 1,
+  },
 };
 
 let initialState = cleanupSlice(loadSlice("settings.general"), defaultSettings);

@@ -9,6 +9,7 @@ import {
   ANIMATION_STATE,
   selectAnimationState,
 } from "../../app/reducers/currentSequenceSlice";
+import Legend from "./Legend";
 
 function Track() {
   const animationState = useSelector(selectAnimationState);
@@ -18,9 +19,10 @@ function Track() {
   ].includes(animationState);
 
   return (
-    <div className={styles.track}>
+    <div className={[styles.track, "js-track"].join(" ")}>
       {trackIsAnimating ? <TrackAnimating /> : <TrackStatic />}
       <TrackOverlay />
+      <Legend />
       <SkaterAnnotations />
     </div>
   );

@@ -23,6 +23,8 @@ import { GrFormClose } from "react-icons/gr";
 
 import styles from "./Settings.module.scss";
 
+import { SwatchesPicker } from "react-color";
+
 const Settings = () => {
   const settings = useSelector(selectGeneralSettings);
   const settingsTrack3D = useSelector(selectTrack3DSettings);
@@ -78,7 +80,7 @@ const Settings = () => {
               Controls
             </button>
           </li>
-          {/* <li>
+          <li>
             <button
               className={classNames({
                 [styles.tab]: true,
@@ -88,7 +90,20 @@ const Settings = () => {
                 setCurrentTab(2);
               }}
             >
-              Tab 3
+              Colors
+            </button>
+          </li>
+          {/* <li>
+            <button
+              className={classNames({
+                [styles.tab]: true,
+                [styles["tab--active"]]: currentTab === 3,
+              })}
+              onClick={() => {
+                setCurrentTab(3);
+              }}
+            >
+              Tab 4
             </button>
           </li> */}
         </ul>
@@ -339,6 +354,40 @@ const Settings = () => {
               />
               {settingsTrack3D.gamepadThreshold.toFixed(2)}
             </label>
+          </div>
+        </section>
+      ) : null}
+
+      {currentTab === 2 ? (
+        <section className={styles.section}>
+          <h1>Colors</h1>
+          <div>
+            <p>Team A</p>
+            <SwatchesPicker
+              onChangeComplete={(color) => {
+                dispatch(
+                  setSetting({
+                    key: "colorTeamA",
+                    value: color.hsl,
+                  })
+                );
+              }}
+              color={settings.colorTeamA}
+            />
+          </div>
+          <div>
+            <p>Team B</p>
+            <SwatchesPicker
+              onChangeComplete={(color) => {
+                dispatch(
+                  setSetting({
+                    key: "colorTeamB",
+                    value: color.hsl,
+                  })
+                );
+              }}
+              color={settings.colorTeamB}
+            />
           </div>
         </section>
       ) : null}

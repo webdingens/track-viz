@@ -237,8 +237,10 @@ class TrackDragging extends React.Component {
     if (this.lastRotation && +new Date() < this.lastRotation + 30) return; // still part of a rotation interaction
 
     const clickedOnSkater = evt.target.closest(".js-skater");
+    const clickedInsideTrack = evt.target.closest(".js-track");
+    const clickedOnAnnotations = evt.target.closest(".js-annotations");
 
-    if (!clickedOnSkater) {
+    if (!clickedOnAnnotations && clickedInsideTrack && !clickedOnSkater) {
       let skaters = _.cloneDeep(this.props.skaters);
 
       // remove focus from others, add to clicked

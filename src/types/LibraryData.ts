@@ -106,6 +106,23 @@ export type SkaterInferredDataType = {
   packSkater?: boolean;
 };
 
+export const SKATER_ANNOTATION_PATTERNS = {
+  SQUARES: "squares",
+  NYLON: "nylon",
+  WAVES: "waves",
+  WOVEN: "woven",
+  CAPS: "caps",
+  CROSSES: "crosses",
+  HEXAGONS: "hexagons",
+} as const;
+
+import { SKATER_ANNOTATION_COLORS } from "../utils/colors";
+export type SkaterAnnotationType = {
+  color?: typeof SKATER_ANNOTATION_COLORS;
+  description?: string;
+  pattern?: typeof SKATER_ANNOTATION_PATTERNS;
+};
+
 export type SkaterLibraryDataType = {
   arrowToNextPosition?: boolean;
 };
@@ -113,4 +130,5 @@ export type SkaterLibraryDataType = {
 export type SkaterType = SkaterDataType &
   SkaterStateType &
   SkaterInferredDataType &
-  SkaterLibraryDataType;
+  SkaterLibraryDataType &
+  SkaterAnnotationType;

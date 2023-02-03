@@ -6,6 +6,7 @@ import {
 } from "../../app/reducers/editedLibrarySlice";
 
 import { LibraryData } from "../../types/LibraryData";
+import CirclePreview from "../Skater/CirclePreview";
 import RichtextEditor from "./RichtextEditor";
 import SequencesEditor from "./SequencesEditor";
 
@@ -48,7 +49,6 @@ function LibraryEdit() {
   return (
     <div>
       <h2>Library (Edit Mode)</h2>
-      <p>Do not reload page while in edit mode.</p>
       <section>
         <label htmlFor="library-title">Title</label>
         <input
@@ -75,8 +75,10 @@ function LibraryEdit() {
             value="A"
             checked={currentPovTeam === "A"}
             onChange={onChangePovTeam}
+            title="Team A"
           />
-          Team <span>A</span>
+
+          <CirclePreview team="A" />
         </label>
         <label>
           <input
@@ -85,8 +87,9 @@ function LibraryEdit() {
             value="B"
             checked={currentPovTeam === "B"}
             onChange={onChangePovTeam}
+            title="Team B"
           />
-          Team <span>B</span>
+          <CirclePreview team="B" />
         </label>
       </section>
       <section>

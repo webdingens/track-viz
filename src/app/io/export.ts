@@ -37,7 +37,7 @@ export const cleanupExportData = (data: ExportData): ExportData => {
           return {
             ...scenario,
             skaters: scenario.skaters.map(
-              ({ id, x, y, rotation, team, isJammer, isPivot }) => ({
+              ({
                 id,
                 x,
                 y,
@@ -45,6 +45,20 @@ export const cleanupExportData = (data: ExportData): ExportData => {
                 team,
                 isJammer,
                 isPivot,
+                color,
+                description,
+                pattern,
+              }) => ({
+                id,
+                x,
+                y,
+                rotation,
+                team,
+                isJammer,
+                isPivot,
+                color,
+                description,
+                pattern,
               })
             ),
           };
@@ -57,7 +71,7 @@ export const cleanupExportData = (data: ExportData): ExportData => {
       version: data.version,
       type: data.type,
       skaters: data.skaters.map(
-        ({ id, x, y, rotation, team, isJammer, isPivot }) => ({
+        ({
           id,
           x,
           y,
@@ -65,6 +79,20 @@ export const cleanupExportData = (data: ExportData): ExportData => {
           team,
           isJammer,
           isPivot,
+          color,
+          description,
+          pattern,
+        }) => ({
+          id,
+          x,
+          y,
+          rotation,
+          team,
+          isJammer,
+          isPivot,
+          color,
+          description,
+          pattern,
         })
       ),
     };
