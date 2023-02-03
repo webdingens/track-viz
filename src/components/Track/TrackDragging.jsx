@@ -5,16 +5,11 @@ import { gsap } from "gsap";
 import Draggable from "gsap/Draggable";
 import _ from "lodash";
 
-import TrackGeometry from "./TrackGeometry";
-
-import {
-  setSkaters,
-  selectCurrentSkatersWDP,
-} from "../../app/reducers/currentTrackSlice";
-import { selectGeneralSettings } from "../../app/reducers/settingsGeneralSlice";
+import { setSkaters } from "../../app/reducers/currentTrackSlice";
 import { selectTrackOrientation } from "../../app/reducers/settingsTrackSlice";
 
 import "../../utils/composedPathPolyfill";
+import Skater from "../Skater/Skater";
 
 gsap.registerPlugin(Draggable);
 
@@ -23,71 +18,67 @@ class TrackDragging extends React.Component {
     dragging: 0,
   };
 
-  trackContainer = createRef();
-  draggables = createRef();
+  groupRef = createRef();
 
   componentDidMount() {
-    console.log("mount");
-    if (this.draggables.current) {
-      this.draggables.current.forEach((draggable) => {
-        draggable.moveDraggable.kill();
-        draggable.rotateDraggable.kill();
-      });
-    }
-    this.draggables.current = [];
+    this.draggables = [];
     this.initSkaterNodes();
-    this.skaterNodes.forEach((el) => {
-      let moveDraggable = Draggable.create(el, {
-        bounds: {
-          minX: -17,
-          maxX: 17,
-          minY: -12,
-          maxY: 12,
-        },
-        minimumMovement: 0.01,
-        trigger: el.querySelector(".js-skater-body-wrapper"),
-        onDragStart: this.onDragStart,
-        onDragStartParams: [this],
-        onDrag: this.onDrag,
-        onDragParams: [this],
-        onDragEnd: this.onDragEnd,
-        onDragEndParams: [this],
-        onClick: this.onClick,
-        onClickParams: [this],
-      })[0];
+    this.gsapContext = gsap.context(() => {
+      this.skaterNodes.forEach((el) => {
+        let moveDraggable = Draggable.create(el, {
+          bounds: {
+            minX: -17,
+            maxX: 17,
+            minY: -12,
+            maxY: 12,
+          },
+          minimumMovement: 0.01,
+          trigger: el.querySelector(".js-skater-body-wrapper"),
+          onDragStart: this.onDragStart,
+          onDragStartParams: [this],
+          onDrag: this.onDrag,
+          onDragParams: [this],
+          onDragEnd: this.onDragEnd,
+          onDragEndParams: [this],
+          onClick: this.onClick,
+          onClickParams: [this],
+        })[0];
 
-      let rotationWrapper = el.querySelector(".js-skater-rotation-wrapper");
-      gsap.set(rotationWrapper, {
-        svgOrigin: "0, 0",
-      });
-      let rotateDraggable = Draggable.create(rotationWrapper, {
-        minimumMovement: 0.01,
-        type: "rotation",
-        trigger: rotationWrapper.querySelector(".js-rotation-handle circle"),
-        onDragStart: this.onDragRotateStart,
-        onDragStartParams: [this],
-        onDrag: this.onDragRotate,
-        onDragParams: [this],
-        onDragEnd: this.onDragRotateEnd,
-        onDragEndParams: [this],
-        onClick: this.onClick,
-        onClickParams: [this],
-      })[0];
+        let rotationWrapper = el.querySelector(".js-skater-rotation-wrapper");
+        gsap.set(rotationWrapper, {
+          svgOrigin: "0, 0",
+        });
+        let rotateDraggable = Draggable.create(rotationWrapper, {
+          minimumMovement: 0.01,
+          type: "rotation",
+          trigger: rotationWrapper.querySelector(".js-rotation-handle circle"),
+          onDragStart: this.onDragRotateStart,
+          onDragStartParams: [this],
+          onDrag: this.onDragRotate,
+          onDragParams: [this],
+          onDragEnd: this.onDragRotateEnd,
+          onDragEndParams: [this],
+          onClick: this.onClick,
+          onClickParams: [this],
+        })[0];
 
-      rotateDraggable.disable();
+        rotateDraggable.disable();
 
-      this.draggables.current.push({
-        moveDraggable,
-        rotateDraggable,
-        dragAction: "move",
+        this.draggables.push({
+          moveDraggable,
+          rotateDraggable,
+          rotationWrapper,
+          el,
+          dragAction: "move",
+        });
       });
     });
 
-    document.body.addEventListener("click", this.onClickBody);
+    document.querySelector("body").addEventListener("click", this.onClickBody);
   }
 
   componentDidUpdate() {
-    this.draggables.current.forEach((draggable, idx) => {
+    this.draggables.forEach((draggable, idx) => {
       let skater = this.props.skaters[idx];
       if (
         skater.x !== draggable.moveDraggable.x ||
@@ -110,12 +101,13 @@ class TrackDragging extends React.Component {
   }
 
   componentWillUnmount() {
-    document.body.removeEventListener("click", this.onClickBody);
+    document
+      .querySelector("body")
+      .removeEventListener("click", this.onClickBody);
 
-    this.draggables.current.forEach((draggable) => {
-      draggable.moveDraggable.kill();
-      draggable.rotateDraggable.kill();
-    });
+    if (this.gsapContext) {
+      this.gsapContext.kill();
+    }
   }
 
   onClick(instance) {
@@ -134,13 +126,13 @@ class TrackDragging extends React.Component {
     if (!skaterAlreadyHasFocus) skaters[idx].hasFocus = true;
 
     // disable rotation drag from all, add to clicked
-    instance.draggables.current.forEach((draggable) => {
+    instance.draggables.forEach((draggable) => {
       draggable.moveDraggable.enable();
       draggable.rotateDraggable.disable();
     });
     if (!skaterAlreadyHasFocus) {
-      instance.draggables.current[idx].moveDraggable.disable();
-      instance.draggables.current[idx].rotateDraggable.enable();
+      instance.draggables[idx].moveDraggable.disable();
+      instance.draggables[idx].rotateDraggable.enable();
     }
 
     instance.props.setSkaters(skaters);
@@ -168,7 +160,7 @@ class TrackDragging extends React.Component {
 
   storeDragPosition(instance) {
     let skaters = _.cloneDeep(instance.props.skaters);
-    instance.draggables.current.forEach((draggable, i) => {
+    instance.draggables.forEach((draggable, i) => {
       skaters[i].x = draggable.moveDraggable.x;
       skaters[i].y = draggable.moveDraggable.y;
     });
@@ -181,7 +173,7 @@ class TrackDragging extends React.Component {
     let target = draggable.target;
     let idx = target.dataset.idx;
 
-    instance.draggables.current[idx].isRotating = true;
+    instance.draggables[idx].isRotating = true;
     instance.setState({
       dragging: instance.state.dragging + 1,
     });
@@ -209,13 +201,13 @@ class TrackDragging extends React.Component {
 
   storeDragRotation(instance) {
     let skaters = _.cloneDeep(instance.props.skaters);
-    instance.draggables.current.forEach((draggable, i) => {
+    instance.draggables.forEach((draggable, i) => {
       skaters[i].rotation = draggable.rotateDraggable.rotation;
       draggable.isRotating = false;
     });
 
     let isRotating = false;
-    instance.draggables.current.forEach((draggable) => {
+    instance.draggables.forEach((draggable) => {
       if (draggable.isRotating) isRotating = true;
     });
     if (!isRotating) instance.lastRotation = +new Date();
@@ -235,37 +227,32 @@ class TrackDragging extends React.Component {
 
   onClickBody = (evt) => {
     // this.debugMath(evt);
-
-    let path = evt.path || (evt.composedPath && evt.composedPath());
+    if (!this.props.skaters.find((skater) => skater.hasFocus)) return; // was not in focus, ignore click
 
     let isRotating = false;
-    this.draggables.current.forEach((draggable) => {
+    this.draggables.forEach((draggable) => {
       if (draggable.isRotating) isRotating = true;
     });
-    if (isRotating) return;
-    if (this.lastRotation && +new Date() < this.lastRotation + 30) return;
+    if (isRotating) return; // still interacting
+    if (this.lastRotation && +new Date() < this.lastRotation + 30) return; // still part of a rotation interaction
 
-    for (let i = 0, l = path.length; i < l; i++) {
-      if (path[i].id === "root") {
-        let skaters = _.cloneDeep(this.props.skaters);
+    const clickedOnSkater = evt.target.closest(".js-skater");
 
-        // remove focus from others, add to clicked
-        skaters.forEach((skater) => {
-          skater.hasFocus = false;
-        });
+    if (!clickedOnSkater) {
+      let skaters = _.cloneDeep(this.props.skaters);
 
-        // disable rotation drag from all, add to clicked
-        this.draggables.current.forEach((draggable) => {
-          draggable.moveDraggable.enable();
-          draggable.rotateDraggable.disable();
-        });
+      // remove focus from others, add to clicked
+      skaters.forEach((skater) => {
+        skater.hasFocus = false;
+      });
 
-        this.props.setSkaters(skaters);
-        break;
-      }
+      // disable rotation drag from all, add to clicked
+      this.draggables.forEach((draggable) => {
+        draggable.moveDraggable.enable();
+        draggable.rotateDraggable.disable();
+      });
 
-      let el = path[i];
-      if (el.classList.contains("js-skater")) break;
+      this.props.setSkaters(skaters);
     }
   };
 
@@ -274,11 +261,11 @@ class TrackDragging extends React.Component {
     this.clickpoints.push({ x: evt.clientX, y: evt.clientY });
     if (this.clickpoints.length === 2) {
       let mappedPoints = this.clickpoints.map((point) => {
-        const pt = this.trackContainer.current.createSVGPoint();
+        const pt = this.groupRef.current.closest("svg").createSVGPoint();
         pt.x = point.x;
         pt.y = point.y;
         const svgGlobal = pt.matrixTransform(
-          this.trackContainer.current.getScreenCTM().inverse()
+          this.groupRef.current.closest("svg").getScreenCTM().inverse()
         );
         return svgGlobal;
       });
@@ -372,7 +359,7 @@ class TrackDragging extends React.Component {
 
   collisionDetection(idx, x, y) {
     let collisions = [];
-    this.draggables.current.forEach((draggable, i) => {
+    this.draggables.forEach((draggable, i) => {
       if (idx === i) return;
 
       let dx = draggable.moveDraggable.x - x;
@@ -402,18 +389,23 @@ class TrackDragging extends React.Component {
   initSkaterNodes() {
     this.skaterNodes = [];
     Array.prototype.forEach.call(
-      this.trackContainer.current.querySelectorAll(".js-skater"),
+      this.groupRef.current.closest("svg").querySelectorAll(".js-skater"),
       (el) => this.skaterNodes.push(el)
     );
   }
 
   render() {
     return (
-      <TrackGeometry
-        ref={this.trackContainer}
-        skaters={this.props.skaters}
-        preventDragUpdate={this.state.dragging > 0}
-      />
+      <g ref={this.groupRef}>
+        {this.props.skaters.map((el, i) => (
+          <Skater
+            key={el.id}
+            idx={i}
+            preventDragUpdate={this.state.dragging > 0}
+            {...el}
+          />
+        ))}
+      </g>
     );
   }
 }
@@ -422,9 +414,7 @@ class TrackDragging extends React.Component {
 //  React Redux Connection
 //
 const mapStateToProps = (state) => {
-  const settings = selectGeneralSettings(state);
   return {
-    skaters: selectCurrentSkatersWDP(state, settings.packMeasuringMethod),
     trackOrientation: selectTrackOrientation(state),
   };
 };

@@ -28,6 +28,8 @@ const Skater = (props: SkaterProps) => {
     packSkater = false, // TODO: show some feedback to indicate this person is a pack skater?
   } = props;
 
+  // console.log(`render: ${props.id}, ${props.idx}`);
+
   return (
     <g
       className={classNames({

@@ -1,4 +1,10 @@
-import { ForwardedRef, forwardRef, HTMLAttributes } from "react";
+import {
+  ForwardedRef,
+  forwardRef,
+  HTMLAttributes,
+  useMemo,
+  useRef,
+} from "react";
 import { useSelector } from "react-redux";
 import classNames from "classnames";
 
@@ -15,6 +21,7 @@ import {
 
 import styles from "./TrackGeometry.module.scss";
 import { SkaterType } from "../../types/LibraryData";
+import TrackDragging from "./TrackDragging";
 
 type TrackGeometryProps = {
   updatePack: boolean;
@@ -37,28 +44,23 @@ const getViewBox = (orientation = 0, showRefLane = true) => {
   }
 };
 
-function TrackGeometry(
-  props: TrackGeometryProps & {
-    trackContainerRef: ForwardedRef<SVGSVGElement>;
-  }
-) {
-  const {
-    trackContainerRef,
-    className,
-    updatePack,
-    skaters,
-    isPreview,
-    style,
-  } = props;
+function TrackGeometry(props: TrackGeometryProps) {
+  const { className, updatePack, skaters, isPreview, style } = props;
   const orientation = useSelector(selectTrackOrientation);
   const showRefLane = useSelector(selectTrackShowRefLane);
   const viewBox = getViewBox(orientation, showRefLane);
   const [xy, wh] = viewBox.split(" ");
   const [x, y] = xy.split(",");
   const [w, h] = wh.split(",");
+
+  // don't redraw Track Markings on skater changes
+  const TrackMarkingsMemo = useMemo(
+    () => <TrackMarkings showRefLane={isPreview ? false : showRefLane} />,
+    [isPreview, showRefLane]
+  );
+
   return (
     <svg
-      ref={trackContainerRef}
       className={classNames(styles.svg, className ?? "")}
       viewBox={viewBox}
       preserveAspectRatio="xMidYMid meet"
@@ -77,21 +79,14 @@ function TrackGeometry(
       <g transform={`rotate(${orientation})`}>
         <TrackPackMarkings useSkaters={updatePack ? skaters : false} />
 
-        <TrackMarkings showRefLane={isPreview ? false : showRefLane} />
+        {TrackMarkingsMemo}
 
         <Track3DCamera />
 
-        <TrackSkaters {...props} />
+        {isPreview ? <TrackSkaters {...props} /> : <TrackDragging {...props} />}
       </g>
     </svg>
   );
 }
 
-const TrackGeometryWithRef = forwardRef<SVGSVGElement, TrackGeometryProps>(
-  (props, ref) => {
-    return <TrackGeometry {...props} trackContainerRef={ref} />;
-  }
-);
-TrackGeometryWithRef.displayName = "TrackGeometryWithRef";
-
-export default TrackGeometryWithRef;
+export default TrackGeometry;
