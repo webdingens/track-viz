@@ -8,7 +8,7 @@ import { setAll, defaultLibrary } from "../../app/reducers/currentLibrarySlice";
 
 import styles from "./ImportLibraryField.module.scss";
 
-const ImportLibraryField = ({ children }) => {
+const ImportLibraryField = ({ children, buttonClassName }) => {
   const dispatch = useDispatch();
   const [error, setError] = useState(null);
 
@@ -50,7 +50,7 @@ const ImportLibraryField = ({ children }) => {
 
   return (
     <div className={styles.ImportLibraryField}>
-      <label>
+      <label className={buttonClassName}>
         <span>{children}</span>
         <input type="file" accept="application/json" onChange={onChange} />
       </label>

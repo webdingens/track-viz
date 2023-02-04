@@ -13,7 +13,7 @@ import { useDataToBlobUrl } from "../../utils/hooks";
 
 import styles from "./ExportLibraryButton.module.scss";
 
-const ExportLibraryButton = ({ children }) => {
+const ExportLibraryButton = ({ children, buttonClassName }) => {
   const storeData = useSelector(selectLibrary);
   const [updating, setUpdating] = useState(false);
   const [url, setData] = useDataToBlobUrl(storeData);
@@ -55,7 +55,7 @@ const ExportLibraryButton = ({ children }) => {
   return (
     <a
       href={href}
-      className={styles.ExportButton}
+      className={[buttonClassName, styles.ExportButton].join(" ")}
       download={title ? `${title}.json` : "TrackViz_LibraryExport.json"}
       style={{
         cursor: updating ? "progress" : "",

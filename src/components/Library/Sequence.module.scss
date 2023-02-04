@@ -16,6 +16,14 @@
     position: relative;
 
     margin-top: 2em;
+
+    &:has(.removeSituationButton:hover) {
+      border-color: red;
+    }
+  }
+
+  hr {
+    margin-block: 1em;
   }
 }
 

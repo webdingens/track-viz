@@ -24,6 +24,9 @@ import {
   PACK_MEASURING_METHODS,
 } from "../../utils/packFunctions";
 import { selectGeneralSettings } from "../../app/reducers/settingsGeneralSlice";
+import styles from "./Situation.module.scss";
+import libraryStyles from "./Library.module.scss";
+import classNames from "classnames";
 
 type SituationProps = PropsWithoutRef<{
   data: SituationType;
@@ -109,7 +112,7 @@ function Situation({ data, idPrefix, onUpdate }: SituationProps) {
   );
 
   return (
-    <div>
+    <div className={styles.situation}>
       <label htmlFor={`${idPrefix}-sit-${data.id}-title`}>Title</label>
       <input
         type="text"
@@ -161,11 +164,27 @@ function Situation({ data, idPrefix, onUpdate }: SituationProps) {
       ) : (
         <p>Empty Track, please copy from current Track</p>
       )}
-      <button type="button" onClick={onCopyFromCurrentTrack} title="Save">
+      <button
+        type="button"
+        onClick={onCopyFromCurrentTrack}
+        title="Save"
+        className={classNames(
+          libraryStyles.libraryButton,
+          libraryStyles.libraryButtonSmall
+        )}
+      >
         Copy from Track
       </button>
       {!data.empty && (
-        <button type="button" onClick={onLoadToCurrentTrack} title="Load">
+        <button
+          type="button"
+          onClick={onLoadToCurrentTrack}
+          title="Load"
+          className={classNames(
+            libraryStyles.libraryButton,
+            libraryStyles.libraryButtonSmall
+          )}
+        >
           Load onto Track
         </button>
       )}

@@ -18,6 +18,8 @@ import {
   SKATER_ANNOTATION_COLORS,
 } from "../../utils/colors";
 import { useId } from "react";
+import JammerStar from "./JammerStar";
+import PivotStripe from "./PivotStripe";
 const Paths = SVGTextures.Paths;
 
 export type SkaterProps = SkaterType & {
@@ -82,32 +84,14 @@ const Skater = (props: SkaterProps) => {
             style={{
               fill: pattern ? `url(#${id}-${pattern})` : hslToString(usedColor),
             }}
+            transform={pattern ? `rotate(${-rotation - trackOrientation})` : ""}
           />
-          {isPivot ? (
-            <>
-              <path
-                className={styles.pivotStripe}
-                d="M-.3,0 L .3,0"
-                style={{
-                  stroke: usedColor.l > 0.7 ? "#000" : "#fff",
-                }}
-              />
-              <circle className={styles.pivotOutline} r=".3" />
-            </>
-          ) : null}
-          {isJammer ? (
-            <>
-              {/* Jammer Star */}
-              <path
-                className={styles.jammerStar}
-                d="m55,237 74-228 74,228L9,96h240"
-                transform={`rotate(-${trackOrientation}) translate(-.23, -.23) scale(.0018)`}
-                style={{
-                  fill: usedColor.l > 0.7 ? "#000" : "#fff",
-                }}
-              />
-            </>
-          ) : null}
+          {isPivot && <PivotStripe color={usedColor} />}
+          {isJammer && (
+            <g transform={`rotate(-${trackOrientation})`}>
+              <JammerStar color={usedColor} />
+            </g>
+          )}
           <g
             className={classNames({
               [styles.statusWrapper]: true,

@@ -20,6 +20,7 @@ import Sequence from "./Sequence";
 
 import "./AccordionStyles.module.scss";
 import styles from "./SequencesEditor.module.scss";
+import libraryStyles from "./Library.module.scss";
 
 type SequencesEditorProps = PropsWithoutRef<{
   sequences: LibraryData["sequences"];
@@ -87,11 +88,17 @@ function SequencesEditor({ sequences, onUpdate }: SequencesEditorProps) {
                     <AccordionItemPanel>
                       <div className={styles.accordionContent}>
                         <Sequence data={sequence} onUpdate={onSequenceUpdate} />
+                        <hr />
                         <button
                           type="button"
                           onClick={() =>
                             removeSequenceFromCurrentSequences(sequence.id)
                           }
+                          className={classNames(
+                            libraryStyles.libraryButton,
+                            libraryStyles.libraryButtonSmall,
+                            styles.removeSequenceButton
+                          )}
                         >
                           Remove Sequence
                         </button>
@@ -106,12 +113,27 @@ function SequencesEditor({ sequences, onUpdate }: SequencesEditorProps) {
       ) : (
         <p>No Sequences added yet</p>
       )}
-      <button type="button" onClick={onAddSequence}>
-        Add Sequence
-      </button>
-      <button type="button" onClick={onRemoveAllSequences}>
-        Remove all Sequences
-      </button>
+      <div className={styles.controls}>
+        <button
+          type="button"
+          onClick={onAddSequence}
+          className={libraryStyles.libraryButton}
+        >
+          Add Sequence
+        </button>
+        {currentSequences.length > 0 && (
+          <button
+            type="button"
+            onClick={onRemoveAllSequences}
+            className={classNames(
+              libraryStyles.libraryButton,
+              styles.removeAllSequences
+            )}
+          >
+            Remove all Sequences
+          </button>
+        )}
+      </div>
     </div>
   );
 }

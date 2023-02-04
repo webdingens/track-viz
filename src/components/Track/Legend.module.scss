@@ -10,7 +10,7 @@
   h2 {
     font-size: 14px;
     margin: 0;
-    margin-bottom: 0.25em;
+    margin-bottom: 0.5em;
   }
 }
 
@@ -28,11 +28,15 @@
 .circlePreview {
   display: flex;
   align-items: center;
-  gap: 0.5em;
+  gap: 0.3em;
   font-size: 14px;
   svg {
     width: 18px;
     height: 18px;
+  }
+
+  span {
+    display: flex;
   }
 
   + .circlePreview {

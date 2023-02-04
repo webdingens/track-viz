@@ -12,6 +12,8 @@ import RichtextEditor from "./RichtextEditor";
 import Situation from "./Situation";
 
 import styles from "./Sequence.module.scss";
+import libraryStyles from "./Library.module.scss";
+import classNames from "classnames";
 
 type SequenceProps = PropsWithRef<{
   data: SequenceType;
@@ -97,9 +99,15 @@ function Sequence({ data, onUpdate }: SequenceProps) {
                 onUpdate={onSituationUpdate}
                 idPrefix={`${id}-seq-${data.id}`}
               />
+              <hr />
               <button
                 type="button"
                 onClick={() => onRemoveSituation(situation.id)}
+                className={classNames(
+                  libraryStyles.libraryButton,
+                  libraryStyles.libraryButtonSmall,
+                  styles.removeSituationButton
+                )}
               >
                 Remove Situation
               </button>
@@ -109,7 +117,14 @@ function Sequence({ data, onUpdate }: SequenceProps) {
       ) : (
         <p>No Situation in this sequence yet.</p>
       )}
-      <button type="button" onClick={onAddSituation}>
+      <button
+        type="button"
+        onClick={onAddSituation}
+        className={classNames(
+          libraryStyles.libraryButton,
+          libraryStyles.libraryButtonSmall
+        )}
+      >
         Add Situation
       </button>
     </div>

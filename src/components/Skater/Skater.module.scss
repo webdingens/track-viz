@@ -1,7 +1,5 @@
 .skater-A {
   .skaterBackground {
-    // fill: #ff0000;
-    fill: var(--color-red);
     stroke: #000;
     stroke-width: 0.05;
   }
@@ -9,8 +7,6 @@
 
 .skater-B {
   .skaterBackground {
-    // fill: #008000;
-    fill: var(--color-green);
     stroke: #000;
     stroke-width: 0.05;
   }
@@ -20,20 +16,7 @@
   font-family: "Work Sans", sans-serif;
 }
 
-.pivotStripe {
-  stroke-width: 0.15;
-  stroke: #fff;
-  pointer-events: none;
-}
-
-.pivotOutline {
-  stroke: #000;
-  stroke-width: 0.05;
-  fill: none;
-}
-
-.statusWrapper,
-.jammerStar {
+.statusWrapper {
   pointer-events: none;
 }
 

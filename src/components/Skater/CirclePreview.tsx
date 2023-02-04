@@ -11,6 +11,8 @@ import {
   hslToString,
   SKATER_ANNOTATION_COLORS,
 } from "../../utils/colors";
+import JammerStar from "./JammerStar";
+import PivotStripe from "./PivotStripe";
 const Paths = SVGTextures.Paths;
 
 function CirclePreview({
@@ -71,6 +73,12 @@ function CirclePreview({
             : hslToString(usedColor),
         }}
       />
+      {skater && (skater.isPivot ?? false) && (
+        <PivotStripe color={usedColor} scale={14 / 0.3} />
+      )}
+      {skater && (skater.isJammer ?? false) && (
+        <JammerStar color={usedColor} scale={14 / 0.3} />
+      )}
     </svg>
   );
 }

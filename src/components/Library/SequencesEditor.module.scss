@@ -24,8 +24,31 @@
   label {
     display: block;
   }
+
+  &:has(.removeAllSequences:hover, .removeAllSequences:focus)
+    :global(.accordion) {
+    box-shadow: 0 0 0 1px red;
+  }
 }
 
 .accordionContent {
   padding: 0.5em;
+
+  &:has(.removeSequenceButton:hover, .removeSequenceButton:focus) {
+    box-shadow: inset 0 0 0 1px red;
+  }
+}
+
+.removeSequenceButton:hover,
+.removeSequenceButton:focus,
+.removeAllSequences:hover,
+.removeAllSequences:focus {
+  border-color: red;
+}
+
+.controls {
+  display: flex;
+  margin-top: 1rem;
+  gap: 1em 0.5em;
+  justify-content: center;
 }

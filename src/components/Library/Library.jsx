@@ -16,6 +16,7 @@ import LibraryView from "./LibraryView";
 import styles from "./Library.module.scss";
 import ExportLibraryButton from "../ExportButton/ExportLibraryButton";
 import ImportLibraryField from "../ImportField/ImportLibraryField";
+import classNames from "classnames";
 
 const LibraryEdit = React.lazy(() => import("./LibraryEdit"));
 
@@ -48,17 +49,32 @@ function Library() {
     <div className={styles.library}>
       {inEditMode ? <LibraryEdit /> : <LibraryView />}
       <div className={styles.controls}>
-        <button type="button" onClick={toggleSaveEditMode}>
+        <button
+          type="button"
+          onClick={toggleSaveEditMode}
+          className={styles.libraryButton}
+        >
           {inEditMode ? "Save Library Changes" : "Edit Library"}
         </button>
         {inEditMode ? (
-          <button type="button" onClick={cancelEditMode}>
+          <button
+            type="button"
+            onClick={cancelEditMode}
+            className={classNames(
+              styles.libraryButton,
+              styles.cancelChangesButton
+            )}
+          >
             Cancel Library Changes
           </button>
         ) : (
           <>
-            <ExportLibraryButton>Export Library (save as)</ExportLibraryButton>
-            <ImportLibraryField>Load Library</ImportLibraryField>
+            <ExportLibraryButton buttonClassName={styles.libraryButton}>
+              Export Library (save as)
+            </ExportLibraryButton>
+            <ImportLibraryField buttonClassName={styles.libraryButton}>
+              Load Library
+            </ImportLibraryField>
           </>
         )}
       </div>

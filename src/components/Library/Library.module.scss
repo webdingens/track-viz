@@ -7,7 +7,31 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
+  padding-top: 0.75rem;
   margin-top: 0.75rem;
+  margin-bottom: 2rem;
 
-  gap: 1em;
+  gap: 1em 0.5em;
+
+  border-top: 1px solid black;
+}
+
+.libraryButton {
+  font-size: 14px;
+  border: 1px solid #000;
+  background: transparent;
+  border-radius: 1em;
+  padding: 0.4em 1em;
+  cursor: pointer;
+}
+.libraryButtonSmall {
+  font-size: 12px;
+}
+
+.cancelChangesButton {
+  &:hover,
+  &:focus {
+    border-color: red;
+  }
 }

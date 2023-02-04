@@ -31,8 +31,12 @@ function Legend() {
       {legendSkaters.map((skater) => {
         return (
           <div key={skater.id} className={styles.circlePreview}>
-            <CirclePreview skater={skater} />
-            {skater.description} (T: <CirclePreview team={skater.team} />)
+            <CirclePreview skater={skater} ignoreTrackOrientation />
+            <span>
+              (<CirclePreview team={skater.team} />
+              ):
+            </span>
+            {skater.description}
           </div>
         );
       })}
