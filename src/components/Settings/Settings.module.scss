@@ -4,7 +4,8 @@
   left: 50%;
   max-width: 450px;
   width: calc(100% - 40px);
-  max-height: 100vh;
+  max-height: calc(100vh - 150px);
+  max-height: calc(100dvh - 20px);
   min-height: 200px;
   padding: 16px;
   overflow: auto;

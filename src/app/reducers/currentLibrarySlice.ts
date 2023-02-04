@@ -6,7 +6,7 @@ import { LibraryData } from "../../types/LibraryData";
 export const defaultLibrary: LibraryData = {
   title: "",
   description: "",
-  povTeam: "A",
+  povTeam: "None",
   sequences: [],
 };
 

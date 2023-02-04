@@ -1,4 +1,5 @@
 import React from "react";
+import { TRACK_VIEWS } from "../../app/reducers/settingsTrackSlice";
 
 import styles from "./TrackMarkings.module.scss";
 
@@ -45,6 +46,13 @@ const TrackMarkings = (props) => (
 
     {/* Figure 6 Pivot Line*/}
     <path d="M5.33,3.81 L5.33,7.775" />
+    {props.view === TRACK_VIEWS.START && (
+      <g transform={`translate(5.33,3.52) rotate(-${props.orientation})`}>
+        <text fontSize=".3" textAnchor="middle" y=".15">
+          P
+        </text>
+      </g>
+    )}
 
     {/* Figure 7 Ticks */}
     <path
@@ -72,6 +80,17 @@ const TrackMarkings = (props) => (
         ((7.775 - 8.385) / (2 * 5.33)) * (5.33 - 3 * TICK_DISTANCE) + 8.08
       }`}
     />
+    {props.view === TRACK_VIEWS.START && (
+      <g
+        transform={`translate(${5.33 - 3 * TICK_DISTANCE},3.52) rotate(-${
+          props.orientation
+        })`}
+      >
+        <text fontSize=".3" textAnchor="middle" y=".15">
+          J
+        </text>
+      </g>
+    )}
 
     {/* Figure 8 Ticks */}
     {[0, 1, 2, 3].map((el, idx) => (
@@ -146,7 +165,7 @@ const TrackMarkings = (props) => (
     })}
 
     {/* Outside Track */}
-    {props.showRefLane ? (
+    {props.view === TRACK_VIEWS.FULL && (
       <g className={styles.outsideOfficiatingBoundary}>
         <path
           d={`M5.33,${7.775 + 3.05} A ${8.08 + 3.05} ${
@@ -162,19 +181,23 @@ const TrackMarkings = (props) => (
         <path d={`M-5.33,${-7.775 - 3.05} L5.33,${-8.385 - 3.05}`} />
         <path d={`M5.33,${7.775 + 3.05} L-5.33,${+8.385 + 3.05}`} />
       </g>
-    ) : null}
+    )}
 
     {/* Measurement Line */}
-    {/* <path className={styles.measurementLine}
+    {/* <path
+      className={styles.measurementLine}
       d={`M-5.33,-${MEASUREMENT_RADIUS} A ${MEASUREMENT_RADIUS} ${MEASUREMENT_RADIUS} 180 1 0 -5.33,${MEASUREMENT_RADIUS}`}
     />
-    <path className={styles.measurementLine}
+    <path
+      className={styles.measurementLine}
       d={`M5.33,${MEASUREMENT_RADIUS} A ${MEASUREMENT_RADIUS} ${MEASUREMENT_RADIUS} 180 1 0 5.33,-${MEASUREMENT_RADIUS}`}
     />
-    <path className={styles.measurementLine}
+    <path
+      className={styles.measurementLine}
       d={`M5.33,${MEASUREMENT_RADIUS} L-5.33,${MEASUREMENT_RADIUS}`}
     />
-    <path className={styles.measurementLine}
+    <path
+      className={styles.measurementLine}
       d={`M5.33,-${MEASUREMENT_RADIUS} L-5.33,-${MEASUREMENT_RADIUS}`}
     /> */}
   </>

@@ -73,12 +73,8 @@ function TrackGeometry(props: TrackGeometryProps) {
 
   // don't redraw Track Markings on skater changes
   const TrackMarkingsMemo = useMemo(
-    () => (
-      <TrackMarkings
-        showRefLane={isPreview ? false : view === TRACK_VIEWS.FULL}
-      />
-    ),
-    [isPreview, view]
+    () => <TrackMarkings view={view} orientation={orientation} />,
+    [orientation, view]
   );
 
   return (

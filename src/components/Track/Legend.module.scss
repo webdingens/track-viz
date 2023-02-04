@@ -7,11 +7,21 @@
   pointer-events: none;
   text-align: left;
 
+  font-size: min(16px, 0.95vw);
+  font-size: min(16px, 1.2cqw);
+
+  @media (orientation: portrait) {
+    font-size: min(16px, 1.6vw);
+    font-size: min(16px, 2.3cqw);
+  }
+
   h2 {
-    font-size: 14px;
+    font-size: calc(1em * 14 / 16);
     margin: 0;
     margin-bottom: 0.5em;
   }
+
+  transform: scale(100vw / 200px) translate(-50%, -50%);
 }
 
 .legendCorner {
@@ -21,6 +31,7 @@
   left: 0;
   background: #fff;
   padding: 1em;
+  font-size: 16px;
 
   box-shadow: 2px -2px 10px 0 rgba(0 0 0 / 0.3);
 }
@@ -29,10 +40,10 @@
   display: flex;
   align-items: center;
   gap: 0.3em;
-  font-size: 14px;
+  font-size: calc(1em * 14 / 16);
   svg {
-    width: 18px;
-    height: 18px;
+    width: calc(1em * 18 / 14);
+    height: calc(1em * 18 / 14);
   }
 
   span {
