@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useId, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectEditedLibrary,
@@ -12,6 +12,7 @@ import SequencesEditor from "./SequencesEditor";
 
 function LibraryEdit() {
   const data = useSelector(selectEditedLibrary);
+  const libraryId = useId();
   const dispatch = useDispatch();
 
   const [currentTitle, setCurrentTitle] = useState(data.title ?? "");
@@ -60,10 +61,11 @@ function LibraryEdit() {
         />
       </section>
       <section>
-        <h3>Description</h3>
+        <label id={`${libraryId}-description`}>Description</label>
         <RichtextEditor
           content={currentDescription}
           onUpdate={(markup) => setCurrentDescription(markup)}
+          ariaDescribedBy={`${libraryId}-description`}
         />
       </section>
       <section>
@@ -77,7 +79,7 @@ function LibraryEdit() {
             onChange={onChangePovTeam}
             title="Team A"
           />
-
+          Team A
           <CirclePreview team="A" />
         </label>
         <label>
@@ -89,6 +91,7 @@ function LibraryEdit() {
             onChange={onChangePovTeam}
             title="Team B"
           />
+          Team B
           <CirclePreview team="B" />
         </label>
         <label>

@@ -3,3 +3,10 @@
     width: 100%;
   }
 }
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em 0.5em;
+  margin-top: 0.75em;
+}

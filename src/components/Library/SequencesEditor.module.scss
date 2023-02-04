@@ -12,7 +12,7 @@
 
     > li,
     > li > ul > li {
-      border: 1px solid black;
+      border: 1px solid var(--library-border-color);
       padding: 0.5em;
 
       + li {
@@ -33,14 +33,8 @@
 
 .accordionContent {
   padding: 0.5em;
-
-  &:has(.removeSequenceButton:hover, .removeSequenceButton:focus) {
-    box-shadow: inset 0 0 0 1px red;
-  }
 }
 
-.removeSequenceButton:hover,
-.removeSequenceButton:focus,
 .removeAllSequences:hover,
 .removeAllSequences:focus {
   border-color: red;
@@ -48,7 +42,65 @@
 
 .controls {
   display: flex;
+  flex-wrap: wrap;
   margin-top: 1rem;
   gap: 1em 0.5em;
   justify-content: center;
+}
+
+.accordionItemHeader {
+  display: flex;
+  > :first-child {
+    flex-grow: 1;
+  }
+}
+
+.sequenceControls {
+  width: 45px;
+  flex: 0 0 45px;
+
+  display: grid;
+  grid-template:
+    "delete up"
+    "delete down";
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    padding: 0;
+    margin: 0;
+    background: none;
+    border-right: 1px solid var(--library-border-color);
+
+    cursor: pointer;
+
+    &:hover,
+    &:focus {
+      background-color: var(--library-button-hover-color);
+    }
+
+    &[disabled] {
+      color: #ccc;
+      cursor: not-allowed;
+    }
+  }
+
+  button:nth-child(1) {
+    grid-area: delete;
+  }
+
+  button:nth-child(2) {
+    grid-area: up;
+    border-bottom: 1px solid var(--library-border-color);
+  }
+
+  button:nth-child(3) {
+    grid-area: down;
+  }
+
+  :global(.accordion__heading--expanded) + & {
+    border-bottom: 1px solid var(--library-border-color);
+  }
 }

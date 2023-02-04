@@ -1,10 +1,20 @@
-import { ChangeEvent, PropsWithRef, useEffect, useState } from "react";
+import { ChangeEvent, PropsWithRef, useEffect, useId, useState } from "react";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionItemHeading,
+  AccordionItemButton,
+  AccordionItemPanel,
+  AccordionItemState,
+} from "react-accessible-accordion";
 import {
   Sequence as SequenceType,
   Situation as SituationType,
 } from "../../types/LibraryData";
 import {
   addEmptySituation,
+  moveSituationDown,
+  moveSituationUp,
   removeSituation,
   setSituation,
 } from "../../utils/libraryEdit";
@@ -14,6 +24,13 @@ import Situation from "./Situation";
 import styles from "./Sequence.module.scss";
 import libraryStyles from "./Library.module.scss";
 import classNames from "classnames";
+import {
+  FiArrowDown,
+  FiArrowUp,
+  FiMinus,
+  FiPlus,
+  FiTrash2,
+} from "react-icons/fi";
 
 type SequenceProps = PropsWithRef<{
   data: SequenceType;
@@ -23,6 +40,7 @@ type SequenceProps = PropsWithRef<{
 function Sequence({ data, onUpdate }: SequenceProps) {
   const [currentSequence, setCurrentSequence] = useState(data);
   const id = "library";
+  const sequenceId = useId();
 
   const onAddSituation = () => {
     const newSequence = addEmptySituation(currentSequence);
@@ -33,8 +51,26 @@ function Sequence({ data, onUpdate }: SequenceProps) {
     setCurrentSequence(newSequence);
   };
 
-  const onRemoveSituation = (situationId: number) => {
-    const newSequence = removeSituation(currentSequence, situationId);
+  const onMoveSituationUp = (situation: SituationType) => {
+    const newSequence = moveSituationUp(currentSequence, situation);
+    if (!newSequence) {
+      console.error("addingScenario failed");
+      return;
+    }
+    setCurrentSequence(newSequence);
+  };
+
+  const onMoveSituationDown = (situation: SituationType) => {
+    const newSequence = moveSituationDown(currentSequence, situation);
+    if (!newSequence) {
+      console.error("addingScenario failed");
+      return;
+    }
+    setCurrentSequence(newSequence);
+  };
+
+  const onRemoveSituation = (situation: SituationType) => {
+    const newSequence = removeSituation(currentSequence, situation);
     if (!newSequence) {
       console.error("addingScenario failed");
       return;
@@ -81,52 +117,93 @@ function Sequence({ data, onUpdate }: SequenceProps) {
         placeholder="Sequence Title"
       />
 
-      <p>Description</p>
+      <label id={`${sequenceId}-description`}>Description</label>
       <RichtextEditor
         content={currentSequence.description ?? ""}
         onUpdate={onUpdateDescription}
+        ariaDescribedBy={`${sequenceId}-description`}
       />
 
-      <hr />
+      <p>
+        <strong>Situations:</strong>
+      </p>
 
       {data.sequence.length > 0 ? (
-        <ul className={styles.situationList}>
+        <Accordion allowZeroExpanded allowMultipleExpanded>
           {data.sequence.map((situation, idx) => (
-            <li key={situation.id}>
-              <p className={styles.situationIndex}>Situation {idx + 1}</p>
-              <Situation
-                data={situation}
-                onUpdate={onSituationUpdate}
-                idPrefix={`${id}-seq-${data.id}`}
-              />
-              <hr />
-              <button
-                type="button"
-                onClick={() => onRemoveSituation(situation.id)}
-                className={classNames(
-                  libraryStyles.libraryButton,
-                  libraryStyles.libraryButtonSmall,
-                  styles.removeSituationButton
+            <AccordionItem key={situation.id}>
+              <AccordionItemState>
+                {({ expanded }) => (
+                  <>
+                    <div className={styles.situationItemHeader}>
+                      <AccordionItemHeading
+                        className={classNames({
+                          accordion__heading: true,
+                          "accordion__heading--expanded": expanded,
+                        })}
+                      >
+                        <AccordionItemButton>
+                          <span>
+                            {situation.title
+                              ? situation.title
+                              : `Situation ${idx + 1}`}
+                          </span>
+                          <span>{expanded ? <FiMinus /> : <FiPlus />}</span>
+                        </AccordionItemButton>
+                      </AccordionItemHeading>
+                      <div className={styles.situationControls}>
+                        <button
+                          onClick={() => onRemoveSituation(situation)}
+                          title="Remove Sequence"
+                        >
+                          <FiTrash2 />
+                        </button>
+                        <button
+                          disabled={idx === 0}
+                          onClick={() => onMoveSituationUp(situation)}
+                          title="Move Sequence Up"
+                        >
+                          <FiArrowUp />
+                        </button>
+                        <button
+                          disabled={idx === data.sequence.length - 1}
+                          onClick={() => onMoveSituationDown(situation)}
+                          title="Move Sequence Down"
+                        >
+                          <FiArrowDown />
+                        </button>
+                      </div>
+                    </div>
+                    <AccordionItemPanel>
+                      <div className={styles.situationWrapper}>
+                        <Situation
+                          data={situation}
+                          onUpdate={onSituationUpdate}
+                          idPrefix={`${id}-seq-${data.id}`}
+                        />
+                      </div>
+                    </AccordionItemPanel>
+                  </>
                 )}
-              >
-                Remove Situation
-              </button>
-            </li>
+              </AccordionItemState>
+            </AccordionItem>
           ))}
-        </ul>
+        </Accordion>
       ) : (
         <p>No Situation in this sequence yet.</p>
       )}
-      <button
-        type="button"
-        onClick={onAddSituation}
-        className={classNames(
-          libraryStyles.libraryButton,
-          libraryStyles.libraryButtonSmall
-        )}
-      >
-        Add Situation
-      </button>
+      <div className={styles.controls}>
+        <button
+          type="button"
+          onClick={onAddSituation}
+          className={classNames(
+            libraryStyles.libraryButton,
+            libraryStyles.libraryButtonSmall
+          )}
+        >
+          Add Situation
+        </button>
+      </div>
     </div>
   );
 }

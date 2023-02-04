@@ -13,7 +13,7 @@
   :global(.rdw-editor-toolbar),
   :global(.rdw-option-wrapper),
   :global(.rdw-dropdown-wrapper) {
-    border-color: #aaa;
+    border-color: var(--library-border-color);
   }
 
   :global(.rdw-emoji-modal) {
@@ -31,6 +31,6 @@
 }
 
 .editorContent {
-  border: 1px solid #aaa;
+  border: 1px solid var(--library-border-color);
   padding: 0.5em;
 }

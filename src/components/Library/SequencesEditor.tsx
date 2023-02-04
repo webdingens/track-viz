@@ -8,11 +8,19 @@ import {
   AccordionItemPanel,
   AccordionItemState,
 } from "react-accessible-accordion";
-import { FiPlus, FiMinus } from "react-icons/fi";
+import {
+  FiPlus,
+  FiMinus,
+  FiTrash2,
+  FiArrowUp,
+  FiArrowDown,
+} from "react-icons/fi";
 
 import { LibraryData, Sequence as SequenceType } from "../../types/LibraryData";
 import {
   addEmptySequence,
+  moveSequenceDown,
+  moveSequenceUp,
   removeSequence,
   setSequence,
 } from "../../utils/libraryEdit";
@@ -48,10 +56,28 @@ function SequencesEditor({ sequences, onUpdate }: SequencesEditorProps) {
     setCurrentSequences(newSequences);
   };
 
-  const removeSequenceFromCurrentSequences = (sequenceId: number) => {
-    const newSequences = removeSequence(currentSequences, sequenceId);
+  const onMoveSequenceUp = (sequence: SequenceType) => {
+    const newSequences = moveSequenceUp(currentSequences, sequence);
     if (!newSequences) {
-      console.error("setting updated Sequence failed");
+      console.error("moving Sequence up failed");
+      return;
+    }
+    setCurrentSequences(newSequences);
+  };
+
+  const onMoveSequenceDown = (sequence: SequenceType) => {
+    const newSequences = moveSequenceDown(currentSequences, sequence);
+    if (!newSequences) {
+      console.error("moving Sequence down failed");
+      return;
+    }
+    setCurrentSequences(newSequences);
+  };
+
+  const onRemoveSequence = (sequence: SequenceType) => {
+    const newSequences = removeSequence(currentSequences, sequence);
+    if (!newSequences) {
+      console.error("removing Sequence failed");
       return;
     }
     setCurrentSequences(newSequences);
@@ -70,38 +96,48 @@ function SequencesEditor({ sequences, onUpdate }: SequencesEditorProps) {
               <AccordionItemState>
                 {({ expanded }) => (
                   <>
-                    <AccordionItemHeading
-                      className={classNames({
-                        accordion__heading: true,
-                        "accordion__heading--expanded": expanded,
-                      })}
-                    >
-                      <AccordionItemButton>
-                        <span>
-                          {sequence.title
-                            ? sequence.title
-                            : `Sequence ${idx + 1} (no title)`}
-                        </span>
-                        <span>{expanded ? <FiMinus /> : <FiPlus />}</span>
-                      </AccordionItemButton>
-                    </AccordionItemHeading>
+                    <div className={styles.accordionItemHeader}>
+                      <AccordionItemHeading
+                        className={classNames({
+                          accordion__heading: true,
+                          "accordion__heading--expanded": expanded,
+                        })}
+                      >
+                        <AccordionItemButton>
+                          <span>
+                            {sequence.title
+                              ? sequence.title
+                              : `Sequence ${idx + 1} (no title)`}
+                          </span>
+                          <span>{expanded ? <FiMinus /> : <FiPlus />}</span>
+                        </AccordionItemButton>
+                      </AccordionItemHeading>
+                      <div className={styles.sequenceControls}>
+                        <button
+                          onClick={() => onRemoveSequence(sequence)}
+                          title="Remove Sequence"
+                        >
+                          <FiTrash2 />
+                        </button>
+                        <button
+                          disabled={idx === 0}
+                          onClick={() => onMoveSequenceUp(sequence)}
+                          title="Move Sequence Up"
+                        >
+                          <FiArrowUp />
+                        </button>
+                        <button
+                          disabled={idx === currentSequences.length - 1}
+                          onClick={() => onMoveSequenceDown(sequence)}
+                          title="Move Sequence Down"
+                        >
+                          <FiArrowDown />
+                        </button>
+                      </div>
+                    </div>
                     <AccordionItemPanel>
                       <div className={styles.accordionContent}>
                         <Sequence data={sequence} onUpdate={onSequenceUpdate} />
-                        <hr />
-                        <button
-                          type="button"
-                          onClick={() =>
-                            removeSequenceFromCurrentSequences(sequence.id)
-                          }
-                          className={classNames(
-                            libraryStyles.libraryButton,
-                            libraryStyles.libraryButtonSmall,
-                            styles.removeSequenceButton
-                          )}
-                        >
-                          Remove Sequence
-                        </button>
                       </div>
                     </AccordionItemPanel>
                   </>

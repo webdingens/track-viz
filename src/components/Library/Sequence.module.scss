@@ -7,23 +7,9 @@
   hr {
     margin-block: 2em;
   }
-}
 
-.situationList {
-  > li {
-    padding: 0.5em;
-    border: 1px solid #aaa;
-    position: relative;
-
-    margin-top: 2em;
-
-    &:has(.removeSituationButton:hover) {
-      border-color: red;
-    }
-  }
-
-  hr {
-    margin-block: 1em;
+  * + label {
+    margin-top: 1em;
   }
 }
 
@@ -33,4 +19,70 @@
   margin-bottom: 0.25em;
   font-size: 12px;
   opacity: 0.7;
+}
+
+.situationItemHeader {
+  display: flex;
+  border-bottom: 1px solid var(--library-border-color);
+  > :first-child {
+    flex-grow: 1;
+  }
+}
+
+.situationControls {
+  width: 45px;
+  flex: 0 0 45px;
+
+  display: grid;
+  grid-template:
+    "delete up"
+    "delete down";
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    padding: 0;
+    margin: 0;
+    background: none;
+    border-right: 1px solid var(--library-border-color);
+
+    cursor: pointer;
+
+    &:hover,
+    &:focus {
+      background-color: var(--library-button-hover-color);
+    }
+
+    &[disabled] {
+      color: #ccc;
+      cursor: not-allowed;
+    }
+  }
+
+  button:nth-child(1) {
+    grid-area: delete;
+  }
+
+  button:nth-child(2) {
+    grid-area: up;
+    border-bottom: 1px solid var(--library-border-color);
+  }
+
+  button:nth-child(3) {
+    grid-area: down;
+  }
+
+  :global(.accordion__heading--expanded) + & {
+    border-bottom: 1px solid var(--library-border-color);
+  }
+}
+
+.situationWrapper {
+  padding: 0.5em;
+}
+
+.controls {
+  margin-top: 0.5em;
 }

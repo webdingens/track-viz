@@ -2,6 +2,7 @@ import {
   ChangeEvent,
   PropsWithoutRef,
   useEffect,
+  useId,
   useMemo,
   useState,
 } from "react";
@@ -39,6 +40,7 @@ function Situation({ data, idPrefix, onUpdate }: SituationProps) {
   const dispatch = useDispatch();
   const settings = useSelector(selectGeneralSettings);
   const currentTrack = useSelector(selectCurrentTrack);
+  const situationId = useId();
 
   const onUpdateDescription = (markup: string) => {
     setCurrentSituation({
@@ -122,10 +124,11 @@ function Situation({ data, idPrefix, onUpdate }: SituationProps) {
         placeholder="Situation Title"
       />
 
-      <p>Description</p>
+      <label id={`${situationId}-description`}>Description</label>
       <RichtextEditor
         content={data.description ?? ""}
         onUpdate={onUpdateDescription}
+        ariaDescribedBy={`${situationId}-description`}
       />
 
       {/* Changing of types, needs different fields for prompting of cases or the like. */}
@@ -153,7 +156,9 @@ function Situation({ data, idPrefix, onUpdate }: SituationProps) {
         </label>
       </fieldset> */}
 
-      <p>Thumbnail</p>
+      <p>
+        <strong>Thumbnail</strong>
+      </p>
       {!data.empty ? (
         <TrackGeometry
           skaters={skatersWDP}
@@ -164,30 +169,32 @@ function Situation({ data, idPrefix, onUpdate }: SituationProps) {
       ) : (
         <p>Empty Track, please copy from current Track</p>
       )}
-      <button
-        type="button"
-        onClick={onCopyFromCurrentTrack}
-        title="Save"
-        className={classNames(
-          libraryStyles.libraryButton,
-          libraryStyles.libraryButtonSmall
-        )}
-      >
-        Copy from Track
-      </button>
-      {!data.empty && (
+      <div className={styles.controls}>
         <button
           type="button"
-          onClick={onLoadToCurrentTrack}
-          title="Load"
+          onClick={onCopyFromCurrentTrack}
+          title="Save"
           className={classNames(
             libraryStyles.libraryButton,
             libraryStyles.libraryButtonSmall
           )}
         >
-          Load onto Track
+          Copy from Track
         </button>
-      )}
+        {!data.empty && (
+          <button
+            type="button"
+            onClick={onLoadToCurrentTrack}
+            title="Load"
+            className={classNames(
+              libraryStyles.libraryButton,
+              libraryStyles.libraryButtonSmall
+            )}
+          >
+            Load onto Track
+          </button>
+        )}
+      </div>
     </div>
   );
 }

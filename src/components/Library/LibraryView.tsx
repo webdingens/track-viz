@@ -122,7 +122,11 @@ function LibraryView() {
                           <ul className={styles.situationList}>
                             {sequence.sequence.map((situation) => (
                               <li key={situation.id}>
-                                {!!situation.title && <p>{situation.title}</p>}
+                                {!!situation.title && (
+                                  <p>
+                                    <strong>{situation.title}</strong>
+                                  </p>
+                                )}
                                 {!!situation.description && (
                                   <RichtextView
                                     content={situation.description}

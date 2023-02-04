@@ -15,9 +15,14 @@ import styles from "./RichtextEditor.module.scss";
 type RichtextEditorProps = PropsWithRef<{
   content: string;
   onUpdate?: (markup: string) => void;
+  ariaDescribedBy?: string;
 }>;
 
-function RichtextEditor({ content = "", onUpdate }: RichtextEditorProps) {
+function RichtextEditor({
+  content = "",
+  onUpdate,
+  ariaDescribedBy,
+}: RichtextEditorProps) {
   const descriptionInitialContentState = useMemo(() => {
     const blocksFromHTML = convertFromHTML(content);
     return ContentState.createFromBlockArray(
@@ -49,6 +54,7 @@ function RichtextEditor({ content = "", onUpdate }: RichtextEditorProps) {
       editorClassName={styles.editorContent}
       onContentStateChange={onContentStateChange}
       toolbarOnFocus={false}
+      ariaDescribedBy={ariaDescribedBy}
       toolbar={{
         options: [
           "inline",

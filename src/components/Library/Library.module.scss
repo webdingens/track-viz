@@ -1,6 +1,26 @@
 .library {
   padding: 1rem;
   overflow: auto;
+
+  --library-border-color: #999;
+  --library-button-hover-color: #fafafa;
+
+  label {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    margin-bottom: 0.5em;
+    gap: 0.5em;
+  }
+
+  section > label {
+    font-size: 16px;
+  }
+
+  section + section {
+    margin-top: 1rem;
+  }
 }
 
 .controls {
@@ -14,7 +34,7 @@
 
   gap: 1em 0.5em;
 
-  border-top: 1px solid black;
+  border-top: 1px solid var(--library-border-color);
 }
 
 .libraryButton {
