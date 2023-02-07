@@ -5,7 +5,6 @@ import {
   SkaterType,
   SKATER_ANNOTATION_PATTERNS,
 } from "../../types/LibraryData";
-import SVGTextures from "react-svg-textures";
 import {
   getAlternateColor,
   hslToString,
@@ -13,7 +12,7 @@ import {
 } from "../../utils/colors";
 import JammerStar from "./JammerStar";
 import PivotStripe from "./PivotStripe";
-const Paths = SVGTextures.Paths;
+import Paths from "../Textures/Paths";
 
 function CirclePreview({
   skater,

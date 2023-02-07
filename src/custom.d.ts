@@ -4,3 +4,4 @@ declare module "*.module.scss" {
 }
 
 declare module "react-svg-textures";
+declare module "textures";

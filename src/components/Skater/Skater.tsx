@@ -1,10 +1,11 @@
-import SkaterDragWrapper from "./SkaterDragWrapper";
+import { useId } from "react";
 import { useSelector } from "react-redux";
-import SVGTextures from "react-svg-textures";
-
-import styles from "./Skater.module.scss";
-
 import classNames from "classnames";
+import Paths from "../Textures/Paths";
+import JammerStar from "./JammerStar";
+import PivotStripe from "./PivotStripe";
+import SkaterDragWrapper from "./SkaterDragWrapper";
+
 import { selectTrackOrientation } from "../../app/reducers/settingsTrackSlice";
 
 import {
@@ -17,10 +18,8 @@ import {
   hslToString,
   SKATER_ANNOTATION_COLORS,
 } from "../../utils/colors";
-import { useId } from "react";
-import JammerStar from "./JammerStar";
-import PivotStripe from "./PivotStripe";
-const Paths = SVGTextures.Paths;
+
+import styles from "./Skater.module.scss";
 
 export type SkaterProps = SkaterType & {
   key: number;

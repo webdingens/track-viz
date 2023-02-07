@@ -417,20 +417,18 @@ class TrackDragging extends React.Component {
     // return this.props.skaters;
     // sort the has focus skater to the back
     const sortedSkaters = [...this.props.skaters];
-    if (sortedSkaters.find((skater) => skater.hasFocus)) {
-      sortedSkaters.sort((a, b) => (a.hasFocus ? 1 : 0) - (b.hasFocus ? 1 : 0));
-    }
 
     const focussedSkater = sortedSkaters.find((skater) => skater.hasFocus);
-    if (
-      focussedSkater?.id !== this.lastFocussed?.id ||
-      typeof this.sortedSkaters === "undefined"
-    ) {
+    if (focussedSkater?.id !== this.lastFocussed?.id) {
       this.lastFocussed = focussedSkater;
-      this.sortedSkaters = sortedSkaters;
+      if (sortedSkaters.find((skater) => skater.hasFocus)) {
+        sortedSkaters.sort(
+          (a, b) => (a.hasFocus ? 1 : 0) - (b.hasFocus ? 1 : 0)
+        );
+      }
     }
 
-    return this.sortedSkaters;
+    return sortedSkaters;
   }
 
   render() {

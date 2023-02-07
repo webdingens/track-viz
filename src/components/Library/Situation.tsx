@@ -68,6 +68,7 @@ function Situation({ data, idPrefix, onUpdate }: SituationProps) {
     });
   };
 
+  // needs trackData as ref because the function might reference an outdated trackData from the store otherwise
   const onCopyFromCurrentTrack = () => {
     setCurrentSituation({
       ...data,

@@ -1,6 +1,5 @@
 import PropTypes from "prop-types";
 import { connect, useSelector } from "react-redux";
-import SVGTextures from "react-svg-textures";
 import classNames from "classnames";
 
 import { selectCurrentSkatersWDPPivotLineDistance } from "../../app/reducers/currentTrackSlice";
@@ -25,7 +24,7 @@ import {
 
 import styles from "./TrackPackMarkings.module.scss";
 
-const { Paths } = SVGTextures;
+import Paths from "../Textures/Paths";
 
 const PartialTrackShapeSector = ({ bounds, overlay, engagementZone, pack }) => {
   if (!bounds) return null;
