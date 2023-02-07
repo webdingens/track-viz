@@ -1,9 +1,11 @@
 import {
   ChangeEvent,
   PropsWithoutRef,
+  useCallback,
   useEffect,
   useId,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -39,8 +41,9 @@ function Situation({ data, idPrefix, onUpdate }: SituationProps) {
   const [currentSituation, setCurrentSituation] = useState(data);
   const dispatch = useDispatch();
   const settings = useSelector(selectGeneralSettings);
-  const currentTrack = useSelector(selectCurrentTrack);
+  const currentTrack = useSelector(selectCurrentTrack); // TODO: Makes the Situation Update
   const situationId = useId();
+  const trackData = useRef(currentTrack);
 
   const onUpdateDescription = (markup: string) => {
     setCurrentSituation({
@@ -68,8 +71,8 @@ function Situation({ data, idPrefix, onUpdate }: SituationProps) {
   const onCopyFromCurrentTrack = () => {
     setCurrentSituation({
       ...data,
-      skaters: currentTrack.skaters,
-      refs: currentTrack.refs,
+      skaters: trackData.current.skaters,
+      refs: trackData.current.refs,
       empty: false,
     });
   };
@@ -85,6 +88,11 @@ function Situation({ data, idPrefix, onUpdate }: SituationProps) {
       })
     );
   };
+
+  // save intermediate changes
+  useEffect(() => {
+    trackData.current = currentTrack;
+  }, [currentTrack]);
 
   useEffect(() => {
     if (onUpdate) onUpdate(currentSituation);
@@ -113,26 +121,28 @@ function Situation({ data, idPrefix, onUpdate }: SituationProps) {
     [data.skaters]
   );
 
-  return (
-    <div className={styles.situation}>
-      <label htmlFor={`${idPrefix}-sit-${data.id}-title`}>Title</label>
-      <input
-        type="text"
-        id={`${idPrefix}-sit-${data.id}-title`}
-        defaultValue={currentSituation.title}
-        onChange={onChangeTitle}
-        placeholder="Situation Title"
-      />
+  // only update if data or situation changed
+  return useMemo(
+    () => (
+      <div className={styles.situation}>
+        <label htmlFor={`${idPrefix}-sit-${data.id}-title`}>Title</label>
+        <input
+          type="text"
+          id={`${idPrefix}-sit-${data.id}-title`}
+          defaultValue={currentSituation.title}
+          onChange={onChangeTitle}
+          placeholder="Situation Title"
+        />
 
-      <label id={`${situationId}-description`}>Description</label>
-      <RichtextEditor
-        content={data.description ?? ""}
-        onUpdate={onUpdateDescription}
-        ariaDescribedBy={`${situationId}-description`}
-      />
+        <label id={`${situationId}-description`}>Description</label>
+        <RichtextEditor
+          content={data.description ?? ""}
+          onUpdate={onUpdateDescription}
+          ariaDescribedBy={`${situationId}-description`}
+        />
 
-      {/* Changing of types, needs different fields for prompting of cases or the like. */}
-      {/* <fieldset>
+        {/* Changing of types, needs different fields for prompting of cases or the like. */}
+        {/* <fieldset>
         <legend>Type</legend>
         <label>
           <input
@@ -156,46 +166,48 @@ function Situation({ data, idPrefix, onUpdate }: SituationProps) {
         </label>
       </fieldset> */}
 
-      <p>
-        <strong>Thumbnail</strong>
-      </p>
-      {!data.empty ? (
-        <TrackGeometry
-          skaters={skatersWDP}
-          isPreview={true}
-          updatePack={true}
-          style={{ maxHeight: "200px" }}
-        />
-      ) : (
-        <p>Empty Track, please copy from current Track</p>
-      )}
-      <div className={styles.controls}>
-        <button
-          type="button"
-          onClick={onCopyFromCurrentTrack}
-          title="Save"
-          className={classNames(
-            libraryStyles.libraryButton,
-            libraryStyles.libraryButtonSmall
-          )}
-        >
-          Copy from Track
-        </button>
-        {!data.empty && (
+        <p>
+          <strong>Thumbnail</strong>
+        </p>
+        {!data.empty ? (
+          <TrackGeometry
+            skaters={skatersWDP}
+            isPreview={true}
+            updatePack={true}
+            style={{ maxHeight: "200px" }}
+          />
+        ) : (
+          <p>Empty Track, please copy from current Track</p>
+        )}
+        <div className={styles.controls}>
           <button
             type="button"
-            onClick={onLoadToCurrentTrack}
-            title="Load"
+            onClick={onCopyFromCurrentTrack}
+            title="Save"
             className={classNames(
               libraryStyles.libraryButton,
               libraryStyles.libraryButtonSmall
             )}
           >
-            Load onto Track
+            Copy from Track
           </button>
-        )}
+          {!data.empty && (
+            <button
+              type="button"
+              onClick={onLoadToCurrentTrack}
+              title="Load"
+              className={classNames(
+                libraryStyles.libraryButton,
+                libraryStyles.libraryButtonSmall
+              )}
+            >
+              Load onto Track
+            </button>
+          )}
+        </div>
       </div>
-    </div>
+    ),
+    [data, currentSituation]
   );
 }
 

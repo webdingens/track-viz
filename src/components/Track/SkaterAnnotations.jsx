@@ -109,29 +109,31 @@ function SkaterAnnotations() {
       </div>
       <div>
         <label htmlFor={`${id}-pattern`}>Pattern</label>
-        <select
-          name="pattern"
-          id={`${id}-pattern`}
-          value={pattern}
-          onChange={(evt) => {
-            setPattern(evt.target.value);
-          }}
-        >
-          <option value="">None</option>
-          {Object.values(SKATER_ANNOTATION_PATTERNS).map((value, idx) => (
-            <option value={value} key={idx}>
-              {value}
-            </option>
-          ))}
-        </select>
-        <CirclePreview
-          color={
-            color === SKATER_ANNOTATION_COLORS.ORIGINAL
-              ? teamColor
-              : alternateColor
-          }
-          pattern={pattern}
-        />
+        <div>
+          <select
+            name="pattern"
+            id={`${id}-pattern`}
+            value={pattern}
+            onChange={(evt) => {
+              setPattern(evt.target.value);
+            }}
+          >
+            <option value="">None</option>
+            {Object.values(SKATER_ANNOTATION_PATTERNS).map((value, idx) => (
+              <option value={value} key={idx}>
+                {value}
+              </option>
+            ))}
+          </select>
+          <CirclePreview
+            color={
+              color === SKATER_ANNOTATION_COLORS.ORIGINAL
+                ? teamColor
+                : alternateColor
+            }
+            pattern={pattern}
+          />
+        </div>
       </div>
     </div>
   );

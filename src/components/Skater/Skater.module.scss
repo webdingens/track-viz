@@ -33,8 +33,12 @@
   }
 
   &--has-focus {
+    --skater-rim-color: rgb(163, 5, 100);
     .rotationHandle {
       display: initial;
+    }
+    .skaterBackground {
+      stroke: var(--skater-rim-color, #000);
     }
   }
 

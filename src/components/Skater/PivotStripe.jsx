@@ -12,7 +12,7 @@ function PivotStripe({ color, scale = 1 }) {
       <circle
         r={0.3 * scale}
         style={{
-          stroke: "#000",
+          stroke: "var(--skater-rim-color, #000)",
           strokeWidth: 0.05 * scale,
           fill: "none",
         }}

@@ -16,4 +16,38 @@
       margin-top: 0.5em;
     }
   }
+
+  fieldset {
+    border: none;
+    padding: 0;
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 0.75em 0.5em;
+    }
+  }
+
+  legend {
+    font-weight: 700;
+  }
+
+  > div > label {
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.25em;
+    margin-top: 0.5em;
+  }
+
+  > div > div {
+    display: flex;
+    gap: 0.5em;
+  }
+
+  select {
+    flex-grow: 1;
+    + svg {
+      margin-inline: auto;
+    }
+  }
 }

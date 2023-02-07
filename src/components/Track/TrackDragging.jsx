@@ -24,7 +24,8 @@ class TrackDragging extends React.Component {
     this.draggables = [];
     this.initSkaterNodes();
     this.gsapContext = gsap.context(() => {
-      this.skaterNodes.forEach((el) => {
+      Object.values(this.skaterNodes).forEach((el) => {
+        const skaterId = el.dataset.idx;
         let moveDraggable = Draggable.create(el, {
           bounds: {
             minX: -17,
@@ -64,13 +65,13 @@ class TrackDragging extends React.Component {
 
         rotateDraggable.disable();
 
-        this.draggables.push({
+        this.draggables[skaterId] = {
           moveDraggable,
           rotateDraggable,
           rotationWrapper,
           el,
           dragAction: "move",
-        });
+        };
       });
     });
 
@@ -78,8 +79,19 @@ class TrackDragging extends React.Component {
   }
 
   componentDidUpdate() {
-    this.draggables.forEach((draggable, idx) => {
-      let skater = this.props.skaters[idx];
+    // this strangely works without recreating draggables after update,
+    // even though a list entry might be shuffled around the dom node stays alive and the greensock properties are kept
+    // react is just reordering the dom without creating new nodes
+    // MIGHT CHANGE LATER!
+    // Then:
+    // this.initSkaterNodes();
+    // kill draggable for current hasFocus (or all if doesn't work)
+    // recreate draggable for hasFocus with move disabled? check the logic then
+
+    Object.keys(this.draggables).forEach((skaterId) => {
+      const draggable = this.draggables[skaterId];
+
+      let skater = this.props.skaters.find((skater) => skater.id === +skaterId);
       if (
         skater.x !== draggable.moveDraggable.x ||
         skater.y !== draggable.moveDraggable.y
@@ -115,24 +127,25 @@ class TrackDragging extends React.Component {
 
     let draggable = this;
     let target = draggable.target;
-    let idx = target.dataset.idx;
+    let skaterId = target.dataset.idx;
     let skaters = _.cloneDeep(instance.props.skaters);
-    let skaterAlreadyHasFocus = skaters[idx].hasFocus;
+    let skater = skaters.find((skater) => skater.id === +skaterId);
+    let skaterAlreadyHasFocus = skater.hasFocus;
 
     // remove focus from others, add to clicked
     skaters.forEach((skater) => {
       skater.hasFocus = false;
     });
-    if (!skaterAlreadyHasFocus) skaters[idx].hasFocus = true;
+    if (!skaterAlreadyHasFocus) skater.hasFocus = true;
 
     // disable rotation drag from all, add to clicked
-    instance.draggables.forEach((draggable) => {
+    Object.values(instance.draggables).forEach((draggable) => {
       draggable.moveDraggable.enable();
       draggable.rotateDraggable.disable();
     });
     if (!skaterAlreadyHasFocus) {
-      instance.draggables[idx].moveDraggable.disable();
-      instance.draggables[idx].rotateDraggable.enable();
+      instance.draggables[skaterId].moveDraggable.disable();
+      instance.draggables[skaterId].rotateDraggable.enable();
     }
 
     instance.props.setSkaters(skaters);
@@ -160,9 +173,10 @@ class TrackDragging extends React.Component {
 
   storeDragPosition(instance) {
     let skaters = _.cloneDeep(instance.props.skaters);
-    instance.draggables.forEach((draggable, i) => {
-      skaters[i].x = draggable.moveDraggable.x;
-      skaters[i].y = draggable.moveDraggable.y;
+    skaters.forEach((skater) => {
+      const draggable = instance.draggables[skater.id];
+      skater.x = draggable.moveDraggable.x;
+      skater.y = draggable.moveDraggable.y;
     });
 
     instance.props.setSkaters(skaters);
@@ -201,13 +215,15 @@ class TrackDragging extends React.Component {
 
   storeDragRotation(instance) {
     let skaters = _.cloneDeep(instance.props.skaters);
-    instance.draggables.forEach((draggable, i) => {
-      skaters[i].rotation = draggable.rotateDraggable.rotation;
+    Object.keys(instance.draggables).forEach((skaterId) => {
+      const draggable = instance.draggables[skaterId];
+      const skater = skaters.find((skater) => skater.id === +skaterId);
+      skater.rotation = draggable.rotateDraggable.rotation;
       draggable.isRotating = false;
     });
 
     let isRotating = false;
-    instance.draggables.forEach((draggable) => {
+    Object.values(instance.draggables).forEach((draggable) => {
       if (draggable.isRotating) isRotating = true;
     });
     if (!isRotating) instance.lastRotation = +new Date();
@@ -230,7 +246,7 @@ class TrackDragging extends React.Component {
     if (!this.props.skaters.find((skater) => skater.hasFocus)) return; // was not in focus, ignore click
 
     let isRotating = false;
-    this.draggables.forEach((draggable) => {
+    Object.values(this.draggables).forEach((draggable) => {
       if (draggable.isRotating) isRotating = true;
     });
     if (isRotating) return; // still interacting
@@ -249,7 +265,7 @@ class TrackDragging extends React.Component {
       });
 
       // disable rotation drag from all, add to clicked
-      this.draggables.forEach((draggable) => {
+      Object.values(this.draggables).forEach((draggable) => {
         draggable.moveDraggable.enable();
         draggable.rotateDraggable.disable();
       });
@@ -361,8 +377,9 @@ class TrackDragging extends React.Component {
 
   collisionDetection(idx, x, y) {
     let collisions = [];
-    this.draggables.forEach((draggable, i) => {
-      if (idx === i) return;
+    Object.keys(this.draggables).forEach((skaterId) => {
+      const draggable = this.draggables[skaterId];
+      if (idx === +skaterId) return;
 
       let dx = draggable.moveDraggable.x - x;
       let dy = draggable.moveDraggable.y - y;
@@ -377,7 +394,7 @@ class TrackDragging extends React.Component {
           y: ynew,
         });
         draggable.moveDraggable.update();
-        collisions.push([i, xnew, ynew]);
+        collisions.push([+skaterId, xnew, ynew]);
       }
     });
 
@@ -389,20 +406,41 @@ class TrackDragging extends React.Component {
   }
 
   initSkaterNodes() {
-    this.skaterNodes = [];
+    this.skaterNodes = {};
     Array.prototype.forEach.call(
       this.groupRef.current.closest("svg").querySelectorAll(".js-skater"),
-      (el) => this.skaterNodes.push(el)
+      (el) => (this.skaterNodes[el.dataset.idx] = el)
     );
   }
 
+  getSortedSkaters() {
+    // return this.props.skaters;
+    // sort the has focus skater to the back
+    const sortedSkaters = [...this.props.skaters];
+    if (sortedSkaters.find((skater) => skater.hasFocus)) {
+      sortedSkaters.sort((a, b) => (a.hasFocus ? 1 : 0) - (b.hasFocus ? 1 : 0));
+    }
+
+    const focussedSkater = sortedSkaters.find((skater) => skater.hasFocus);
+    if (
+      focussedSkater?.id !== this.lastFocussed?.id ||
+      typeof this.sortedSkaters === "undefined"
+    ) {
+      this.lastFocussed = focussedSkater;
+      this.sortedSkaters = sortedSkaters;
+    }
+
+    return this.sortedSkaters;
+  }
+
   render() {
+    const sortedSkaters = this.getSortedSkaters();
     return (
       <g ref={this.groupRef}>
-        {this.props.skaters.map((el, i) => (
+        {sortedSkaters.map((el) => (
           <Skater
             key={el.id}
-            idx={i}
+            idx={el.id}
             preventDragUpdate={this.state.dragging > 0}
             {...el}
           />
