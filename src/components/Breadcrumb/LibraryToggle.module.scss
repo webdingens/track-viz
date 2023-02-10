@@ -12,6 +12,7 @@
   position: fixed;
   top: 50%;
   left: 50%;
+  z-index: 3;
   display: none;
 
   transform: translate(-50%, -50%);
@@ -20,6 +21,17 @@
   padding: 1em;
 
   box-shadow: 2px 1px 10px 0 rgba(0 0 0 / 0.3);
+
+  h2 {
+    font-size: 1.25rem;
+  }
+
+  p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+  }
 }
 
 .modalOpen {

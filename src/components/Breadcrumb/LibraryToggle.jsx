@@ -68,7 +68,6 @@ function LibraryToggle({ library }) {
           {library.povTeam === "A" && <CirclePreview team="A" />}
           {library.povTeam === "B" && <CirclePreview team="B" />}
         </p>
-        <br />
         {!!library.description && (
           <RichtextView content={library.description} />
         )}

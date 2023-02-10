@@ -3,6 +3,7 @@
   bottom: 10px;
   right: 0;
   width: 100%;
+  z-index: 1;
 
   // squeeze buttons into view on iPhone4
   @media (max-width: 374.9px) {
