@@ -1,0 +1,105 @@
+.menu {
+  position: fixed;
+  top: 0.8rem;
+  left: 0.8rem;
+  z-index: 2;
+  max-width: 90vw;
+
+  ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+  }
+
+  > ul {
+    > li + li {
+      margin-top: 0.4em;
+    }
+
+    > li span {
+      margin-bottom: 0.5em;
+    }
+
+    ul li {
+      line-height: 1.25;
+      @media (max-width: 767.9px) {
+        font-size: 12px;
+      }
+
+      + li {
+        margin-top: 0.4em;
+      }
+    }
+  }
+
+  button,
+  label,
+  a {
+    color: var(--body-color);
+  }
+}
+
+.controls {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25em 0.5em;
+
+  > * {
+    flex-shrink: 0;
+  }
+}
+
+ul.menuList {
+  position: absolute;
+
+  margin-top: 0.5rem;
+
+  z-index: 1;
+  color: var(--body-color);
+  background: #fff;
+  padding: 0.8rem;
+  box-shadow: 2px 4px 10px 0 rgba(0 0 0 / 0.3);
+
+  font-size: 1.2rem;
+  line-height: 1.5;
+  text-align: left;
+
+  width: max-content;
+
+  transform: translateX(-0.8rem) translateX(-100%);
+
+  .menuClosed & {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .menuOpen & {
+    transform: translateX(-0.8rem) translateX(0%);
+    transition: all 0.2s ease-in-out;
+  }
+}
+
+.headline {
+  display: inline-block;
+  font-family: "Work Sans", sans-serif;
+  margin-bottom: 0.15em;
+  font-weight: 700;
+
+  @media (max-width: 767.9px) {
+    font-size: 14px;
+  }
+}
+
+.button {
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+
+  &.button--active {
+    text-decoration: underline;
+    text-decoration-color: red;
+    text-decoration-thickness: 1.5px;
+  }
+}

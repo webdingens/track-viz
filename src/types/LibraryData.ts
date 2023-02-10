@@ -9,6 +9,11 @@ const colorLabels = {
 
 export type ColorLabels = typeof colorLabels;
 
+export type LibraryFileData = {
+  loadedAt?: number;
+  editedAt?: number;
+};
+
 export type LibraryData = {
   [k: string]: any;
   title?: string;
@@ -16,11 +21,11 @@ export type LibraryData = {
   povTeam?: "A" | "B" | "None";
   sequences: Sequence[];
   colorLabels?: ColorLabels;
-};
+} & LibraryFileData;
 
 export type Sequence = {
   id: number;
-  title: string;
+  title?: string;
   description?: string;
   sequence: Situation[];
 };

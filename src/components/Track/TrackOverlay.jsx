@@ -17,6 +17,8 @@ import {
 } from "../../app/reducers/settingsTrackSlice";
 
 import styles from "./TrackOverlay.module.scss";
+import buttonStyles from "../../styles/Buttons.module.scss";
+import classNames from "classnames";
 
 function TrackOverlay() {
   const dispatch = useDispatch();
@@ -61,9 +63,14 @@ function TrackOverlay() {
     <div className={styles.trackOverlay}>
       <ul className={styles.trackMenu}>
         <li>
-          <div className={styles.orientationSetter}>
+          <div
+            className={classNames(
+              styles.orientationSetter,
+              buttonStyles.leftRightButton
+            )}
+          >
             <button
-              className={styles.menuButtonLeft}
+              className={buttonStyles.menuButtonLeft}
               onClick={() => {
                 dispatch(setOrientation((orientation - 90 + 360) % 360));
               }}
@@ -72,7 +79,7 @@ function TrackOverlay() {
             </button>
             <span>{orientation}°</span>
             <button
-              className={styles.menuButtonRight}
+              className={buttonStyles.menuButtonRight}
               onClick={() => {
                 dispatch(setOrientation((orientation + 90) % 360));
               }}
@@ -82,19 +89,24 @@ function TrackOverlay() {
           </div>
         </li>
         <li>
-          <div className={styles.viewSetter}>
-            <button className={styles.menuButtonLeft} onClick={nextView}>
+          <div
+            className={classNames(
+              styles.viewSetter,
+              buttonStyles.leftRightButton
+            )}
+          >
+            <button className={buttonStyles.menuButtonLeft} onClick={nextView}>
               <FiChevronLeft />
             </button>
             <span>View: {VIEW_LABELS[currentView]}</span>
-            <button className={styles.menuButtonRight} onClick={prevView}>
+            <button className={buttonStyles.menuButtonRight} onClick={prevView}>
               <FiChevronRight />
             </button>
           </div>
         </li>
         <li>
           <button
-            className={styles.menuButton}
+            className={buttonStyles.menuButton}
             onClick={() => dispatch(resetTrack())}
           >
             Reset Track

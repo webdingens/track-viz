@@ -17,6 +17,8 @@ html {
 
 #root {
   height: 100%;
+  --body-color: #000;
+  --button-disabled-color: #ccc;
 }
 
 body {
@@ -25,6 +27,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
+  color: var(--body-color);
 }
 
 code {

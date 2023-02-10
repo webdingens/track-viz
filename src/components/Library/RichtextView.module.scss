@@ -4,4 +4,12 @@
   ul {
     list-style-type: disc;
   }
+
+  > :first-child {
+    margin-top: 0;
+  }
+
+  > :last-child {
+    margin-bottom: 0;
+  }
 }

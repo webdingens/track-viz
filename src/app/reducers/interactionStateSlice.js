@@ -7,6 +7,8 @@ export const defaultInteractionState = {
   mapControlsRotateMode: false,
   touchOnRotateModeButton: -1,
   libraryInEditMode: false,
+  libraryModalShown: false,
+  breadcrumbShowDescription: false,
 };
 
 let initialState = cleanupSlice(
@@ -43,6 +45,12 @@ export const interactionStateSlice = createSlice({
     setLibraryInEditMode: (state, action) => {
       state.libraryInEditMode = action.payload;
     },
+    setLibraryModalShown: (state, action) => {
+      state.libraryModalShown = action.payload;
+    },
+    setBreadcrumbShowDescription: (state, action) => {
+      state.breadcrumbShowDescription = action.payload;
+    },
     reset: (state) => {
       for (let key in state) {
         delete state[key];
@@ -58,6 +66,8 @@ export const {
   setMapControlsRotateMode,
   setTouchOnRotateModeButton,
   setLibraryInEditMode,
+  setLibraryModalShown,
+  setBreadcrumbShowDescription,
   reset,
 } = interactionStateSlice.actions;
 
@@ -72,5 +82,9 @@ export const selectTouchOnRotateModeButton = (state) =>
   state.interactionState.touchOnRotateModeButton;
 export const selectLibraryInEditMode = (state) =>
   state.interactionState.libraryInEditMode;
+export const selectLibraryModalShown = (state) =>
+  state.interactionState.libraryModalShown;
+export const selectBreadcrumbShowDescription = (state) =>
+  state.interactionState.breadcrumbShowDescription;
 
 export default interactionStateSlice.reducer;

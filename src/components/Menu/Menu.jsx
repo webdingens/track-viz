@@ -19,28 +19,56 @@ import {
   selectTrack3DControlMode,
 } from "../../app/reducers/settingsTrack3DSlice";
 
-import styles from "./Toolbar.module.scss";
+import {
+  reset as resetLibrary,
+  selectLibrary,
+} from "../../app/reducers/currentLibrarySlice";
 
-const Toolbar = () => {
+import styles from "./Menu.module.scss";
+import buttonStyles from "../../styles/Buttons.module.scss";
+import Breadcrumb from "../Breadcrumb/Breadcrumb";
+import { FiMenu, FiX } from "react-icons/fi";
+import ImportLibraryField from "../ImportField/ImportLibraryField";
+
+const Menu = () => {
   const [state, setState] = useState({
     open: false,
-    openedOnce: false,
+    openedOnce: false, // prevent spinning on load
   });
 
   const settings = useSelector(selectGeneralSettings);
   const controlMode = useSelector(selectTrack3DControlMode);
   const layoutMode = useSelector(selectLayoutMode);
+  const library = useSelector(selectLibrary);
   const dispatch = useDispatch();
 
   return (
     <div
       className={classNames({
-        [styles.toolbar]: true,
-        [styles.toolbarOpen]: state.open,
-        [styles.toolbarClosed]: state.openedOnce && !state.open,
+        [styles.menu]: true,
+        [styles.menuOpen]: state.open,
+        [styles.menuClosed]: state.openedOnce && !state.open,
       })}
     >
-      <ul>
+      <div className={styles.controls}>
+        <button
+          className={buttonStyles.menuButton}
+          onClick={() => {
+            setState({
+              open: !state.open,
+              openedOnce: true,
+            });
+          }}
+          type="button"
+          style={{ float: "left" }}
+          title={state.open ? "Close" : "Menu"}
+        >
+          {state.open ? <FiX /> : <FiMenu />}
+        </button>
+        <Breadcrumb />
+      </div>
+
+      <ul className={styles.menuList}>
         <li>
           <span className={styles.headline}>Editor Layout</span>
           <ul>
@@ -97,7 +125,7 @@ const Toolbar = () => {
                   dispatch(setLayoutMode(LAYOUT_MODES.LAYOUT_TRACK_LIBRARY));
                 }}
               >
-                Track | Library
+                Track | Library Editor
               </button>
             </li>
             <li>
@@ -147,33 +175,46 @@ const Toolbar = () => {
           <span className={styles.headline}>Import / Export</span>
           <ul>
             <li>
-              <ImportField />
+              <ImportField buttonClassName={styles.button} />
             </li>
             <li>
-              <ExportButton />
+              <ExportButton buttonClassName={styles.button} />
             </li>
           </ul>
         </li>
-      </ul>
 
-      <button
-        className={styles.toggleButton}
-        onClick={() => {
-          setState({
-            open: !state.open,
-            openedOnce: true,
-          });
-        }}
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-        <span className={styles.buttonLabel}>
-          {state.open ? "Close Menu" : "Open Menu"}
-        </span>
-      </button>
+        <li>
+          <span className={styles.headline}>Library</span>
+          <ul>
+            <li>
+              <ImportLibraryField
+                onLoad={() => {
+                  setState({ open: false });
+                }}
+                buttonClassName={styles.button}
+              >
+                Load Library
+              </ImportLibraryField>
+            </li>
+            {library.sequences.length > 0 && (
+              <li>
+                <button
+                  type="button"
+                  onClick={() => {
+                    dispatch(resetLibrary());
+                    setState({ open: false });
+                  }}
+                  className={styles.button}
+                >
+                  Close Library
+                </button>
+              </li>
+            )}
+          </ul>
+        </li>
+      </ul>
     </div>
   );
 };
 
-export default Toolbar;
+export default Menu;

@@ -1,6 +1,6 @@
 import "./App.css";
 
-import Toolbar from "./components/Toolbar/Toolbar";
+import Menu from "./components/Menu/Menu";
 import SplitView from "./components/SplitView/SplitView";
 import Settings from "./components/Settings/Settings";
 import "focus-visible";
@@ -9,7 +9,7 @@ import QueryLoader from "./components/Library/QueryLoader";
 function App() {
   return (
     <div className="App">
-      <Toolbar />
+      <Menu />
 
       <Settings />
 

@@ -7,6 +7,8 @@ export const defaultLibrary: LibraryData = {
   title: "",
   description: "",
   povTeam: "None",
+  loadedAt: -1,
+  editedAt: -1,
   sequences: [],
 };
 

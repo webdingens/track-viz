@@ -31,7 +31,7 @@ function Library() {
   // toggling edit mode, save when leaving edit mode
   const toggleSaveEditMode = () => {
     if (inEditMode) {
-      dispatch(setAllStore(editedLibraryData));
+      dispatch(setAllStore({ ...editedLibraryData, editedAt: Date.now() }));
     } else {
       // sync currentLibrary to editedLibrary
       dispatch(setAllEditedStore(libraryData));

@@ -11,7 +11,7 @@ import {
 
 import styles from "./ImportField.module.scss";
 
-const ImportField = () => {
+const ImportField = ({ buttonClassName }) => {
   const dispatch = useDispatch();
 
   const onFileLoadEnd = useCallback(
@@ -45,7 +45,7 @@ const ImportField = () => {
 
   return (
     <div className={styles.ImportField}>
-      <label>
+      <label className={buttonClassName}>
         <span>
           <FiUploadCloud /> Import Track
         </span>

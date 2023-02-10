@@ -3,10 +3,6 @@ import { useDispatch } from "react-redux";
 import { EXPORT_TYPES } from "../../app/io/export";
 import { convertToCurrentVersion } from "../../app/io/import";
 import { defaultLibrary, setAll } from "../../app/reducers/currentLibrarySlice";
-import {
-  LAYOUT_MODES,
-  setLayoutMode,
-} from "../../app/reducers/settingsGeneralSlice";
 import { cleanupSlice } from "../../app/storePersistence";
 import styles from "./QueryLoader.module.scss";
 
@@ -50,9 +46,9 @@ function QueryLoader() {
           }
 
           let loadedState = cleanupSlice(convertedData, defaultLibrary);
+          loadedState.loadedAt = Date.now();
 
           dispatch(setAll(loadedState));
-          dispatch(setLayoutMode(LAYOUT_MODES.LAYOUT_TRACK_LIBRARY));
         });
     } catch (err) {
       console.error("There has been an error: ", err.message);

@@ -14,7 +14,7 @@ import { useDataToBlobUrl } from "../../utils/hooks";
 
 import styles from "./ExportButton.module.scss";
 
-const ExportButton = () => {
+const ExportButton = ({ buttonClassName }) => {
   const currentTrack = useSelector(selectCurrentTrack);
   const [updating, setUpdating] = useState(false);
   const [url, setData] = useDataToBlobUrl(currentTrack);
@@ -51,7 +51,7 @@ const ExportButton = () => {
   return (
     <a
       href={href}
-      className={styles.ExportButton}
+      className={[styles.ExportButton, buttonClassName].join(" ")}
       download="TrackViz_TrackExport.json"
       style={{
         cursor: updating ? "progress" : "",

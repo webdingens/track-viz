@@ -7,8 +7,9 @@ import { EXPORT_TYPES } from "../../app/io/export";
 import { setAll, defaultLibrary } from "../../app/reducers/currentLibrarySlice";
 
 import styles from "./ImportLibraryField.module.scss";
+import { setLibraryModalShown } from "../../app/reducers/interactionStateSlice";
 
-const ImportLibraryField = ({ children, buttonClassName }) => {
+const ImportLibraryField = ({ children, buttonClassName, onLoad }) => {
   const dispatch = useDispatch();
   const [error, setError] = useState(null);
 
@@ -23,8 +24,11 @@ const ImportLibraryField = ({ children, buttonClassName }) => {
         }
 
         let loadedState = cleanupSlice(convertedData, defaultLibrary);
+        loadedState.loadedAt = Date.now();
 
+        dispatch(setLibraryModalShown(false));
         dispatch(setAll(loadedState));
+        if (onLoad) onLoad();
       } catch (error) {
         console.log("Error loading the file: ", error.msg);
         setError("Error loading the file: " + error.msg);
@@ -49,7 +53,7 @@ const ImportLibraryField = ({ children, buttonClassName }) => {
   );
 
   return (
-    <div className={styles.ImportLibraryField}>
+    <div className={styles.importLibraryField}>
       <label className={buttonClassName}>
         <span>{children}</span>
         <input type="file" accept="application/json" onChange={onChange} />

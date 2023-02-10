@@ -1,0 +1,59 @@
+.controlsDescriptionWrapper {
+  position: relative;
+}
+
+.controls {
+  display: block;
+}
+
+.sequenceTitle {
+  position: absolute;
+  top: 100%;
+  font-size: 0.75rem;
+  margin: 0.25rem 0 0 3rem;
+  left: 0;
+  font-style: italic;
+}
+
+.descriptionHolder {
+  z-index: 0;
+  .description {
+    display: none;
+  }
+}
+
+.descriptionHolderActive {
+  z-index: 1;
+  .description {
+    display: block;
+  }
+}
+
+.description {
+  position: absolute;
+  z-index: 2;
+  top: 100%;
+  background: #fff;
+  box-shadow: 2px 4px 10px 0 rgba(0 0 0 / 0.3);
+  z-index: 1;
+  margin-top: 1em;
+  width: min(350px, 100vw);
+  max-width: max-content;
+  color: var(--body-color);
+
+  left: 50%;
+  transform: translate(-50%, 0);
+
+  padding: 1em;
+  font-size: 0.85rem;
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 0.5em;
+    font-size: 1rem;
+  }
+
+  ul {
+    padding-left: 1em;
+  }
+}
