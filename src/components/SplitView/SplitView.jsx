@@ -1,19 +1,14 @@
 import React, { useMemo, Suspense } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import classNames from "classnames";
 
 import Track from "../Track/Track";
-// import SequenceEditor from "../SequenceEditor/SequenceEditor";
-// import PlaybackControls from "../PlaybackControls/PlaybackControls";
 
 import {
   selectGeneralSettings,
   selectLayoutMode,
-  setSequenceEditorVisibility,
   LAYOUT_MODES,
 } from "../../app/reducers/settingsGeneralSlice";
-
-import { FiChevronsDown, FiChevronsUp } from "react-icons/fi";
 
 import styles from "./SplitView.module.scss";
 
@@ -22,7 +17,6 @@ const Track3D = React.lazy(() => import("../Track3D/Track3D"));
 
 const SplitView = () => {
   const settings = useSelector(selectGeneralSettings) || {};
-  const dispatch = useDispatch();
   const layoutMode = useSelector(selectLayoutMode);
 
   const layout = useMemo(() => {
@@ -45,8 +39,6 @@ const SplitView = () => {
       className={classNames({
         [styles.splitView]: true,
         [styles[`splitView--${layout}`]]: true,
-        [styles["splitView--sequence-editor-visible"]]:
-          settings.sequenceEditorVisible,
       })}
     >
       <div className={styles.viewColumns}>
@@ -58,7 +50,7 @@ const SplitView = () => {
 
         {settings.track3DVisible && (
           <div className={styles.column}>
-            <Suspense fallback={<p>Loading</p>}>
+            <Suspense fallback={<p>Loading 3D Track</p>}>
               <Track3D />
             </Suspense>
           </div>
@@ -67,44 +59,13 @@ const SplitView = () => {
         {settings.libraryVisible && (
           <div className={classNames(styles.column, styles.columnLibrary)}>
             <div className={styles.scrollWrapper}>
-              <Suspense fallback={<p>Loading</p>}>
+              <Suspense fallback={<p>Loading Library</p>}>
                 <Library />
               </Suspense>
             </div>
           </div>
         )}
       </div>
-
-      {/* <div className={styles.LowerSection}>
-        <button
-          className={styles.SequenceEditorToggleButton}
-          onClick={() =>
-            dispatch(
-              setSequenceEditorVisibility(!settings.sequenceEditorVisible)
-            )
-          }
-        >
-          {settings.sequenceEditorVisible ? (
-            <FiChevronsDown />
-          ) : (
-            <FiChevronsUp />
-          )}
-          <span>
-            {settings.sequenceEditorVisible ? "Close" : "Open"} Sequence Editor
-          </span>
-          {settings.sequenceEditorVisible ? (
-            <FiChevronsDown />
-          ) : (
-            <FiChevronsUp />
-          )}
-        </button>
-        {settings.sequenceEditorVisible ? (
-          <div className={styles.SequenceEditorWrapper}>
-            <PlaybackControls />
-            <SequenceEditor />
-          </div>
-        ) : null}
-      </div> */}
     </div>
   );
 };

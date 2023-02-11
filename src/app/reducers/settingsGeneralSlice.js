@@ -18,7 +18,6 @@ const defaultSettings = {
   trackEditorVisible: true,
   track3DVisible: false,
   libraryVisible: false,
-  sequenceEditorVisible: false,
   settingsVisible: false,
   layoutMode: LAYOUT_MODES.LAYOUT_TRACK,
 
@@ -60,9 +59,6 @@ export const settingsGeneralSlice = createSlice({
     },
     setTrack3DVisibility: (state, action) => {
       state.track3DVisible = action.payload;
-    },
-    setSequenceEditorVisibility: (state, action) => {
-      state.sequenceEditorVisible = action.payload;
     },
     setLayoutMode: (state, action) => {
       switch (action.payload) {
@@ -106,7 +102,6 @@ export const {
   setTrackEditorVisibility,
   setTrack3DVisibility,
   setLayoutMode,
-  setSequenceEditorVisibility,
   setSetting,
   reset,
 } = settingsGeneralSlice.actions;
