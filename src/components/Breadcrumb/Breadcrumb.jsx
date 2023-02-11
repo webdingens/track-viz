@@ -22,6 +22,7 @@ import classNames from "classnames";
 import { setCurrentTrack } from "../../app/reducers/currentTrackSlice";
 import LibraryToggle from "./LibraryToggle";
 import ButtonOrSpan from "./ButtonOrSpan";
+import OutlinedText from "./OutlinedText";
 
 function BreadcrumbInViewMode() {
   const library = useSelector(selectLibrary);
@@ -257,7 +258,9 @@ function BreadcrumbInViewMode() {
               </div>
             )}
             {!showDescription && playSequence && (
-              <p className={styles.sequenceTitle}>{sequenceTitle}</p>
+              <div className={styles.sequenceTitle}>
+                <OutlinedText text={sequenceTitle} />
+              </div>
             )}
           </div>
           {!!selectedSituation && (
