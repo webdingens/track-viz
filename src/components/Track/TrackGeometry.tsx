@@ -26,7 +26,8 @@ import TrackDragging from "./TrackDragging";
 
 type TrackGeometryProps = {
   skaters: SkaterType[];
-  isPreview: boolean;
+  interactive: boolean;
+  isAnimating?: boolean;
 } & HTMLAttributes<SVGElement>;
 
 const REF_LANE_WIDTH = 3.05;
@@ -62,7 +63,7 @@ const getViewBox = (orientation = 0, view: keyof typeof TRACK_VIEWS) => {
 };
 
 function TrackGeometry(props: TrackGeometryProps) {
-  const { className, skaters, isPreview, style } = props;
+  const { className, skaters, interactive, isAnimating, style } = props;
   const orientation = useSelector(selectTrackOrientation);
   const view = useSelector(selectTrackView);
   const viewBox = getViewBox(orientation, view);
@@ -104,10 +105,10 @@ function TrackGeometry(props: TrackGeometryProps) {
         <Track3DCamera />
 
         {/* display non interactive skaters */}
-        {isPreview ? (
+        {!interactive ? (
           <TrackSkaters skaters={skaters} />
         ) : (
-          <TrackDragging skaters={skaters} />
+          <TrackDragging skaters={skaters} isAnimating={isAnimating} />
         )}
       </g>
     </svg>

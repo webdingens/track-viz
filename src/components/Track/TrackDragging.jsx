@@ -78,7 +78,7 @@ class TrackDragging extends React.Component {
     document.querySelector("body").addEventListener("click", this.onClickBody);
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     // this strangely works without recreating draggables after update,
     // even though a list entry might be shuffled around the dom node stays alive and the greensock properties are kept
     // react is just reordering the dom without creating new nodes
@@ -96,18 +96,58 @@ class TrackDragging extends React.Component {
         skater.x !== draggable.moveDraggable.x ||
         skater.y !== draggable.moveDraggable.y
       ) {
-        gsap.set(draggable.moveDraggable.target, {
-          x: skater.x,
-          y: skater.y,
-        });
-        draggable.moveDraggable.update();
+        if (this.state.dragging === 0) {
+          gsap.to(draggable.moveDraggable.target, {
+            x: skater.x,
+            y: skater.y,
+            duration: 0.2,
+            onComplete: () => {
+              draggable.moveDraggable.update();
+            },
+          });
+        } else {
+          gsap.set(draggable.moveDraggable.target, {
+            x: skater.x,
+            y: skater.y,
+          });
+          draggable.moveDraggable.update();
+        }
       }
 
       if (skater.rotation !== draggable.rotateDraggable.rotation) {
+        let nextRotation = skater.rotation;
+        const prevSkater = prevProps.skaters.find(
+          (skater) => skater.id === +skaterId
+        );
+        const prevRotation = prevSkater.rotation % 360;
         gsap.set(draggable.rotateDraggable.target, {
-          rotation: skater.rotation,
+          rotation: prevRotation,
         });
-        draggable.rotateDraggable.update();
+
+        nextRotation = nextRotation % 360;
+        let dRot = nextRotation - prevRotation;
+        if (dRot < -180) {
+          dRot += 360;
+        }
+        if (dRot > 180) {
+          dRot -= 360;
+        }
+        nextRotation = prevRotation + dRot;
+
+        if (this.state.dragging === 0) {
+          gsap.to(draggable.rotateDraggable.target, {
+            rotation: nextRotation,
+            duration: 0.2,
+            onComplete: () => {
+              draggable.rotateDraggable.update();
+            },
+          });
+        } else {
+          gsap.set(draggable.rotateDraggable.target, {
+            rotation: nextRotation,
+          });
+          draggable.rotateDraggable.update();
+        }
       }
     });
   }

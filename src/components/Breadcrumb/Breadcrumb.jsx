@@ -24,9 +24,14 @@ import LibraryToggle from "./LibraryToggle";
 import ButtonOrSpan from "./ButtonOrSpan";
 import OutlinedText from "./OutlinedText";
 import PlaybackControls from "../PlaybackControls/PlaybackControls";
+import {
+  LAYOUT_MODES,
+  selectLayoutMode,
+} from "../../app/reducers/settingsGeneralSlice";
 
 function BreadcrumbInViewMode() {
   const library = useSelector(selectLibrary);
+  const layoutMode = useSelector(selectLayoutMode);
   const [selectedSequence, setSelectedSequence] = useState(
     library.sequences.length ? library.sequences[0] : null
   );
@@ -281,7 +286,7 @@ function BreadcrumbInViewMode() {
               {playSequence ? <FiCornerUpLeft /> : <FiCornerRightDown />}
             </button>
           )}
-          {!!selectedSequence && (
+          {!!selectedSequence && layoutMode !== LAYOUT_MODES.LAYOUT_3D && (
             <PlaybackControls sequence={selectedSequence} />
           )}
         </>

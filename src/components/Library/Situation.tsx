@@ -173,7 +173,7 @@ function Situation({ data, idPrefix, onUpdate }: SituationProps) {
         {!data.empty ? (
           <TrackGeometry
             skaters={skatersWDP}
-            isPreview={true}
+            interactive={false}
             style={{ maxHeight: "200px" }}
           />
         ) : (

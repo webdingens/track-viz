@@ -1,6 +1,5 @@
-import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { FiPlay, FiSquare, FiRepeat } from "react-icons/fi";
+import { FiPlay, FiSquare } from "react-icons/fi";
 import Player from "./Player";
 import {
   selectIsPlaying,

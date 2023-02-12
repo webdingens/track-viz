@@ -141,7 +141,7 @@ function LibraryView() {
                                       skaters={addDerivedPropertiesToSkaters(
                                         situation.skaters
                                       )}
-                                      isPreview={true}
+                                      interactive={false}
                                       style={{ maxHeight: "200px" }}
                                     />
                                     <button

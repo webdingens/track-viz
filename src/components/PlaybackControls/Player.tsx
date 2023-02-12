@@ -56,9 +56,9 @@ function Player({ sequence }: PlayerProps) {
   const animationState = useSelector(selectAnimationState);
   const animationContext = useRef<gsap.Context | null>(null);
 
-  const playbackType = PLAYBACK_TYPES.MEASUREMENT_LINE;
+  const playbackType = PLAYBACK_TYPES.SIMPLE;
   const startDelay = 0.8;
-  const stepDelay = 1;
+  const stepDelay = 0;
   const endDelay = 1.5;
   const useDistanceMeasurement = DISTANCE_MEASUREMENT.MAX;
   const movementSpeedMax = 3;
@@ -333,11 +333,12 @@ function Player({ sequence }: PlayerProps) {
         if (typeof prevTrackIdx === "undefined") {
           throw new Error("Should be defined");
         }
+
         // set pivot Line Dist based on prevTrack
         tl.to(
           animatingTrack.current.skaters[j],
           {
-            rotation: skaterNow.rotation,
+            rotation: track.skaters[j].rotation,
             pivotLineDist: skaterNow.pivotLineDist,
             v: skaterNow.v,
             duration: stepDuration,

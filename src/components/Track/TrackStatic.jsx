@@ -8,7 +8,7 @@ function TrackStatic() {
   const skaters = useSelector((state) =>
     selectCurrentSkatersWDP(state, settings.packMeasuringMethod)
   );
-  return <TrackGeometry skaters={skaters} />;
+  return <TrackGeometry skaters={skaters} interactive />;
 }
 
 export default TrackStatic;
