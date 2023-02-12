@@ -1,24 +1,33 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { loadSlice, cleanupSlice } from "../storePersistence";
 import _ from "lodash";
+import { Situation, SITUATION_TYPES, TrackData } from "../../types/LibraryData";
 
 export const ANIMATION_STATE = {
-  PLAYING: "playing",
-  PAUSED: "paused",
-  STOPPED: "stopped",
+  PLAYING: "PLAYING",
+  PAUSED: "PAUSED",
+  STOPPED: "STOPPED",
+} as const;
+
+export type AnimationStateType = keyof typeof ANIMATION_STATE;
+
+type animatingTrackState = {
+  animatingTrack: TrackData | null;
+  frame: number;
+  isPlaying: boolean;
+  animationState: AnimationStateType;
+  tracks: Situation[];
 };
 
-export const defaultSequence = {
-  tracks: [],
+export const defaultAnimatingTrack: animatingTrackState = {
+  animatingTrack: null,
+  frame: 0,
   isPlaying: false,
   animationState: ANIMATION_STATE.STOPPED,
+  tracks: [],
 };
 
-let initialState = cleanupSlice(loadSlice("currentSequence"), defaultSequence);
-initialState.isPlaying = false;
-initialState.animationState = ANIMATION_STATE.STOPPED;
-
-const getUniqueId = (state) => {
+const getUniqueId = (state: animatingTrackState) => {
   // get unique id per sequence
   let id = 0;
   let ids = state.tracks.map((track) => track.id);
@@ -29,10 +38,21 @@ const getUniqueId = (state) => {
   return id;
 };
 
-export const currentSequenceSlice = createSlice({
-  name: "currentSequence",
-  initialState: initialState || defaultSequence,
+let initialState = cleanupSlice(
+  loadSlice("animatingTrack"),
+  defaultAnimatingTrack
+) as animatingTrackState;
+initialState.isPlaying = false;
+initialState.animationState = ANIMATION_STATE.STOPPED;
+
+export const animatingTrackSlice = createSlice({
+  name: "animatingTrack",
+  initialState: initialState || defaultAnimatingTrack,
   reducers: {
+    setAnimatingTrack: (state, action: { payload: TrackData }) => {
+      state.animatingTrack = action.payload;
+      state.frame++;
+    },
     setTracks: (state, action) => {
       state.tracks = action.payload;
     },
@@ -69,14 +89,17 @@ export const currentSequenceSlice = createSlice({
     },
     addTrack: (state) => {
       state.tracks.push({
+        skaters: [],
+        refs: [],
+        type: SITUATION_TYPES.DESCRIPTION,
         empty: true,
         id: getUniqueId(state),
       });
     },
-    setIsPlaying: (state, action) => {
+    setIsPlaying: (state, action: { payload: boolean }) => {
       state.isPlaying = action.payload;
     },
-    setAnimationState: (state, action) => {
+    setAnimationState: (state, action: { payload: AnimationStateType }) => {
       state.animationState = action.payload;
     },
     clearSequence: (state) => {
@@ -86,6 +109,7 @@ export const currentSequenceSlice = createSlice({
 });
 
 export const {
+  setAnimatingTrack,
   setTracks,
   removeTrack,
   moveTrackRight,
@@ -95,16 +119,21 @@ export const {
   clearSequence,
   setIsPlaying,
   setAnimationState,
-} = currentSequenceSlice.actions;
+} = animatingTrackSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 
-export const selectCurrentSequence = (state) => state.currentSequence;
-export const selectCurrentTracks = (state) => state.currentSequence.tracks;
-export const selectIsPlaying = (state) => state.currentSequence.isPlaying;
-export const selectAnimationState = (state) =>
-  state.currentSequence.animationState;
+type globalState = { animatingTrack: animatingTrackState };
 
-export default currentSequenceSlice.reducer;
+export const selectAnimatingTrack = (state: globalState) =>
+  state.animatingTrack.animatingTrack;
+export const selectCurrentTracks = (state: globalState) =>
+  state.animatingTrack.tracks;
+export const selectIsPlaying = (state: globalState) =>
+  state.animatingTrack.isPlaying;
+export const selectAnimationState = (state: globalState) =>
+  state.animatingTrack.animationState;
+
+export default animatingTrackSlice.reducer;

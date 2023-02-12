@@ -8,7 +8,7 @@ import styles from "./Track.module.scss";
 import {
   ANIMATION_STATE,
   selectAnimationState,
-} from "../../app/reducers/currentSequenceSlice";
+} from "../../app/reducers/animatingTrackSlice";
 import Legend from "./Legend";
 
 function Track() {

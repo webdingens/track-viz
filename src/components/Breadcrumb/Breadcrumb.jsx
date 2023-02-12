@@ -23,6 +23,7 @@ import { setCurrentTrack } from "../../app/reducers/currentTrackSlice";
 import LibraryToggle from "./LibraryToggle";
 import ButtonOrSpan from "./ButtonOrSpan";
 import OutlinedText from "./OutlinedText";
+import PlaybackControls from "../PlaybackControls/PlaybackControls";
 
 function BreadcrumbInViewMode() {
   const library = useSelector(selectLibrary);
@@ -272,6 +273,9 @@ function BreadcrumbInViewMode() {
             >
               {playSequence ? <FiSquare /> : <FiPlay />}
             </button>
+          )}
+          {!!selectedSequence && (
+            <PlaybackControls sequence={selectedSequence} />
           )}
         </>
       )}

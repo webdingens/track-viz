@@ -1,18 +1,20 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-
 import { FiPlay, FiSquare, FiRepeat } from "react-icons/fi";
-
 import Player from "./Player";
-
 import {
   selectIsPlaying,
   setIsPlaying,
-} from "../../app/reducers/currentSequenceSlice";
+} from "../../app/reducers/animatingTrackSlice";
 
 import styles from "./PlaybackControls.module.scss";
+import { Sequence } from "../../types/LibraryData";
 
-const PlaybackControls = () => {
+type PlaybackControlsProps = {
+  sequence: Sequence;
+};
+
+const PlaybackControls = ({ sequence }: PlaybackControlsProps) => {
   const isPlaying = useSelector(selectIsPlaying);
   const dispatch = useDispatch();
   const onClick = () => dispatch(setIsPlaying(!isPlaying));
@@ -24,7 +26,7 @@ const PlaybackControls = () => {
         <FiRepeat />
       </button>
 
-      <Player />
+      <Player sequence={sequence} />
     </div>
   );
 };

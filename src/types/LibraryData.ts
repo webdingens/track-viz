@@ -109,6 +109,7 @@ export type SkaterInferredDataType = {
   inBounds?: boolean;
   inPlay?: boolean;
   packSkater?: boolean;
+  v?: number;
 };
 
 export const SKATER_ANNOTATION_PATTERNS = {
@@ -137,3 +138,7 @@ export type SkaterType = SkaterDataType &
   SkaterInferredDataType &
   SkaterLibraryDataType &
   SkaterAnnotationType;
+
+export type SkaterWithPivotLineDist = SkaterType & {
+  pivotLineDist: number;
+};

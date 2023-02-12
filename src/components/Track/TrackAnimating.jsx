@@ -6,6 +6,7 @@ import { selectAnimatingTrack } from "../../app/reducers/animatingTrackSlice";
 
 function TrackAnimating() {
   const animatingTrack = useSelector(selectAnimatingTrack);
+  if (!animatingTrack) return null;
   return <TrackGeometry skaters={animatingTrack.skaters} updatePack={true} />;
 }
 

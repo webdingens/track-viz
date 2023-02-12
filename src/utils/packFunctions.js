@@ -1,5 +1,6 @@
 import _ from "lodash";
 import * as THREE from "three";
+
 const { Vector2 } = THREE;
 
 export const C1 = new Vector2(5.33, 0);
@@ -805,6 +806,8 @@ export const setPositionFromVAndDist = (skater) => {
     s.y = y;
     return s;
   }
+
+  console.error("pivotLineDist wrong");
 };
 
 /**

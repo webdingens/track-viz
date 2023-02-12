@@ -1,6 +1,5 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import currentTrackReducer from "./reducers/currentTrackSlice";
-import currentSequenceReducer from "./reducers/currentSequenceSlice";
 import interactionStateSlice from "./reducers/interactionStateSlice";
 import animatingTrackReducer from "./reducers/animatingTrackSlice";
 import settingsGeneralReducer from "./reducers/settingsGeneralSlice";
@@ -13,7 +12,6 @@ import startPersistingStore from "./storePersistence";
 let store = configureStore({
   reducer: {
     currentTrack: currentTrackReducer,
-    currentSequence: currentSequenceReducer,
     currentLibrary: currentLibraryReducer,
     interactionState: interactionStateSlice,
     editedLibrary: editedLibraryReducer,
