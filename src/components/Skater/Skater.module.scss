@@ -66,3 +66,26 @@
 
   pointer-events: none;
 }
+
+//
+//  There is a transition between the skater position changes
+//  Transitioning with gsap didn't work because the skaters would update
+//  and then gsap would reset the position, then tweening to the final position of the new track/situation.
+//  Sometimes a frame of the final position could be seen before the tween.
+//  To prevent the flicker the skater body would have to be updated by gsap entirely, no thank you. Or something similarly complicated.
+//
+:global(.js-skater) {
+  transition: 0.3s transform ease-in-out;
+}
+
+:global(.js-track-dragging) :global(.js-skater) {
+  transition: none;
+}
+
+:global(.js-skater-rotation-wrapper) {
+  transition: 0.3s transform ease-in-out;
+}
+
+:global(.js-track-dragging) :global(.js-skater-rotation-wrapper) {
+  transition: none;
+}

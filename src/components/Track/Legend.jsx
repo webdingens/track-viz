@@ -1,5 +1,10 @@
 import classNames from "classnames";
 import { useSelector } from "react-redux";
+import {
+  selectAnimatingSkaters,
+  selectAnimationState,
+  ANIMATION_STATE,
+} from "../../app/reducers/animatingTrackSlice";
 import { selectCurrentSkaters } from "../../app/reducers/currentTrackSlice";
 import {
   selectTrackView,
@@ -11,8 +16,15 @@ import CirclePreview from "../Skater/CirclePreview";
 import styles from "./Legend.module.scss";
 
 function Legend() {
-  const skaters = useSelector(selectCurrentSkaters);
+  const currentSkaters = useSelector(selectCurrentSkaters);
   const view = useSelector(selectTrackView);
+  const animationState = useSelector(selectAnimationState);
+  const animatingSkaters = useSelector(selectAnimatingSkaters);
+  const skaters =
+    animationState === ANIMATION_STATE.PLAYING
+      ? animatingSkaters
+      : currentSkaters;
+
   const legendSkaters = skaters.filter((skater) => {
     return (
       skater.color === SKATER_ANNOTATION_COLORS.ALTERNATE ||

@@ -101,21 +101,10 @@ class TrackDragging extends React.Component {
           skater.x !== draggable.moveDraggable.x ||
           skater.y !== draggable.moveDraggable.y
         ) {
-          if (this.state.dragging === 0) {
-            gsap.to(draggable.moveDraggable.target, {
-              x: skater.x,
-              y: skater.y,
-              duration: 0.2,
-              onComplete: () => {
-                draggable.moveDraggable.update();
-              },
-            });
-          } else {
-            gsap.set(draggable.moveDraggable.target, {
-              x: skater.x,
-              y: skater.y,
-            });
-          }
+          gsap.set(draggable.moveDraggable.target, {
+            x: skater.x,
+            y: skater.y,
+          });
           draggable.moveDraggable.update();
         }
 
@@ -139,19 +128,9 @@ class TrackDragging extends React.Component {
           }
           nextRotation = prevRotation + dRot;
 
-          if (this.state.dragging === 0) {
-            gsap.to(draggable.rotateDraggable.target, {
-              rotation: nextRotation,
-              duration: 0.2,
-              onComplete: () => {
-                draggable.rotateDraggable.update();
-              },
-            });
-          } else {
-            gsap.set(draggable.rotateDraggable.target, {
-              rotation: nextRotation,
-            });
-          }
+          gsap.set(draggable.rotateDraggable.target, {
+            rotation: nextRotation,
+          });
           draggable.rotateDraggable.update();
         }
       });
@@ -479,7 +458,14 @@ class TrackDragging extends React.Component {
   render() {
     const sortedSkaters = this.getSortedSkaters();
     return (
-      <g ref={this.groupRef}>
+      <g
+        ref={this.groupRef}
+        className={
+          this.state.dragging > 0 || this.props.isAnimating
+            ? "js-track-dragging"
+            : ""
+        }
+      >
         {sortedSkaters.map((el) => (
           <Skater
             key={el.id}

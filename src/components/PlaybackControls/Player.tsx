@@ -22,7 +22,6 @@ import {
   setAnimatingTrack as _setAnimatingTrack,
   AnimationStateType,
 } from "../../app/reducers/animatingTrackSlice";
-import { selectCurrentTrack } from "../../app/reducers/currentTrackSlice";
 import {
   Sequence,
   SkaterDataType,
@@ -48,7 +47,6 @@ type PlayerProps = {
 
 function Player({ sequence }: PlayerProps) {
   const dispatch = useDispatch();
-  const currentTrack = useSelector(selectCurrentTrack);
   const currentSequence = sequence;
   const isPlaying = useSelector(selectIsPlaying);
   const settings = useSelector(selectGeneralSettings);
@@ -80,10 +78,14 @@ function Player({ sequence }: PlayerProps) {
 
   useEffect(() => {
     if (isPlaying) {
+      if (!currentSequence?.sequence?.length) {
+        throw new Error("Expected Sequence to have situations");
+      }
       // start animation with current track
       let startingTrack = getTrackWithRelativeVPositions(
-        _.cloneDeep(currentTrack)
+        _.cloneDeep(currentSequence.sequence[0])
       );
+
       startingTrack.skaters = addDerivedPropertiesToSkaters(
         startingTrack.skaters
       );

@@ -135,5 +135,7 @@ export const selectIsPlaying = (state: globalState) =>
   state.animatingTrack.isPlaying;
 export const selectAnimationState = (state: globalState) =>
   state.animatingTrack.animationState;
+export const selectAnimatingSkaters = (state: globalState) =>
+  state.animatingTrack.animatingTrack?.skaters;
 
 export default animatingTrackSlice.reducer;
