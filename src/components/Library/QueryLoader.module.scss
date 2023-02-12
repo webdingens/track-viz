@@ -5,4 +5,12 @@
   transform: translate(-50%, -50%);
   margin: 0;
   max-width: 100vw;
+  z-index: 10;
+
+  form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1em;
+  }
 }

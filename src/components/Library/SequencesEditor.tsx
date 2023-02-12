@@ -28,7 +28,7 @@ import Sequence from "./Sequence";
 
 import "./AccordionStyles.module.scss";
 import styles from "./SequencesEditor.module.scss";
-import libraryStyles from "./Library.module.scss";
+import buttonStyles from "../../styles/Buttons.module.scss";
 
 type SequencesEditorProps = PropsWithoutRef<{
   sequences: LibraryData["sequences"];
@@ -153,7 +153,7 @@ function SequencesEditor({ sequences, onUpdate }: SequencesEditorProps) {
         <button
           type="button"
           onClick={onAddSequence}
-          className={libraryStyles.libraryButton}
+          className={buttonStyles.rectButton}
         >
           Add Sequence
         </button>
@@ -162,7 +162,7 @@ function SequencesEditor({ sequences, onUpdate }: SequencesEditorProps) {
             type="button"
             onClick={onRemoveAllSequences}
             className={classNames(
-              libraryStyles.libraryButton,
+              buttonStyles.rectButton,
               styles.removeAllSequences
             )}
           >

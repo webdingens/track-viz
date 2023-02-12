@@ -28,7 +28,7 @@ import {
 } from "../../utils/packFunctions";
 import { selectGeneralSettings } from "../../app/reducers/settingsGeneralSlice";
 import styles from "./Situation.module.scss";
-import libraryStyles from "./Library.module.scss";
+import buttonStyles from "../../styles/Buttons.module.scss";
 import classNames from "classnames";
 
 type SituationProps = PropsWithoutRef<{
@@ -185,8 +185,8 @@ function Situation({ data, idPrefix, onUpdate }: SituationProps) {
             onClick={onCopyFromCurrentTrack}
             title="Save"
             className={classNames(
-              libraryStyles.libraryButton,
-              libraryStyles.libraryButtonSmall
+              buttonStyles.rectButton,
+              buttonStyles.rectButtonSmall
             )}
           >
             Copy from Track
@@ -197,8 +197,8 @@ function Situation({ data, idPrefix, onUpdate }: SituationProps) {
               onClick={onLoadToCurrentTrack}
               title="Load"
               className={classNames(
-                libraryStyles.libraryButton,
-                libraryStyles.libraryButtonSmall
+                buttonStyles.rectButton,
+                buttonStyles.rectButtonSmall
               )}
             >
               Load onto Track

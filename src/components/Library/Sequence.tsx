@@ -22,7 +22,7 @@ import RichtextEditor from "./RichtextEditor";
 import Situation from "./Situation";
 
 import styles from "./Sequence.module.scss";
-import libraryStyles from "./Library.module.scss";
+import buttonStyles from "../../styles/Buttons.module.scss";
 import classNames from "classnames";
 import {
   FiArrowDown,
@@ -197,8 +197,8 @@ function Sequence({ data, onUpdate }: SequenceProps) {
           type="button"
           onClick={onAddSituation}
           className={classNames(
-            libraryStyles.libraryButton,
-            libraryStyles.libraryButtonSmall
+            buttonStyles.rectButton,
+            buttonStyles.rectButtonSmall
           )}
         >
           Add Situation

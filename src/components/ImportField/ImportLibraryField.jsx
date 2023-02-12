@@ -7,7 +7,10 @@ import { EXPORT_TYPES } from "../../app/io/export";
 import { setAll, defaultLibrary } from "../../app/reducers/currentLibrarySlice";
 
 import styles from "./ImportLibraryField.module.scss";
-import { setLibraryModalShown } from "../../app/reducers/interactionStateSlice";
+import {
+  setLibraryInEditMode,
+  setLibraryModalShown,
+} from "../../app/reducers/interactionStateSlice";
 
 const ImportLibraryField = ({ children, buttonClassName, onLoad }) => {
   const dispatch = useDispatch();
@@ -26,6 +29,7 @@ const ImportLibraryField = ({ children, buttonClassName, onLoad }) => {
         let loadedState = cleanupSlice(convertedData, defaultLibrary);
         loadedState.loadedAt = Date.now();
 
+        dispatch(setLibraryInEditMode(false));
         dispatch(setLibraryModalShown(false));
         dispatch(setAll(loadedState));
         if (onLoad) onLoad();

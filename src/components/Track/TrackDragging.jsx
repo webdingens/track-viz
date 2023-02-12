@@ -88,67 +88,73 @@ class TrackDragging extends React.Component {
     // kill draggable for current hasFocus (or all if doesn't work)
     // recreate draggable for hasFocus with move disabled? check the logic then
 
-    Object.keys(this.draggables).forEach((skaterId) => {
-      const draggable = this.draggables[skaterId];
+    if (this.updateContext) this.updateContext.kill();
 
-      let skater = this.props.skaters.find((skater) => skater.id === +skaterId);
-      if (
-        skater.x !== draggable.moveDraggable.x ||
-        skater.y !== draggable.moveDraggable.y
-      ) {
-        if (this.state.dragging === 0) {
-          gsap.to(draggable.moveDraggable.target, {
-            x: skater.x,
-            y: skater.y,
-            duration: 0.2,
-            onComplete: () => {
-              draggable.moveDraggable.update();
-            },
-          });
-        } else {
-          gsap.set(draggable.moveDraggable.target, {
-            x: skater.x,
-            y: skater.y,
-          });
-          draggable.moveDraggable.update();
-        }
-      }
+    this.updateContext = gsap.context(() => {
+      Object.keys(this.draggables).forEach((skaterId) => {
+        const draggable = this.draggables[skaterId];
 
-      if (skater.rotation !== draggable.rotateDraggable.rotation) {
-        let nextRotation = skater.rotation;
-        const prevSkater = prevProps.skaters.find(
+        let skater = this.props.skaters.find(
           (skater) => skater.id === +skaterId
         );
-        const prevRotation = prevSkater.rotation % 360;
-        gsap.set(draggable.rotateDraggable.target, {
-          rotation: prevRotation,
-        });
-
-        nextRotation = nextRotation % 360;
-        let dRot = nextRotation - prevRotation;
-        if (dRot < -180) {
-          dRot += 360;
+        if (
+          skater.x !== draggable.moveDraggable.x ||
+          skater.y !== draggable.moveDraggable.y
+        ) {
+          if (this.state.dragging === 0) {
+            gsap.to(draggable.moveDraggable.target, {
+              x: skater.x,
+              y: skater.y,
+              duration: 0.2,
+              onComplete: () => {
+                draggable.moveDraggable.update();
+              },
+            });
+          } else {
+            gsap.set(draggable.moveDraggable.target, {
+              x: skater.x,
+              y: skater.y,
+            });
+          }
+          draggable.moveDraggable.update();
         }
-        if (dRot > 180) {
-          dRot -= 360;
-        }
-        nextRotation = prevRotation + dRot;
 
-        if (this.state.dragging === 0) {
-          gsap.to(draggable.rotateDraggable.target, {
-            rotation: nextRotation,
-            duration: 0.2,
-            onComplete: () => {
-              draggable.rotateDraggable.update();
-            },
-          });
-        } else {
+        if (skater.rotation !== draggable.rotateDraggable.rotation) {
+          let nextRotation = skater.rotation;
+          const prevSkater = prevProps.skaters.find(
+            (skater) => skater.id === +skaterId
+          );
+          const prevRotation = prevSkater.rotation % 360;
           gsap.set(draggable.rotateDraggable.target, {
-            rotation: nextRotation,
+            rotation: prevRotation,
           });
+
+          nextRotation = nextRotation % 360;
+          let dRot = nextRotation - prevRotation;
+          if (dRot < -180) {
+            dRot += 360;
+          }
+          if (dRot > 180) {
+            dRot -= 360;
+          }
+          nextRotation = prevRotation + dRot;
+
+          if (this.state.dragging === 0) {
+            gsap.to(draggable.rotateDraggable.target, {
+              rotation: nextRotation,
+              duration: 0.2,
+              onComplete: () => {
+                draggable.rotateDraggable.update();
+              },
+            });
+          } else {
+            gsap.set(draggable.rotateDraggable.target, {
+              rotation: nextRotation,
+            });
+          }
           draggable.rotateDraggable.update();
         }
-      }
+      });
     });
   }
 
@@ -157,9 +163,8 @@ class TrackDragging extends React.Component {
       .querySelector("body")
       .removeEventListener("click", this.onClickBody);
 
-    if (this.gsapContext) {
-      this.gsapContext.kill();
-    }
+    if (this.updateContext) this.updateContext.kill();
+    if (this.gsapContext) this.gsapContext.kill();
   }
 
   onClick(instance) {

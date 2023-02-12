@@ -29,6 +29,7 @@ import buttonStyles from "../../styles/Buttons.module.scss";
 import Breadcrumb from "../Breadcrumb/Breadcrumb";
 import { FiMenu, FiX } from "react-icons/fi";
 import ImportLibraryField from "../ImportField/ImportLibraryField";
+import { setLibraryInEditMode } from "../../app/reducers/interactionStateSlice";
 
 const Menu = () => {
   const [state, setState] = useState({
@@ -202,6 +203,7 @@ const Menu = () => {
                   type="button"
                   onClick={() => {
                     dispatch(resetLibrary());
+                    dispatch(setLibraryInEditMode(false));
                     setState({ open: false });
                   }}
                   className={styles.button}

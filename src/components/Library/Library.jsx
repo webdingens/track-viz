@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
+import classNames from "classnames";
 import {
   selectLibrary,
   setAll as setAllStore,
@@ -13,10 +14,10 @@ import {
   setLibraryInEditMode,
 } from "../../app/reducers/interactionStateSlice";
 import LibraryView from "./LibraryView";
-import styles from "./Library.module.scss";
 import ExportLibraryButton from "../ExportButton/ExportLibraryButton";
 import ImportLibraryField from "../ImportField/ImportLibraryField";
-import classNames from "classnames";
+import styles from "./Library.module.scss";
+import buttonStyles from "../../styles/Buttons.module.scss";
 
 const LibraryEdit = React.lazy(() => import("./LibraryEdit"));
 
@@ -52,7 +53,7 @@ function Library() {
         <button
           type="button"
           onClick={toggleSaveEditMode}
-          className={styles.libraryButton}
+          className={buttonStyles.rectButton}
         >
           {inEditMode ? "Save Library Changes" : "Edit Library"}
         </button>
@@ -61,7 +62,7 @@ function Library() {
             type="button"
             onClick={cancelEditMode}
             className={classNames(
-              styles.libraryButton,
+              buttonStyles.rectButton,
               styles.cancelChangesButton
             )}
           >
@@ -69,10 +70,10 @@ function Library() {
           </button>
         ) : (
           <>
-            <ExportLibraryButton buttonClassName={styles.libraryButton}>
+            <ExportLibraryButton buttonClassName={buttonStyles.rectButton}>
               Export Library (save as)
             </ExportLibraryButton>
-            <ImportLibraryField buttonClassName={styles.libraryButton}>
+            <ImportLibraryField buttonClassName={buttonStyles.rectButton}>
               Load Library
             </ImportLibraryField>
           </>

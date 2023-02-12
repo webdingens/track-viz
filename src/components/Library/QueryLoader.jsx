@@ -5,6 +5,11 @@ import { convertToCurrentVersion } from "../../app/io/import";
 import { defaultLibrary, setAll } from "../../app/reducers/currentLibrarySlice";
 import { cleanupSlice } from "../../app/storePersistence";
 import styles from "./QueryLoader.module.scss";
+import buttonStyles from "../../styles/Buttons.module.scss";
+import {
+  setLibraryInEditMode,
+  setLibraryModalShown,
+} from "../../app/reducers/interactionStateSlice";
 
 function QueryLoader() {
   const [showDialog, setShowDialog] = useState(false);
@@ -48,6 +53,8 @@ function QueryLoader() {
           let loadedState = cleanupSlice(convertedData, defaultLibrary);
           loadedState.loadedAt = Date.now();
 
+          dispatch(setLibraryInEditMode(false));
+          dispatch(setLibraryModalShown(false));
           dispatch(setAll(loadedState));
         });
     } catch (err) {
@@ -74,8 +81,12 @@ function QueryLoader() {
       </p>
       <p>Warning: will replace current library file and any changes therein.</p>
       <form method="dialog">
-        <button value="cancel">Cancel</button>
-        <button value="confirm">Confirm</button>
+        <button value="cancel" className={buttonStyles.rectButton}>
+          Cancel
+        </button>
+        <button value="confirm" className={buttonStyles.rectButton}>
+          Confirm
+        </button>
       </form>
     </dialog>
   );

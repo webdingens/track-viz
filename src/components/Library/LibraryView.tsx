@@ -27,7 +27,7 @@ import {
   PACK_MEASURING_METHODS,
 } from "../../utils/packFunctions";
 import styles from "./LibraryView.module.scss";
-import libraryStyles from "./Library.module.scss";
+import buttonStyles from "../../styles/Buttons.module.scss";
 import "./AccordionStyles.module.scss";
 import CirclePreview from "../Skater/CirclePreview";
 
@@ -151,8 +151,8 @@ function LibraryView() {
                                       }
                                       title="Load"
                                       className={classNames(
-                                        libraryStyles.libraryButton,
-                                        libraryStyles.libraryButtonSmall
+                                        buttonStyles.rectButton,
+                                        buttonStyles.rectButtonSmall
                                       )}
                                     >
                                       Load onto Track

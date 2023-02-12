@@ -37,18 +37,6 @@
   border-top: 1px solid var(--library-border-color);
 }
 
-.libraryButton {
-  font-size: 14px;
-  border: 1px solid #000;
-  background: transparent;
-  border-radius: 1em;
-  padding: 0.4em 1em;
-  cursor: pointer;
-}
-.libraryButtonSmall {
-  font-size: 12px;
-}
-
 .cancelChangesButton {
   &:hover,
   &:focus {
