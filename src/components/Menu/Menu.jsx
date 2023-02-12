@@ -61,7 +61,7 @@ const Menu = () => {
           }}
           type="button"
           style={{ float: "left" }}
-          title={state.open ? "Close" : "Menu"}
+          title={state.open ? "Close Menu" : "Menu"}
         >
           {state.open ? <FiX /> : <FiMenu />}
         </button>

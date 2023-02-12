@@ -12,8 +12,8 @@ import {
   FiChevronLeft,
   FiChevronRight,
   FiChevronUp,
-  FiPlay,
-  FiSquare,
+  FiCornerRightDown,
+  FiCornerUpLeft,
 } from "react-icons/fi";
 
 import styles from "./Breadcrumb.module.scss";
@@ -201,26 +201,30 @@ function BreadcrumbInViewMode() {
                   })}
                 >
                   <div className={buttonStyles.leftRightButton}>
-                    <button
-                      type="button"
-                      disabled={selectedSituationIndex === 0}
-                      onClick={onSituationLeft}
-                      className={buttonStyles.menuButtonLeft}
-                    >
-                      <FiChevronLeft title="Go to previous situation" />
-                    </button>
                     <ButtonOrSpan
                       onClick={() =>
                         dispatch(setBreadcrumbShowDescription(!showDescription))
                       }
                       isButton={!!selectedSequence.description}
                       title="Toggle Description"
-                      className={buttonStyles.menuButtonCenter}
+                      className={buttonStyles.menuButtonLeft}
                     >
                       <span>{situationTitle}</span>
                       {!!selectedSituation.description &&
                         (showDescription ? <FiChevronUp /> : <FiChevronDown />)}
                     </ButtonOrSpan>
+                    <button
+                      type="button"
+                      disabled={selectedSituationIndex === 0}
+                      onClick={onSituationLeft}
+                      className={classNames(
+                        buttonStyles.menuButtonCenter,
+                        buttonStyles.menuButtonIconOnly
+                      )}
+                      title="Go to previous situation"
+                    >
+                      <FiChevronLeft />
+                    </button>
                     <button
                       className={buttonStyles.menuButtonRight}
                       type="button"
@@ -229,8 +233,9 @@ function BreadcrumbInViewMode() {
                         selectedSequence.sequence.length - 1
                       }
                       onClick={onSituationRight}
+                      title="Go to next situation"
                     >
-                      <FiChevronRight title="Go to next situation" />
+                      <FiChevronRight />
                     </button>
                   </div>
                 </div>
@@ -267,11 +272,13 @@ function BreadcrumbInViewMode() {
           {!!selectedSituation && (
             <button
               type="button"
-              title={playSequence ? "Stop Sequence" : "Play Sequence"}
+              title={playSequence ? "Close Sequence" : "Open Sequence"}
               onClick={onTogglePlaySequence}
-              className={buttonStyles.menuButton}
+              className={classNames(buttonStyles.menuButton, {
+                [buttonStyles.menuButtonActive]: playSequence,
+              })}
             >
-              {playSequence ? <FiSquare /> : <FiPlay />}
+              {playSequence ? <FiCornerUpLeft /> : <FiCornerRightDown />}
             </button>
           )}
           {!!selectedSequence && (

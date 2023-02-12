@@ -46,11 +46,7 @@ const Preview = ({ track, bbox, onShown }) => {
 
   return (
     <div ref={element} className={styles.Preview}>
-      <TrackGeometry
-        skaters={track.skaters}
-        isPreview={true}
-        updatePack={true}
-      />
+      <TrackGeometry skaters={track.skaters} isPreview={true} />
     </div>
   );
 };

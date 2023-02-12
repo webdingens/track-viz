@@ -7,8 +7,10 @@ import {
   setIsPlaying,
 } from "../../app/reducers/animatingTrackSlice";
 
-import styles from "./PlaybackControls.module.scss";
 import { Sequence } from "../../types/LibraryData";
+
+import buttonStyles from "../../styles/Buttons.module.scss";
+import classNames from "classnames";
 
 type PlaybackControlsProps = {
   sequence: Sequence;
@@ -20,14 +22,18 @@ const PlaybackControls = ({ sequence }: PlaybackControlsProps) => {
   const onClick = () => dispatch(setIsPlaying(!isPlaying));
 
   return (
-    <div className={styles.PlaybackControls}>
-      <button onClick={onClick}>{isPlaying ? <FiSquare /> : <FiPlay />}</button>
-      <button>
-        <FiRepeat />
+    <>
+      <button
+        onClick={onClick}
+        className={classNames(buttonStyles.menuButton, {
+          [buttonStyles.menuButtonActive]: isPlaying,
+        })}
+        title={isPlaying ? "Stop sequence" : "Play sequence"}
+      >
+        {isPlaying ? <FiSquare /> : <FiPlay />}
       </button>
-
       <Player sequence={sequence} />
-    </div>
+    </>
   );
 };
 

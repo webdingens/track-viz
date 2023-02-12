@@ -5,6 +5,9 @@
   position: relative;
   background: rgba(255, 255, 255, 0.8);
 
+  display: flex;
+  align-items: center;
+
   font-family: "Work Sans", sans-serif;
   font-size: calc(1rem * 14 / 16);
 
@@ -47,6 +50,15 @@
 
     svg {
       opacity: 0.5;
+    }
+  }
+
+  &.menuButtonActive {
+    border-color: rgb(56, 142, 60);
+    box-shadow: 0 0 0 1px rgb(56, 142, 60);
+
+    svg {
+      color: rgb(56, 142, 60);
     }
   }
 }
@@ -109,6 +121,10 @@
 
   span {
     flex-grow: 1;
+  }
+
+  &.menuButtonIconOnly {
+    padding-inline: 0.5em;
   }
 }
 

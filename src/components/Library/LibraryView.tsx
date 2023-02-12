@@ -142,7 +142,6 @@ function LibraryView() {
                                         situation.skaters
                                       )}
                                       isPreview={true}
-                                      updatePack={true}
                                       style={{ maxHeight: "200px" }}
                                     />
                                     <button

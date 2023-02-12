@@ -1,8 +1,6 @@
 import PropTypes from "prop-types";
-import { connect, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import classNames from "classnames";
-
-import { selectCurrentSkatersWDPPivotLineDistance } from "../../app/reducers/currentTrackSlice";
 
 import { selectGeneralSettings } from "../../app/reducers/settingsGeneralSlice";
 
@@ -112,9 +110,8 @@ const PartialTrackShapeRectangle = ({
   );
 };
 
-const TrackPackMarkings = ({ useSkaters, storeSkaters }) => {
+const TrackPackMarkings = ({ skaters }) => {
   const settings = useSelector(selectGeneralSettings);
-  const skaters = useSkaters ? useSkaters : storeSkaters;
 
   /*
    *   Sector Method Variables
@@ -461,10 +458,4 @@ TrackPackMarkings.propTypes = {
   storeSkaters: PropTypes.array,
 };
 
-const mapStateToProps = (state) => {
-  return {
-    storeSkaters: selectCurrentSkatersWDPPivotLineDistance(state),
-  };
-};
-
-export default connect(mapStateToProps)(TrackPackMarkings);
+export default TrackPackMarkings;

@@ -174,7 +174,6 @@ function Situation({ data, idPrefix, onUpdate }: SituationProps) {
           <TrackGeometry
             skaters={skatersWDP}
             isPreview={true}
-            updatePack={true}
             style={{ maxHeight: "200px" }}
           />
         ) : (

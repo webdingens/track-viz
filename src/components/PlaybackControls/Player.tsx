@@ -57,7 +57,7 @@ function Player({ sequence }: PlayerProps) {
   const animationContext = useRef<gsap.Context | null>(null);
 
   const playbackType = PLAYBACK_TYPES.MEASUREMENT_LINE;
-  const startDelay = 1;
+  const startDelay = 0.8;
   const stepDelay = 1;
   const endDelay = 1.5;
   const useDistanceMeasurement = DISTANCE_MEASUREMENT.MAX;

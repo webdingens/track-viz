@@ -25,7 +25,6 @@ import { SkaterType } from "../../types/LibraryData";
 import TrackDragging from "./TrackDragging";
 
 type TrackGeometryProps = {
-  updatePack: boolean;
   skaters: SkaterType[];
   isPreview: boolean;
 } & HTMLAttributes<SVGElement>;
@@ -63,7 +62,7 @@ const getViewBox = (orientation = 0, view: keyof typeof TRACK_VIEWS) => {
 };
 
 function TrackGeometry(props: TrackGeometryProps) {
-  const { className, updatePack, skaters, isPreview, style } = props;
+  const { className, skaters, isPreview, style } = props;
   const orientation = useSelector(selectTrackOrientation);
   const view = useSelector(selectTrackView);
   const viewBox = getViewBox(orientation, view);
@@ -72,7 +71,7 @@ function TrackGeometry(props: TrackGeometryProps) {
   const [w, h] = wh.split(",");
 
   // don't redraw Track Markings on skater changes
-  const TrackMarkingsMemo = useMemo(
+  const TrackMarkingsMemoized = useMemo(
     () => <TrackMarkings view={view} orientation={orientation} />,
     [orientation, view]
   );
@@ -98,13 +97,18 @@ function TrackGeometry(props: TrackGeometryProps) {
       )}
 
       <g transform={`rotate(${orientation})`}>
-        <TrackPackMarkings useSkaters={updatePack ? skaters : false} />
+        <TrackPackMarkings skaters={skaters} />
 
-        {TrackMarkingsMemo}
+        {TrackMarkingsMemoized}
 
         <Track3DCamera />
 
-        {isPreview ? <TrackSkaters {...props} /> : <TrackDragging {...props} />}
+        {/* display non interactive skaters */}
+        {isPreview ? (
+          <TrackSkaters skaters={skaters} />
+        ) : (
+          <TrackDragging skaters={skaters} />
+        )}
       </g>
     </svg>
   );
