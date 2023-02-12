@@ -13,9 +13,6 @@ import {
   PACK_MEASURING_METHODS,
   getSkatersWDPInPlayPackSkater,
 } from "../../utils/packFunctions";
-
-import { selectCurrentTrack } from "../../app/reducers/currentTrackSlice";
-
 import {
   selectIsPlaying,
   setIsPlaying as _setIsPlaying,
@@ -23,9 +20,9 @@ import {
   setAnimationState as _setAnimationState,
   selectAnimationState,
   setAnimatingTrack as _setAnimatingTrack,
-  selectAnimatingTrack,
   AnimationStateType,
 } from "../../app/reducers/animatingTrackSlice";
+import { selectCurrentTrack } from "../../app/reducers/currentTrackSlice";
 import {
   Sequence,
   SkaterDataType,
@@ -40,6 +37,11 @@ const PLAYBACK_TYPES = {
   MEASUREMENT_LINE: "MEASUREMENT_LINE",
 };
 
+const DISTANCE_MEASUREMENT = {
+  SUM: "SUM",
+  MAX: "MAX",
+};
+
 type PlayerProps = {
   sequence: Sequence;
 };
@@ -52,16 +54,29 @@ function Player({ sequence }: PlayerProps) {
   const settings = useSelector(selectGeneralSettings);
   const animatingTrack = useRef<TrackData | null>(null);
   const animationState = useSelector(selectAnimationState);
-  const timeline = useRef<GSAPTimeline | null>(null);
+  const animationContext = useRef<gsap.Context | null>(null);
 
-  const playbackType = PLAYBACK_TYPES.SIMPLE;
+  const playbackType = PLAYBACK_TYPES.MEASUREMENT_LINE;
+  const startDelay = 1;
+  const stepDelay = 1;
+  const endDelay = 1.5;
+  const useDistanceMeasurement = DISTANCE_MEASUREMENT.MAX;
+  const movementSpeedMax = 3;
+  const movementSpeedSum = 10;
+  const movementSpeed =
+    useDistanceMeasurement === DISTANCE_MEASUREMENT.MAX
+      ? movementSpeedMax
+      : movementSpeedSum;
 
-  const setIsPlaying = (val: boolean) => dispatch(_setIsPlaying(val));
+  function setIsPlaying(val: boolean) {
+    dispatch(_setIsPlaying(val));
+  }
   function setAnimatingTrack<T extends TrackData>(track: T) {
     dispatch(_setAnimatingTrack(track));
   }
-  const setAnimationState = (val: AnimationStateType) =>
+  function setAnimationState(val: AnimationStateType) {
     dispatch(_setAnimationState(val));
+  }
 
   useEffect(() => {
     if (isPlaying) {
@@ -77,7 +92,7 @@ function Player({ sequence }: PlayerProps) {
       setAnimatingTrack(_.cloneDeep(startingTrack));
       setAnimationState(ANIMATION_STATE.PLAYING);
     } else {
-      if (timeline.current) timeline.current.kill();
+      if (animationContext.current) animationContext.current.kill();
       setAnimationState(ANIMATION_STATE.STOPPED);
     }
   }, [isPlaying]);
@@ -95,7 +110,7 @@ function Player({ sequence }: PlayerProps) {
 
   useEffect(() => {
     return () => {
-      if (timeline.current) timeline.current.kill();
+      if (animationContext.current) animationContext.current.kill();
       setAnimationState(ANIMATION_STATE.STOPPED);
     };
   }, []);
@@ -118,11 +133,15 @@ function Player({ sequence }: PlayerProps) {
   }
 
   function animateSequence() {
-    if (playbackType === PLAYBACK_TYPES.SIMPLE) {
-      animateSimple();
-    } else {
-      animateAlongMeasurementLine();
-    }
+    if (animationContext.current) animationContext.current.kill();
+
+    animationContext.current = gsap.context(() => {
+      if (playbackType === PLAYBACK_TYPES.SIMPLE) {
+        animateSimple();
+      } else {
+        animateAlongMeasurementLine();
+      }
+    });
   }
 
   function animateSimple() {
@@ -140,58 +159,78 @@ function Player({ sequence }: PlayerProps) {
       },
     });
     let tracks = currentSequence.sequence;
-    let firstTrack = true;
     let prevTrackIdx;
+    let prevTrack;
     let prevTrackEnd = 0;
-    for (let i = 0; i < tracks.length; i++) {
+
+    // set initial state
+    if (tracks.length && !tracks[0].empty) {
+      const track = tracks[0];
+      for (let j = 0; j < track.skaters.length; j++) {
+        tl.set(animatingTrack.current.skaters[j], {
+          rotation: track.skaters[j].rotation,
+          x: track.skaters[j].x,
+          y: track.skaters[j].y,
+        });
+      }
+      prevTrackEnd = startDelay;
+      prevTrackIdx = 0;
+      prevTrack = track;
+    }
+
+    for (let i = 1; i < tracks.length; i++) {
       let track = tracks[i];
       if (track.empty) continue;
 
+      let sumDistance = 0;
       for (let j = 0; j < track.skaters.length; j++) {
-        if (firstTrack) {
-          tl.to(
-            animatingTrack.current.skaters[j],
-            {
-              // rotation: track.skaters[j].rotation,
-              x: track.skaters[j].x,
-              y: track.skaters[j].y,
-              duration: 0.2,
-            },
-            0
+        if (!prevTrack) {
+          throw new Error(
+            "Expected prevTrack to be set up during initial state setup"
           );
-        } else {
-          if (typeof prevTrackIdx === "undefined") {
-            throw new Error("Should be defined");
+        }
+        const skaterA = track.skaters[j];
+        const skaterB = prevTrack.skaters[j];
+        const dX = skaterA.x - skaterB.x;
+        const dY = skaterA.y - skaterB.y;
+        const newDist = Math.sqrt(dX * dX + dY * dY);
+        if (useDistanceMeasurement === DISTANCE_MEASUREMENT.MAX) {
+          if (newDist > sumDistance) {
+            sumDistance = newDist;
           }
-          tl.to(
-            animatingTrack.current.skaters[j],
-            {
-              // rotation: track.skaters[j].rotation,
-              x: track.skaters[j].x,
-              y: track.skaters[j].y,
-              duration: 0.2 * (i - prevTrackIdx),
-            },
-            prevTrackEnd + 0.5
-          );
+        } else {
+          sumDistance += newDist;
         }
       }
 
-      if (firstTrack) {
-        prevTrackEnd = 0.2 + 0.5;
-      } else {
+      const stepDuration = Math.max(1, sumDistance / movementSpeed);
+
+      for (let j = 0; j < track.skaters.length; j++) {
         if (typeof prevTrackIdx === "undefined") {
           throw new Error("Should be defined");
         }
-        prevTrackEnd = prevTrackEnd + 0.5 + 0.2 * (i - prevTrackIdx);
+        tl.to(
+          animatingTrack.current.skaters[j],
+          {
+            rotation: track.skaters[j].rotation,
+            x: track.skaters[j].x,
+            y: track.skaters[j].y,
+            duration: stepDuration,
+          },
+          prevTrackEnd + stepDelay
+        );
       }
 
+      if (typeof prevTrackIdx === "undefined") {
+        throw new Error("Should be defined");
+      }
+      prevTrackEnd = prevTrackEnd + stepDelay + stepDuration;
       prevTrackIdx = i;
-      firstTrack = false;
+      prevTrack = track;
     }
     tl.add(() => {
       setIsPlaying(false);
-    }, "+=1");
-    timeline.current = tl;
+    }, `+=${endDelay}`);
   }
 
   function animateAlongMeasurementLine() {
@@ -218,17 +257,58 @@ function Player({ sequence }: PlayerProps) {
     });
 
     let tracks = currentSequence.sequence;
-    let firstTrack = true;
     let prevTrackIdx;
-    let prevTrack = _.cloneDeep(currentTrack);
-    prevTrack.skaters = addDerivedPropertiesToSkaters(prevTrack.skaters);
+    let prevTrack;
     let prevTrackEnd = 0;
-    for (let i = 0; i < tracks.length; i++) {
+
+    // set initial state
+    if (tracks.length && !tracks[0].empty) {
+      let track = _.cloneDeep(tracks[0]);
+      track.skaters = addDerivedPropertiesToSkaters(track.skaters);
+      track = getTrackWithRelativeVPositions(track);
+      for (let j = 0; j < track.skaters.length; j++) {
+        const skaterNow = track.skaters[j] as SkaterWithPivotLineDist;
+        tl.set(animatingTrack.current.skaters[j], {
+          rotation: skaterNow.rotation,
+          pivotLineDist: skaterNow.pivotLineDist,
+          v: skaterNow.v,
+        });
+      }
+      prevTrackEnd = startDelay;
+      prevTrackIdx = 0;
+      prevTrack = track;
+      prevTrack.skaters = addDerivedPropertiesToSkaters(prevTrack.skaters);
+    }
+
+    for (let i = 1; i < tracks.length; i++) {
+      if (!prevTrack) {
+        throw new Error(
+          "Expected prevTrack to be set up during initial state setup"
+        );
+      }
       let track = _.cloneDeep(tracks[i]);
       if (track.empty) continue;
 
       track.skaters = addDerivedPropertiesToSkaters(track.skaters);
       track = getTrackWithRelativeVPositions(track);
+
+      let sumDistance = 0;
+      for (let j = 0; j < track.skaters.length; j++) {
+        const skaterA = track.skaters[j];
+        const skaterB = prevTrack.skaters[j];
+        const dX = skaterA.x - skaterB.x;
+        const dY = skaterA.y - skaterB.y;
+        const newDist = Math.sqrt(dX * dX + dY * dY);
+        if (useDistanceMeasurement === DISTANCE_MEASUREMENT.MAX) {
+          if (newDist > sumDistance) {
+            sumDistance = newDist;
+          }
+        } else {
+          sumDistance += newDist;
+        }
+      }
+
+      const stepDuration = Math.max(1, sumDistance / movementSpeed);
 
       for (let j = 0; j < track.skaters.length; j++) {
         const skaterNow = track.skaters[j] as SkaterWithPivotLineDist;
@@ -250,52 +330,32 @@ function Player({ sequence }: PlayerProps) {
           skaterNow.rotation
         );
 
-        if (firstTrack) {
-          tl.to(
-            animatingTrack.current.skaters[j],
-            {
-              rotation: skaterNow.rotation,
-              pivotLineDist: skaterNow.pivotLineDist,
-              v: skaterNow.v,
-              duration: 0.2,
-            },
-            0
-          );
-        } else {
-          if (typeof prevTrackIdx === "undefined") {
-            throw new Error("Should be defined");
-          }
-          // set pivot Line Dist based on prevTrack
-          tl.to(
-            animatingTrack.current.skaters[j],
-            {
-              rotation: skaterNow.rotation,
-              pivotLineDist: skaterNow.pivotLineDist,
-              v: skaterNow.v,
-              duration: 0.2 * (i - prevTrackIdx),
-            },
-            prevTrackEnd + 0.5
-          );
-        }
-      }
-
-      if (firstTrack) {
-        prevTrackEnd = 0.2 + 0.5;
-      } else {
         if (typeof prevTrackIdx === "undefined") {
           throw new Error("Should be defined");
         }
-        prevTrackEnd = prevTrackEnd + 0.5 + 0.2 * (i - prevTrackIdx);
+        // set pivot Line Dist based on prevTrack
+        tl.to(
+          animatingTrack.current.skaters[j],
+          {
+            rotation: skaterNow.rotation,
+            pivotLineDist: skaterNow.pivotLineDist,
+            v: skaterNow.v,
+            duration: stepDuration,
+          },
+          prevTrackEnd + stepDelay
+        );
       }
 
+      if (typeof prevTrackIdx === "undefined") {
+        throw new Error("Should be defined");
+      }
+      prevTrackEnd = prevTrackEnd + stepDelay + stepDuration;
       prevTrackIdx = i;
       prevTrack = track;
-      firstTrack = false;
     }
     tl.add(() => {
       setIsPlaying(false);
-    }, "+=1");
-    timeline.current = tl;
+    }, `+=${endDelay}`);
   }
 
   function getTrackWithRelativeVPositions<T extends TrackData>(
