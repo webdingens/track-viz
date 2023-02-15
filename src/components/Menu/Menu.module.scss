@@ -11,6 +11,10 @@
     max-width: 90vw;
   }
 
+  @media (max-width: 374.9px) {
+    font-size: 11px;
+  }
+
   ul {
     padding: 0;
     margin: 0;
