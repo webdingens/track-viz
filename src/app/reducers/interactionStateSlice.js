@@ -1,6 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { cleanupSlice, loadSlice } from "../storePersistence";
 
+export const BREADCRUMB_SHOW_DESCRIPTION = {
+  NONE: "NONE",
+  SEQUENCE: "SEQUENCE",
+  SITUATION: "SITUATION",
+};
+
 export const defaultInteractionState = {
   userIsInteractingWithTrack3D: false,
   touchEnabledDevice: false,
@@ -8,7 +14,7 @@ export const defaultInteractionState = {
   touchOnRotateModeButton: -1,
   libraryInEditMode: false,
   libraryModalShown: false,
-  breadcrumbShowDescription: false,
+  breadcrumbShowDescription: BREADCRUMB_SHOW_DESCRIPTION.SEQUENCE,
 };
 
 let initialState = cleanupSlice(

@@ -3,7 +3,31 @@
 }
 
 .controls {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  width: 100%;
+
+  > div {
+    display: flex;
+    width: 100%;
+    gap: 0.5em;
+    justify-content: space-between;
+  }
+
+  select {
+    border: none;
+    width: 150px;
+    width: min(150px, calc(100vw - 210px));
+    padding-inline: 0.5em;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    &:not(:nth-last-child(2)) {
+      border-right: 1px solid #000;
+    }
+  }
 }
 
 .sequenceTitle {

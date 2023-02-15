@@ -52,20 +52,22 @@ const Menu = () => {
       })}
     >
       <div className={styles.controls}>
-        <button
-          className={buttonStyles.menuButton}
-          onClick={() => {
-            setState({
-              open: !state.open,
-              openedOnce: true,
-            });
-          }}
-          type="button"
-          style={{ float: "left" }}
-          title={state.open ? "Close Menu" : "Menu"}
-        >
-          {state.open ? <FiX /> : <FiMenu />}
-        </button>
+        <div>
+          <button
+            className={buttonStyles.menuButton}
+            onClick={() => {
+              setState({
+                open: !state.open,
+                openedOnce: true,
+              });
+            }}
+            type="button"
+            style={{ float: "left" }}
+            title={state.open ? "Close Menu" : "Menu"}
+          >
+            {state.open ? <FiX /> : <FiMenu />}
+          </button>
+        </div>
         <Breadcrumb />
       </div>
 
