@@ -3,7 +3,17 @@
   top: 0.8rem;
   left: 0.8rem;
   z-index: 2;
-  max-width: 90vw;
+  width: 100%;
+  max-width: calc(100vw - 1.6rem);
+  text-align: left;
+
+  @media (min-width: 768px) {
+    max-width: 90vw;
+  }
+
+  @media (max-width: 374.9px) {
+    font-size: 11px;
+  }
 
   ul {
     padding: 0;

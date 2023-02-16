@@ -3,7 +3,39 @@
 }
 
 .controls {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  width: 100%;
+
+  > div {
+    display: flex;
+    width: 100%;
+    gap: 0.5em;
+    justify-content: space-between;
+
+    @media (max-width: 767.9px) {
+      justify-content: flex-end;
+    }
+  }
+
+  select {
+    border: none;
+    width: 150px;
+    width: min(150px, calc(100vw - 210px));
+    padding-inline: 0.5em;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    @media (max-width: 767.9px) {
+      max-width: 120px;
+    }
+
+    &:not(:nth-last-child(2)) {
+      border-right: 1px solid #000;
+    }
+  }
 }
 
 .sequenceTitle {
@@ -50,8 +82,8 @@
   box-shadow: 2px 4px 10px 0 rgba(0 0 0 / 0.3);
   z-index: 1;
   margin-top: 1em;
-  width: min(350px, 100vw);
-  max-width: max-content;
+  width: max-content;
+  max-width: 100%;
   color: var(--body-color);
 
   left: 50%;

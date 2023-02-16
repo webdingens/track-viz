@@ -5,24 +5,16 @@ import {
   selectBreadcrumbShowDescription,
   selectLibraryInEditMode,
   setBreadcrumbShowDescription,
+  BREADCRUMB_SHOW_DESCRIPTION,
 } from "../../app/reducers/interactionStateSlice";
 import RichtextView from "../Library/RichtextView";
-import {
-  FiChevronDown,
-  FiChevronLeft,
-  FiChevronRight,
-  FiChevronUp,
-  FiCornerRightDown,
-  FiCornerUpLeft,
-} from "react-icons/fi";
+import { FiChevronLeft, FiChevronRight, FiInfo, FiX } from "react-icons/fi";
 
 import styles from "./Breadcrumb.module.scss";
 import buttonStyles from "../../styles/Buttons.module.scss";
 import classNames from "classnames";
 import { setCurrentTrack } from "../../app/reducers/currentTrackSlice";
 import LibraryToggle from "./LibraryToggle";
-import ButtonOrSpan from "./ButtonOrSpan";
-import OutlinedText from "./OutlinedText";
 import PlaybackControls from "../PlaybackControls/PlaybackControls";
 import {
   LAYOUT_MODES,
@@ -72,55 +64,82 @@ function BreadcrumbInViewMode() {
     );
   }
 
-  const onTogglePlaySequence = () => {
-    setFirstSituation(selectedSequence);
-    setPlaySequence(!playSequence);
+  const setSequenceBasedByIndex = (sequenceIndex) => {
+    const newSequence = library.sequences[sequenceIndex];
+    setSelectedSequence(newSequence);
+    setSelectedSequenceIndex(sequenceIndex);
+    const firstSituation = setFirstSituation(newSequence);
+    loadSituationOntoTrack(firstSituation);
+    setPlaySequence(false);
   };
 
   const onSequenceLeft = () => {
     const newIndex = selectedSequenceIndex - 1;
     if (newIndex < 0) {
-      console.error("Failed to select previous Sequence");
-      return;
+      return console.error("Failed to select previous Sequence");
     }
-    setSelectedSequence(library.sequences[newIndex]);
-    setSelectedSequenceIndex(newIndex);
-    setFirstSituation(library.sequences[newIndex]);
-    setPlaySequence(false);
+    setSequenceBasedByIndex(newIndex);
   };
 
   const onSequenceRight = () => {
     const newIndex = selectedSequenceIndex + 1;
     if (newIndex > library.sequences.length - 1) {
-      console.error("Failed to select next Sequence");
-      return;
+      return console.error("Failed to select next Sequence");
     }
-    setSelectedSequence(library.sequences[newIndex]);
-    setSelectedSequenceIndex(newIndex);
-    setFirstSituation(library.sequences[newIndex]);
-    setPlaySequence(false);
+    setSequenceBasedByIndex(newIndex);
+  };
+
+  const onChangeSelectSequence = (evt) => {
+    const sequenceId = +evt.target.value;
+    const newIndex = library.sequences.findIndex(
+      (entry) => entry.id === sequenceId
+    );
+    if (newIndex === -1) {
+      return console.error("Did not find selected sequence");
+    }
+    setSequenceBasedByIndex(newIndex);
   };
 
   const onSituationLeft = () => {
     const newIndex = selectedSituationIndex - 1;
     if (newIndex < 0) {
-      console.error("Failed to select previous Situation");
-      return;
+      return console.error("Failed to select previous Situation");
     }
-    setSelectedSituation(selectedSequence.sequence[newIndex]);
-    setSelectedSituationIndex(newIndex);
-    loadSituationOntoTrack(selectedSequence.sequence[newIndex]);
+    setSituationByIndex(newIndex);
   };
 
   const onSituationRight = () => {
     const newIndex = selectedSituationIndex + 1;
     if (newIndex > selectedSequence.sequence.length - 1) {
-      console.error("Failed to select next Situation");
-      return;
+      return console.error("Failed to select next Situation");
     }
-    setSelectedSituation(selectedSequence.sequence[newIndex]);
-    setSelectedSituationIndex(newIndex);
-    loadSituationOntoTrack(selectedSequence.sequence[newIndex]);
+    setSituationByIndex(newIndex);
+  };
+
+  const onChangeSelectSituation = (evt) => {
+    const situationId = +evt.target.value;
+    const newIndex = selectedSequence.sequence.findIndex(
+      (entry) => entry.id === situationId
+    );
+    if (newIndex === -1) {
+      return console.error("Did not find selected situation");
+    }
+    setSituationByIndex(newIndex);
+  };
+
+  const setSituationByIndex = (situationIndex) => {
+    const newSituation = selectedSequence.sequence[situationIndex];
+    setSelectedSituation(newSituation);
+    setSelectedSituationIndex(situationIndex);
+    loadSituationOntoTrack(newSituation);
+  };
+
+  const toggleDescription = (descriptionType) => {
+    if (showDescription === descriptionType) {
+      dispatch(setBreadcrumbShowDescription(BREADCRUMB_SHOW_DESCRIPTION.NONE));
+    } else {
+      dispatch(setBreadcrumbShowDescription(descriptionType));
+    }
   };
 
   // on update library reset the Breadcrumb
@@ -136,7 +155,9 @@ function BreadcrumbInViewMode() {
     setSelectedSituation(newSituation);
     setSelectedSituationIndex(0);
     setPlaySequence(false);
-    dispatch(setBreadcrumbShowDescription(true));
+    dispatch(
+      setBreadcrumbShowDescription(BREADCRUMB_SHOW_DESCRIPTION.SEQUENCE)
+    );
   }, [library]);
 
   // Strict Mode
@@ -165,28 +186,49 @@ function BreadcrumbInViewMode() {
                 [styles.playSequence]: playSequence,
               })}
             >
-              {!playSequence && (
+              <div>
                 <div className={buttonStyles.leftRightButton}>
+                  <button
+                    type="button"
+                    className={buttonStyles.menuButtonLeft}
+                    title="Toggle Sequence Description"
+                    aria-label="Toggle Sequence Description"
+                    onClick={() =>
+                      toggleDescription(BREADCRUMB_SHOW_DESCRIPTION.SEQUENCE)
+                    }
+                  >
+                    {showDescription ===
+                    BREADCRUMB_SHOW_DESCRIPTION.SEQUENCE ? (
+                      <FiX />
+                    ) : (
+                      <FiInfo />
+                    )}
+                  </button>
+                  <select
+                    title="Select Sequence"
+                    aria-label="Select Sequence"
+                    onChange={onChangeSelectSequence}
+                    value={selectedSequence?.id}
+                  >
+                    {library.sequences.map((sequence) => (
+                      <option key={sequence.id} value={sequence.id}>
+                        {sequence.title}
+                      </option>
+                    ))}
+                  </select>
                   <button
                     type="button"
                     disabled={selectedSequenceIndex === 0}
                     onClick={onSequenceLeft}
-                    className={buttonStyles.menuButtonLeft}
+                    className={classNames(
+                      buttonStyles.menuButtonInter,
+                      buttonStyles.menuButtonIconOnly
+                    )}
+                    title="Go to previous sequence"
+                    aria-label="Go to previous sequence"
                   >
-                    <FiChevronLeft title="Go to previous sequence" />
+                    <FiChevronLeft />
                   </button>
-                  <ButtonOrSpan
-                    onClick={() =>
-                      dispatch(setBreadcrumbShowDescription(!showDescription))
-                    }
-                    isButton={!!selectedSequence.description}
-                    title="Toggle Description"
-                    className={buttonStyles.menuButtonCenter}
-                  >
-                    <span>{sequenceTitle}</span>
-                    {!!selectedSequence.description &&
-                      (showDescription ? <FiChevronUp /> : <FiChevronDown />)}
-                  </ButtonOrSpan>
                   <button
                     type="button"
                     disabled={
@@ -194,101 +236,111 @@ function BreadcrumbInViewMode() {
                     }
                     onClick={onSequenceRight}
                     className={buttonStyles.menuButtonRight}
+                    title="Go to next sequence"
+                    aria-label="Go to next sequence"
                   >
-                    <FiChevronRight title="Go to next sequence" />
+                    <FiChevronRight />
                   </button>
                 </div>
-              )}
-              {!!selectedSituation && playSequence && (
-                <div
-                  className={classNames(styles.descriptionHolder, {
-                    [styles.descriptionHolderActive]: showDescription,
-                  })}
-                >
-                  <div className={buttonStyles.leftRightButton}>
-                    <ButtonOrSpan
-                      onClick={() =>
-                        dispatch(setBreadcrumbShowDescription(!showDescription))
-                      }
-                      isButton={!!selectedSequence.description}
-                      title="Toggle Description"
-                      className={buttonStyles.menuButtonLeft}
-                    >
-                      <span>{situationTitle}</span>
-                      {!!selectedSituation.description &&
-                        (showDescription ? <FiChevronUp /> : <FiChevronDown />)}
-                    </ButtonOrSpan>
-                    <button
-                      type="button"
-                      disabled={selectedSituationIndex === 0}
-                      onClick={onSituationLeft}
-                      className={classNames(
-                        buttonStyles.menuButtonCenter,
-                        buttonStyles.menuButtonIconOnly
-                      )}
-                      title="Go to previous situation"
-                    >
-                      <FiChevronLeft />
-                    </button>
-                    <button
-                      className={buttonStyles.menuButtonRight}
-                      type="button"
-                      disabled={
-                        selectedSituationIndex ===
-                        selectedSequence.sequence.length - 1
-                      }
-                      onClick={onSituationRight}
-                      title="Go to next situation"
-                    >
-                      <FiChevronRight />
-                    </button>
+                <div className={buttonStyles.menuButtonHideOnMobile}>
+                  {layoutMode !== LAYOUT_MODES.LAYOUT_3D && (
+                    <PlaybackControls sequence={selectedSequence} />
+                  )}
+                </div>
+              </div>
+              <div>
+                <div className={buttonStyles.leftRightButton}>
+                  <button
+                    type="button"
+                    className={buttonStyles.menuButtonLeft}
+                    title="Toggle Situation Description"
+                    aria-label="Toggle Situation Description"
+                    onClick={() =>
+                      toggleDescription(BREADCRUMB_SHOW_DESCRIPTION.SITUATION)
+                    }
+                  >
+                    {showDescription ===
+                    BREADCRUMB_SHOW_DESCRIPTION.SITUATION ? (
+                      <FiX />
+                    ) : (
+                      <FiInfo />
+                    )}
+                  </button>
+                  <select
+                    className={buttonStyles.menuButtonHideOnMobile}
+                    title="Select Situation"
+                    aria-label="Select Situation"
+                    value={selectedSituation?.id}
+                    onChange={onChangeSelectSituation}
+                  >
+                    {selectedSequence.sequence.map((situation) => (
+                      <option key={situation.id} value={situation.id}>
+                        {situation.title}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    disabled={selectedSituationIndex === 0}
+                    onClick={onSituationLeft}
+                    className={classNames(
+                      buttonStyles.menuButtonInterLeft,
+                      buttonStyles.menuButtonIconOnly
+                    )}
+                    title="Go to previous situation"
+                  >
+                    <FiChevronLeft />
+                  </button>
+                  <button
+                    className={classNames(
+                      buttonStyles.menuButtonInter,
+                      buttonStyles.menuButtonIconOnly
+                    )}
+                    type="button"
+                    disabled={
+                      selectedSituationIndex ===
+                      selectedSequence.sequence.length - 1
+                    }
+                    onClick={onSituationRight}
+                    title="Go to next situation"
+                  >
+                    <FiChevronRight />
+                  </button>
+                  <div className={buttonStyles.menuButtonRight}>
+                    <code>
+                      {`${selectedSituationIndex + 1} / ${
+                        selectedSequence.sequence.length
+                      }`}
+                    </code>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
-            {showDescription && selectedSequence && (
+            {showDescription !== BREADCRUMB_SHOW_DESCRIPTION.NONE && (
               <div
                 className={classNames(styles.descriptionHolder, {
-                  [styles.descriptionHolderActive]: showDescription,
+                  [styles.descriptionHolderActive]: true,
                 })}
               >
                 <div className={styles.description}>
-                  <h3>
-                    {sequenceTitle}
-                    {!!selectedSituation &&
-                      playSequence &&
-                      `: ${situationTitle}`}
-                  </h3>
-                  {!playSequence && !!selectedSequence.description && (
-                    <RichtextView content={selectedSequence.description} />
-                  )}
-                  {playSequence && !!selectedSituation.description && (
-                    <RichtextView content={selectedSituation.description} />
-                  )}
+                  {showDescription === BREADCRUMB_SHOW_DESCRIPTION.SEQUENCE &&
+                    !!selectedSequence.description && (
+                      <>
+                        <h3>{sequenceTitle}</h3>
+                        <RichtextView content={selectedSequence.description} />
+                      </>
+                    )}
+                  {showDescription === BREADCRUMB_SHOW_DESCRIPTION.SITUATION &&
+                    !!selectedSituation.description && (
+                      <>
+                        <h3>{`${sequenceTitle}: ${situationTitle}`}</h3>
+                        <RichtextView content={selectedSituation.description} />
+                      </>
+                    )}
                 </div>
               </div>
             )}
-            {!showDescription && playSequence && (
-              <div className={styles.sequenceTitle}>
-                <OutlinedText text={sequenceTitle} />
-              </div>
-            )}
           </div>
-          {!!selectedSituation && (
-            <button
-              type="button"
-              title={playSequence ? "Close Sequence" : "Open Sequence"}
-              onClick={onTogglePlaySequence}
-              className={classNames(buttonStyles.menuButton, {
-                [buttonStyles.menuButtonActive]: playSequence,
-              })}
-            >
-              {playSequence ? <FiCornerUpLeft /> : <FiCornerRightDown />}
-            </button>
-          )}
-          {!!selectedSequence && layoutMode !== LAYOUT_MODES.LAYOUT_3D && (
-            <PlaybackControls sequence={selectedSequence} />
-          )}
         </>
       )}
     </>
