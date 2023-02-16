@@ -96,6 +96,7 @@ ul.menuList {
   border: 0;
   padding: 0;
   cursor: pointer;
+  text-decoration: none;
 
   &.button--active {
     text-decoration: underline;

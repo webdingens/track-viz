@@ -11,7 +11,7 @@ import {
 
 import styles from "./ImportField.module.scss";
 
-const ImportField = ({ buttonClassName }) => {
+const ImportField = ({ buttonClassName, children }) => {
   const dispatch = useDispatch();
 
   const onFileLoadEnd = useCallback(
@@ -46,9 +46,7 @@ const ImportField = ({ buttonClassName }) => {
   return (
     <div className={styles.ImportField}>
       <label className={buttonClassName}>
-        <span>
-          <FiUploadCloud /> Import Track
-        </span>
+        <span> {children}</span>
         <input type="file" accept="application/json" onChange={onChange} />
       </label>
     </div>

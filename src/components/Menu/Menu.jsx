@@ -27,7 +27,7 @@ import {
 import styles from "./Menu.module.scss";
 import buttonStyles from "../../styles/Buttons.module.scss";
 import Breadcrumb from "../Breadcrumb/Breadcrumb";
-import { FiMenu, FiX } from "react-icons/fi";
+import { FiExternalLink, FiMenu, FiX } from "react-icons/fi";
 import ImportLibraryField from "../ImportField/ImportLibraryField";
 import { setLibraryInEditMode } from "../../app/reducers/interactionStateSlice";
 
@@ -176,10 +176,14 @@ const Menu = () => {
           <span className={styles.headline}>Import / Export</span>
           <ul>
             <li>
-              <ImportField buttonClassName={styles.button} />
+              <ImportField buttonClassName={styles.button}>
+                Open Track
+              </ImportField>
             </li>
             <li>
-              <ExportButton buttonClassName={styles.button} />
+              <ExportButton buttonClassName={styles.button}>
+                Save Track (Save link as)
+              </ExportButton>
             </li>
           </ul>
         </li>
@@ -194,7 +198,7 @@ const Menu = () => {
                 }}
                 buttonClassName={styles.button}
               >
-                Load Library
+                Open Library
               </ImportLibraryField>
             </li>
             {library.sequences.length > 0 && (
@@ -213,6 +217,18 @@ const Menu = () => {
               </li>
             )}
           </ul>
+        </li>
+
+        <li>
+          <hr />
+          <a
+            href="https://trackviz-docs.netlify.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.button}
+          >
+            Documentation <FiExternalLink />
+          </a>
         </li>
       </ul>
     </div>

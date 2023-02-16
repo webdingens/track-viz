@@ -2,8 +2,6 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useSelector } from "react-redux";
 import _ from "lodash";
 
-import { FiDownloadCloud } from "react-icons/fi";
-
 import { selectCurrentTrack } from "../../app/reducers/currentTrackSlice";
 import {
   EXPORT_VERSION,
@@ -14,7 +12,7 @@ import { useDataToBlobUrl } from "../../utils/hooks";
 
 import styles from "./ExportButton.module.scss";
 
-const ExportButton = ({ buttonClassName }) => {
+const ExportButton = ({ buttonClassName, children }) => {
   const currentTrack = useSelector(selectCurrentTrack);
   const [updating, setUpdating] = useState(false);
   const [url, setData] = useDataToBlobUrl(currentTrack);
@@ -60,7 +58,7 @@ const ExportButton = ({ buttonClassName }) => {
         cursor: updating ? "progress" : "",
       }}
     >
-      <FiDownloadCloud /> Export Track (Save Link As)
+      {children}
     </a>
   );
 };
