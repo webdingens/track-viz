@@ -9,7 +9,8 @@
     "preview": "vite preview --host",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --quiet",
-    "ba": "vite-bundle-visualizer --output stats.html"
+    "bundleViz": "vite-bundle-visualizer --output stats.html",
+    "jsonSchema": "typescript-json-schema --ignoreErrors \"./src/**/*.ts\" ExportData -o \"./public/trackVizFileSchema.json\""
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.2",
@@ -49,6 +50,7 @@
     "prettier": "^2.8.2",
     "sass": "^1.58.0",
     "typescript": "^4.9.4",
+    "typescript-json-schema": "^0.55.0",
     "typescript-plugin-css-modules": "^4.1.1",
     "vite": "^4.0.4",
     "vite-bundle-visualizer": "^0.4.2",

@@ -27,7 +27,10 @@ const ExportButton = ({ buttonClassName }) => {
       dataCopy.version = EXPORT_VERSION;
       dataCopy.type = EXPORT_TYPES.SINGLE_TRACK;
 
-      setData(cleanupExportData(dataCopy));
+      const data = cleanupExportData(dataCopy);
+      data.editedAt = Date.now();
+
+      setData(data);
       setUpdating(false);
     },
     [setData]

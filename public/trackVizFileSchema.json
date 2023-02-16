@@ -1,0 +1,551 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "anyOf": [
+        {
+            "allOf": [
+                {
+                    "properties": {
+                        "version": {
+                            "enum": [
+                                "0.1.0"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "additionalProperties": {},
+                    "properties": {
+                        "description": {
+                            "type": "string"
+                        },
+                        "povTeam": {
+                            "enum": [
+                                "A",
+                                "B",
+                                "None"
+                            ],
+                            "type": "string"
+                        },
+                        "sequences": {
+                            "items": {
+                                "properties": {
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "id": {
+                                        "type": "number"
+                                    },
+                                    "sequence": {
+                                        "items": {
+                                            "$ref": "#/definitions/Situation"
+                                        },
+                                        "type": "array"
+                                    },
+                                    "title": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "type": "array"
+                        },
+                        "title": {
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "properties": {
+                        "editedAt": {
+                            "type": "number"
+                        },
+                        "loadedAt": {
+                            "type": "number"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "properties": {
+                        "type": {
+                            "enum": [
+                                "LIBRARY"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            ]
+        },
+        {
+            "allOf": [
+                {
+                    "properties": {
+                        "version": {
+                            "enum": [
+                                "0.1.0"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "properties": {
+                        "refs": {
+                            "items": {
+                                "$ref": "#/definitions/RefData"
+                            },
+                            "type": "array"
+                        },
+                        "skaters": {
+                            "items": {
+                                "$ref": "#/definitions/SkaterType"
+                            },
+                            "type": "array"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "properties": {
+                        "type": {
+                            "enum": [
+                                "SINGLE_TRACK"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            ]
+        }
+    ],
+    "definitions": {
+        "Annotation": {
+            "anyOf": [
+                {
+                    "properties": {
+                        "from": {
+                            "properties": {
+                                "x": {
+                                    "type": "number"
+                                },
+                                "y": {
+                                    "type": "number"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "to": {
+                            "properties": {
+                                "x": {
+                                    "type": "number"
+                                },
+                                "y": {
+                                    "type": "number"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "type": {
+                            "enum": [
+                                "ARROW"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "properties": {
+                        "position": {
+                            "properties": {
+                                "x": {
+                                    "type": "number"
+                                },
+                                "y": {
+                                    "type": "number"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "text": {
+                            "type": "string"
+                        },
+                        "type": {
+                            "enum": [
+                                "TOOLTIP"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            ]
+        },
+        "RefData": {
+            "allOf": [
+                {
+                    "properties": {
+                        "id": {
+                            "type": "number"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "properties": {
+                        "x": {
+                            "type": "number"
+                        },
+                        "y": {
+                            "type": "number"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "properties": {
+                        "rotation": {
+                            "type": "number"
+                        }
+                    },
+                    "type": "object"
+                }
+            ]
+        },
+        "Situation": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "properties": {
+                                "annotations": {
+                                    "items": {
+                                        "$ref": "#/definitions/Annotation"
+                                    },
+                                    "type": "array"
+                                },
+                                "description": {
+                                    "type": "string"
+                                },
+                                "empty": {
+                                    "type": "boolean"
+                                },
+                                "id": {
+                                    "type": "number"
+                                },
+                                "settings": {
+                                    "properties": {
+                                        "track2D": {
+                                            "properties": {
+                                                "view": {
+                                                    "enum": [
+                                                        "FIT",
+                                                        "FULL",
+                                                        "START"
+                                                    ],
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "transitionEffect": {
+                                    "enum": [
+                                        "ANIMATE_POSITIONS",
+                                        "FADE_OVER",
+                                        "NONE"
+                                    ],
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        {
+                            "properties": {
+                                "refs": {
+                                    "items": {
+                                        "$ref": "#/definitions/RefData"
+                                    },
+                                    "type": "array"
+                                },
+                                "skaters": {
+                                    "items": {
+                                        "$ref": "#/definitions/SkaterType"
+                                    },
+                                    "type": "array"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        {
+                            "properties": {
+                                "type": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "properties": {
+                                "annotations": {
+                                    "items": {
+                                        "$ref": "#/definitions/Annotation"
+                                    },
+                                    "type": "array"
+                                },
+                                "description": {
+                                    "type": "string"
+                                },
+                                "empty": {
+                                    "type": "boolean"
+                                },
+                                "id": {
+                                    "type": "number"
+                                },
+                                "settings": {
+                                    "properties": {
+                                        "track2D": {
+                                            "properties": {
+                                                "view": {
+                                                    "enum": [
+                                                        "FIT",
+                                                        "FULL",
+                                                        "START"
+                                                    ],
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "transitionEffect": {
+                                    "enum": [
+                                        "ANIMATE_POSITIONS",
+                                        "FADE_OVER",
+                                        "NONE"
+                                    ],
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        {
+                            "properties": {
+                                "refs": {
+                                    "items": {
+                                        "$ref": "#/definitions/RefData"
+                                    },
+                                    "type": "array"
+                                },
+                                "skaters": {
+                                    "items": {
+                                        "$ref": "#/definitions/SkaterType"
+                                    },
+                                    "type": "array"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        {
+                            "properties": {
+                                "outcome": {
+                                    "type": "string"
+                                },
+                                "situation": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    ]
+                }
+            ]
+        },
+        "SkaterType": {
+            "allOf": [
+                {
+                    "properties": {
+                        "id": {
+                            "type": "number"
+                        },
+                        "isJammer": {
+                            "type": "boolean"
+                        },
+                        "isPivot": {
+                            "type": "boolean"
+                        },
+                        "team": {
+                            "enum": [
+                                "A",
+                                "B"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "properties": {
+                        "x": {
+                            "type": "number"
+                        },
+                        "y": {
+                            "type": "number"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "properties": {
+                        "rotation": {
+                            "type": "number"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "properties": {
+                        "hasFocus": {
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "properties": {
+                        "inBounds": {
+                            "type": "boolean"
+                        },
+                        "inPlay": {
+                            "type": "boolean"
+                        },
+                        "packSkater": {
+                            "type": "boolean"
+                        },
+                        "pivotLineDist": {
+                            "type": "number"
+                        },
+                        "v": {
+                            "type": "number"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "properties": {
+                        "arrowToNextPosition": {
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "properties": {
+                        "color": {
+                            "properties": {
+                                "ALTERNATE": {
+                                    "default": "ALTERNATE",
+                                    "enum": [
+                                        "ALTERNATE"
+                                    ],
+                                    "type": "string"
+                                },
+                                "ORIGINAL": {
+                                    "default": "ORIGINAL",
+                                    "enum": [
+                                        "ORIGINAL"
+                                    ],
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "description": {
+                            "type": "string"
+                        },
+                        "pattern": {
+                            "properties": {
+                                "CAPS": {
+                                    "default": "caps",
+                                    "enum": [
+                                        "caps"
+                                    ],
+                                    "type": "string"
+                                },
+                                "CROSSES": {
+                                    "default": "crosses",
+                                    "enum": [
+                                        "crosses"
+                                    ],
+                                    "type": "string"
+                                },
+                                "HEXAGONS": {
+                                    "default": "hexagons",
+                                    "enum": [
+                                        "hexagons"
+                                    ],
+                                    "type": "string"
+                                },
+                                "NYLON": {
+                                    "default": "nylon",
+                                    "enum": [
+                                        "nylon"
+                                    ],
+                                    "type": "string"
+                                },
+                                "SQUARES": {
+                                    "default": "squares",
+                                    "enum": [
+                                        "squares"
+                                    ],
+                                    "type": "string"
+                                },
+                                "WAVES": {
+                                    "default": "waves",
+                                    "enum": [
+                                        "waves"
+                                    ],
+                                    "type": "string"
+                                },
+                                "WOVEN": {
+                                    "default": "woven",
+                                    "enum": [
+                                        "woven"
+                                    ],
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "type": "object"
+                }
+            ]
+        }
+    }
+}
+

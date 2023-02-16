@@ -1,14 +1,3 @@
-const colorLabels = {
-  "%%%COLOR_A%%%": "RED",
-  "%%%Color_A%%%": "Red",
-  "%%%color_A%%%": "red",
-  "%%%COLOR_B%%%": "WHITE",
-  "%%%Color_B%%%": "White",
-  "%%%color_B%%%": "white",
-};
-
-export type ColorLabels = typeof colorLabels;
-
 export type LibraryFileData = {
   loadedAt?: number;
   editedAt?: number;
@@ -20,7 +9,6 @@ export type LibraryData = {
   description?: string;
   povTeam?: "A" | "B" | "None";
   sequences: Sequence[];
-  colorLabels?: ColorLabels;
 } & LibraryFileData;
 
 export type Sequence = {

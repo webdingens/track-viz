@@ -17,7 +17,8 @@ type SingleTrackExportData = TrackData & {
   type: ExportTypes["SINGLE_TRACK"];
 };
 
-export type ExportData = { version: string } & (
+// ExportData is exported to the public JSON schema
+export type ExportData = { version: typeof EXPORT_VERSION } & (
   | LibraryExportData
   | SingleTrackExportData
 );
