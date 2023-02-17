@@ -15,33 +15,6 @@
     font-size: 11px;
   }
 
-  ul {
-    padding: 0;
-    margin: 0;
-    list-style-type: none;
-  }
-
-  > ul {
-    > li + li {
-      margin-top: 0.4em;
-    }
-
-    > li span {
-      margin-bottom: 0.5em;
-    }
-
-    ul li {
-      line-height: 1.25;
-      @media (max-width: 767.9px) {
-        font-size: 12px;
-      }
-
-      + li {
-        margin-top: 0.4em;
-      }
-    }
-  }
-
   button,
   label,
   a {
@@ -60,6 +33,10 @@
 }
 
 ul.menuList {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+
   position: absolute;
 
   margin-top: 0.5rem;
@@ -85,6 +62,31 @@ ul.menuList {
   .menuOpen & {
     transform: translateX(-0.8rem) translateX(0%);
     transition: all 0.2s ease-in-out;
+  }
+
+  ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+  }
+
+  > li + li {
+    margin-top: 0.4em;
+  }
+
+  > li span {
+    margin-bottom: 0.5em;
+  }
+
+  ul li {
+    line-height: 1.25;
+    @media (max-width: 767.9px) {
+      font-size: 12px;
+    }
+
+    + li {
+      margin-top: 0.4em;
+    }
   }
 }
 
