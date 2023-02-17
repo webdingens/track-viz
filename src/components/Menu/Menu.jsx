@@ -131,22 +131,6 @@ const Menu = () => {
                 Track | Library Editor
               </button>
             </li>
-            <li>
-              <button
-                className={styles.button}
-                onClick={() => {
-                  dispatch(
-                    setSetting({
-                      key: "settingsVisible",
-                      value: true,
-                    })
-                  );
-                  setState({ open: false });
-                }}
-              >
-                Settings
-              </button>
-            </li>
           </ul>
         </li>
 
@@ -220,9 +204,10 @@ const Menu = () => {
             )}
           </ul>
         </li>
-
         <li>
           <hr />
+        </li>
+        <li>
           <a
             href="https://trackviz-docs.netlify.app/"
             target="_blank"
@@ -231,6 +216,22 @@ const Menu = () => {
           >
             Documentation <FiExternalLink />
           </a>
+        </li>
+        <li>
+          <button
+            className={styles.button}
+            onClick={() => {
+              dispatch(
+                setSetting({
+                  key: "settingsVisible",
+                  value: true,
+                })
+              );
+              setState({ open: false });
+            }}
+          >
+            Settings
+          </button>
         </li>
       </ul>
     </div>

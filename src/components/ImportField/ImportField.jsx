@@ -2,8 +2,6 @@ import React, { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { cleanupSlice } from "../../app/storePersistence";
 
-import { FiUploadCloud } from "react-icons/fi";
-
 import {
   setCurrentTrack,
   defaultTrack,

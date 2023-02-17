@@ -1,9 +1,8 @@
 .overlay {
-
   background: #fff;
   padding: 1rem 1rem;
 
-  box-shadow: -2px 2px 24px 0 rgba(0,0,0,.0);
+  box-shadow: -2px 2px 24px 0 rgba(0, 0, 0, 0);
 
   ul {
     list-style-type: none;
@@ -22,20 +21,21 @@
   label {
     white-space: nowrap;
     span {
-      margin-right: .5em;
+      margin-right: 0.5em;
     }
   }
 
   position: absolute;
   top: 0;
   right: 0;
-  transition: .5s all ease-in-out;
+  transition: 0.5s all ease-in-out;
   transform: translateX(100%);
+  z-index: 3;
 
   &--open {
     transform: translateX(0);
 
-    box-shadow: -2px 2px 24px 0 rgba(0,0,0,.2);
+    box-shadow: -2px 2px 24px 0 rgba(0, 0, 0, 0.2);
 
     .toggleButton svg {
       transform: rotate(-260deg);
@@ -60,7 +60,7 @@
     width: 20px;
     height: 20px;
 
-    transition: .5s all ease-in-out;
+    transition: 0.5s all ease-in-out;
     transform: rotate(0deg);
   }
 
@@ -81,15 +81,15 @@
   border: 1px solid #000;
   background: #fff;
   border-radius: 1em;
-  padding: .4em 1em;
+  padding: 0.4em 1em;
   position: relative;
 
-  font-family: 'Work Sans', sans-serif;
+  font-family: "Work Sans", sans-serif;
 
   cursor: pointer;
 
   &:after {
-    content: '';
+    content: "";
     display: block;
     position: absolute;
     top: 0;
@@ -99,7 +99,7 @@
     border-radius: 1em;
     box-shadow: 1px 1px 2px 0 #000;
     opacity: 0;
-    transition: all .1s ease-in-out;
+    transition: all 0.1s ease-in-out;
   }
 
   &:hover {
@@ -215,7 +215,7 @@
 }
 
 .menuSelectTitle {
-  margin-bottom: .2em;
+  margin-bottom: 0.2em;
 }
 
 .menuSelect {
