@@ -1,1 +1,574 @@
-{"title":"Example Situations","description":"<p>Strategy description.</p>\n<p>Multiline.</p>\n<ul>\n<li>With bulletpoints.</li>\n</ul>\n","povTeam":"B","loadedAt":1676569842406,"editedAt":1676643967293,"sequences":[{"id":1,"title":"Sequence 1 Title","sequence":[{"id":1,"skaters":[{"id":1,"x":-1.2325,"y":4.8105,"rotation":180,"team":"A","color":"ALTERNATE","description":"Special Skater 1","pattern":""},{"id":2,"x":-2.4821,"y":6.011,"rotation":335.9194446173931,"team":"A"},{"id":3,"x":-0.6183,"y":5.6906,"rotation":180.6573927107817,"team":"A"},{"id":4,"x":-2.5515,"y":5.2737,"rotation":34.39815177124905,"team":"A","isPivot":true},{"id":5,"x":-5.3613,"y":5.9604,"rotation":0,"team":"A","isJammer":true},{"id":6,"x":-2.2014,"y":6.6028,"rotation":86.36783764470876,"team":"B"},{"id":7,"x":-1.518,"y":5.5986,"rotation":180,"team":"B","color":"ALTERNATE","description":"Special Skater 2","pattern":""},{"id":8,"x":-2.2284,"y":7.6391,"rotation":269.8539493696673,"team":"B"},{"id":9,"x":-1.1937,"y":7.0004,"rotation":180,"team":"B","isPivot":true},{"id":10,"x":-4.2856,"y":5.9578,"rotation":0,"team":"B","isJammer":true}],"description":"<ul>\n<li style=\"margin-left:1.5em;\">Bulletpoint</li>\n<li><span style=\"color: rgb(0,0,0);font-size: medium;font-family: Roboto, sans-serif;\">Bulletpoint</span>&nbsp;</li>\n</ul>\n","title":"Phase 1","type":"DESCRIPTION","refs":[],"empty":false},{"id":0,"type":"DESCRIPTION","empty":false,"skaters":[{"id":1,"x":-0.1732,"y":4.772,"rotation":180,"team":"A","color":"ALTERNATE","description":"Special Skater 1","pattern":""},{"id":2,"x":-2.3716,"y":6.5696,"rotation":335.9194446173931,"team":"A"},{"id":3,"x":-0.6183,"y":5.6906,"rotation":180.6573927107817,"team":"A"},{"id":4,"x":-2.0238,"y":4.809,"rotation":34.39815177124905,"team":"A","isPivot":true},{"id":5,"x":-3.3389,"y":4.747,"rotation":0,"team":"A","isJammer":true},{"id":6,"x":-1.7972,"y":5.8874,"rotation":86.36783764470876,"team":"B"},{"id":7,"x":-2.6736,"y":5.3097,"rotation":180,"team":"B","color":"ALTERNATE","description":"Special Skater 2","pattern":""},{"id":8,"x":-2.2284,"y":7.6391,"rotation":269.8539493696673,"team":"B"},{"id":9,"x":-1.1937,"y":7.0004,"rotation":180,"team":"B","isPivot":true},{"id":10,"x":-3.4767,"y":6.9016,"rotation":0,"team":"B","isJammer":true}],"refs":[],"description":"<ul>\n<li style=\"margin-left:1.5em;\"><span style=\"color: rgb(0,0,0);font-size: medium;font-family: Roboto, sans-serif;\">Bulletpoint</span></li>\n<li style=\"margin-left:1.5em;\"><span style=\"color: rgb(0,0,0);font-size: medium;font-family: Roboto, sans-serif;\">Bulletpoint</span>&nbsp;&nbsp;</li>\n</ul>\n","title":"Phase 2"},{"id":2,"type":"DESCRIPTION","empty":false,"skaters":[{"id":1,"x":-0.1732,"y":4.772,"rotation":180,"team":"A","color":"ALTERNATE","description":"Special Skater 1","pattern":""},{"id":2,"x":-2.8683,"y":6.9079,"rotation":335.9194446173931,"team":"A"},{"id":3,"x":-0.3679,"y":5.6713,"rotation":180.6573927107817,"team":"A"},{"id":4,"x":-2.2242,"y":4.5873,"rotation":34.39815177124905,"team":"A","isPivot":true},{"id":5,"x":-1.1748,"y":5.2994,"rotation":0,"team":"A","isJammer":true},{"id":6,"x":-2.3191,"y":6.5228,"rotation":86.36783764470876,"team":"B"},{"id":7,"x":-1.8138,"y":5.0978,"rotation":180,"team":"B","color":"ALTERNATE","description":"Special Skater 2","pattern":""},{"id":8,"x":-2.2234,"y":7.6617,"rotation":269.8539493696673,"team":"B"},{"id":9,"x":-1.0686,"y":7.1452,"rotation":180,"team":"B","isPivot":true},{"id":10,"x":-1.4604,"y":6.6203,"rotation":0,"team":"B","isJammer":true}],"refs":[],"description":"<ul>\n<li style=\"margin-left:1.5em;\"><span style=\"color: rgb(0,0,0);font-size: medium;font-family: Roboto, sans-serif;\">Bulletpoint</span></li>\n<li style=\"margin-left:1.5em;\"><span style=\"color: rgb(0,0,0);font-size: medium;font-family: Roboto, sans-serif;\">Bulletpoint</span>&nbsp;&nbsp;</li>\n</ul>\n","title":"Phase 3"}],"description":"<ul>\n<li>Bulletpoint</li>\n<li>Bulletpoint</li>\n<li>Bulletpoint</li>\n</ul>\n"},{"id":0,"title":"Sequence 2 Title","sequence":[{"id":0,"type":"DESCRIPTION","empty":false,"skaters":[{"id":1,"x":-1.7911,"y":4.6372,"rotation":180,"team":"A","color":"ALTERNATE","description":"Special Skater 1","pattern":""},{"id":2,"x":-3.0229,"y":7.3393,"rotation":335.9194446173931,"team":"A"},{"id":3,"x":-0.6375,"y":5.4787,"rotation":180.6573927107817,"team":"A"},{"id":4,"x":-1.8412,"y":7.7456,"rotation":-83.26151402753142,"team":"A","isPivot":true,"color":"ORIGINAL","description":"","pattern":""},{"id":5,"x":-4.3143,"y":4.3556,"rotation":0,"team":"A","isJammer":true},{"id":6,"x":-2.8312,"y":5.1527,"rotation":86.36783764470876,"team":"B"},{"id":7,"x":-1.8328,"y":5.5345,"rotation":180,"team":"B","color":"ALTERNATE","description":"Special Skater 2","pattern":""},{"id":8,"x":-2.9616,"y":6.2261,"rotation":269.8539493696673,"team":"B"},{"id":9,"x":-1.8994,"y":6.6612,"rotation":180,"team":"B","isPivot":true},{"id":10,"x":-4.2852,"y":6.3516,"rotation":0,"team":"B","isJammer":true}],"refs":[],"description":"<ul>\n<li style=\"margin-left:1.5em;\"><span style=\"color: rgb(0,0,0);font-size: medium;font-family: Roboto, sans-serif;\">Bulletpoint</span></li>\n<li style=\"margin-left:1.5em;\"><span style=\"color: rgb(0,0,0);font-size: medium;font-family: Roboto, sans-serif;\">Bulletpoint</span>&nbsp;&nbsp;</li>\n</ul>\n","title":"Phase 1"},{"id":1,"type":"DESCRIPTION","empty":false,"skaters":[{"id":1,"x":-1.7911,"y":4.6372,"rotation":180,"team":"A","color":"ALTERNATE","description":"Special Skater 1","pattern":""},{"id":2,"x":-2.811,"y":7.2623,"rotation":335.9194446173931,"team":"A"},{"id":3,"x":-0.8879,"y":6.6343,"rotation":180.6573927107817,"team":"A"},{"id":4,"x":-1.8412,"y":7.033,"rotation":-83.26151402753142,"team":"A","isPivot":true,"color":"ORIGINAL","description":"","pattern":""},{"id":5,"x":-3.5439,"y":5.1453,"rotation":0,"team":"A","isJammer":true},{"id":6,"x":-3.0045,"y":4.4208,"rotation":86.36783764470876,"team":"B"},{"id":7,"x":-1.8328,"y":5.5345,"rotation":180,"team":"B","color":"ALTERNATE","description":"Special Skater 2","pattern":""},{"id":8,"x":-2.8342,"y":5.5099,"rotation":269.8539493696673,"team":"B"},{"id":9,"x":-1.8994,"y":6.1989,"rotation":180,"team":"B","isPivot":true},{"id":10,"x":-3.014,"y":6.5249,"rotation":0,"team":"B","isJammer":true}],"refs":[],"description":"<ul>\n<li style=\"margin-left:1.5em;\"><span style=\"color: rgb(0,0,0);font-size: medium;font-family: Roboto, sans-serif;\">Bulletpoint</span></li>\n<li style=\"margin-left:1.5em;\"><span style=\"color: rgb(0,0,0);font-size: medium;font-family: Roboto, sans-serif;\">Bulletpoint</span>&nbsp;&nbsp;</li>\n</ul>\n","title":"Phase 2"},{"id":2,"type":"DESCRIPTION","empty":false,"skaters":[{"id":1,"x":-1.2518,"y":5.1572,"rotation":180,"team":"A","color":"ALTERNATE","description":"Special Skater 1","pattern":""},{"id":2,"x":-1.7099,"y":7.8209,"rotation":335.9194446173931,"team":"A"},{"id":3,"x":-1.3628,"y":6.5787,"rotation":180.6573927107817,"team":"A"},{"id":4,"x":-1.1758,"y":7.2329,"rotation":-83.26151402753142,"team":"A","isPivot":true,"color":"ORIGINAL","description":"","pattern":""},{"id":5,"x":2.0417,"y":5.049,"rotation":0,"team":"A","isJammer":true},{"id":6,"x":-2.8119,"y":5.6727,"rotation":86.36783764470876,"team":"B"},{"id":7,"x":-1.8055,"y":5.6584,"rotation":180,"team":"B","color":"ALTERNATE","description":"Special Skater 2","pattern":""},{"id":8,"x":-2.2781,"y":5.205,"rotation":269.8539493696673,"team":"B"},{"id":9,"x":-1.9536,"y":6.292,"rotation":180,"team":"B","isPivot":true},{"id":10,"x":-1.8289,"y":7.1759,"rotation":0,"team":"B","isJammer":true}],"refs":[],"description":"<ul>\n<li style=\"margin-left:1.5em;\"><span style=\"color: rgb(0,0,0);font-size: medium;font-family: Roboto, sans-serif;\">Bulletpoint</span></li>\n<li style=\"margin-left:1.5em;\"><span style=\"color: rgb(0,0,0);font-size: medium;font-family: Roboto, sans-serif;\">Bulletpoint</span>&nbsp;&nbsp;</li>\n</ul>\n","title":"Phase 3"}],"description":"<ul>\n<li style=\"margin-left:1.5em;\"><span style=\"color: rgb(0,0,0);font-size: medium;font-family: Roboto, sans-serif;\">Bulletpoint</span></li>\n<li style=\"margin-left:1.5em;\"><span style=\"color: rgb(0,0,0);font-size: medium;font-family: Roboto, sans-serif;\">Bulletpoint</span></li>\n</ul>\n"}],"version":"0.1.0","type":"LIBRARY"}
+{
+  "title": "Example Situations",
+  "description": "<p>Strategy description.</p>\n<p>Multiline.</p>\n<ul>\n<li>With bulletpoints.</li>\n</ul>\n",
+  "povTeam": "B",
+  "loadedAt": 1676650967602,
+  "editedAt": 1676651489048,
+  "sequences": [
+    {
+      "id": 1,
+      "title": "Sequence 1 Title",
+      "sequence": [
+        {
+          "id": 1,
+          "skaters": [
+            {
+              "id": 1,
+              "x": -1.2325,
+              "y": 4.8105,
+              "rotation": 180,
+              "team": "A",
+              "color": "ALTERNATE",
+              "description": "Special Skater 1",
+              "pattern": ""
+            },
+            {
+              "id": 2,
+              "x": -2.4821,
+              "y": 6.011,
+              "rotation": 335.9194446173931,
+              "team": "A"
+            },
+            {
+              "id": 3,
+              "x": -0.6183,
+              "y": 5.6906,
+              "rotation": 180.6573927107817,
+              "team": "A"
+            },
+            {
+              "id": 4,
+              "x": -2.5515,
+              "y": 5.2737,
+              "rotation": 34.39815177124905,
+              "team": "A",
+              "isPivot": true
+            },
+            {
+              "id": 5,
+              "x": -5.3613,
+              "y": 5.9604,
+              "rotation": 0,
+              "team": "A",
+              "isJammer": true
+            },
+            {
+              "id": 6,
+              "x": -2.2014,
+              "y": 6.6028,
+              "rotation": 86.36783764470876,
+              "team": "B"
+            },
+            {
+              "id": 7,
+              "x": -1.518,
+              "y": 5.5986,
+              "rotation": 180,
+              "team": "B",
+              "color": "ALTERNATE",
+              "description": "Special Skater 2",
+              "pattern": ""
+            },
+            {
+              "id": 8,
+              "x": -2.2284,
+              "y": 7.6391,
+              "rotation": 269.8539493696673,
+              "team": "B"
+            },
+            {
+              "id": 9,
+              "x": -1.1937,
+              "y": 7.0004,
+              "rotation": 180,
+              "team": "B",
+              "isPivot": true
+            },
+            {
+              "id": 10,
+              "x": -4.2856,
+              "y": 5.9578,
+              "rotation": 0,
+              "team": "B",
+              "isJammer": true
+            }
+          ],
+          "description": "<ul>\n<li>Bulletpoint</li>\n<li>Bulletpoint</li>\n</ul>\n",
+          "title": "Phase 1",
+          "type": "DESCRIPTION",
+          "refs": [],
+          "empty": false
+        },
+        {
+          "id": 0,
+          "type": "DESCRIPTION",
+          "empty": false,
+          "skaters": [
+            {
+              "id": 1,
+              "x": -0.1732,
+              "y": 4.772,
+              "rotation": 180,
+              "team": "A",
+              "color": "ALTERNATE",
+              "description": "Special Skater 1",
+              "pattern": ""
+            },
+            {
+              "id": 2,
+              "x": -2.3716,
+              "y": 6.5696,
+              "rotation": 335.9194446173931,
+              "team": "A"
+            },
+            {
+              "id": 3,
+              "x": -0.6183,
+              "y": 5.6906,
+              "rotation": 180.6573927107817,
+              "team": "A"
+            },
+            {
+              "id": 4,
+              "x": -2.0238,
+              "y": 4.809,
+              "rotation": 34.39815177124905,
+              "team": "A",
+              "isPivot": true
+            },
+            {
+              "id": 5,
+              "x": -3.3389,
+              "y": 4.747,
+              "rotation": 0,
+              "team": "A",
+              "isJammer": true
+            },
+            {
+              "id": 6,
+              "x": -1.7972,
+              "y": 5.8874,
+              "rotation": 86.36783764470876,
+              "team": "B"
+            },
+            {
+              "id": 7,
+              "x": -2.6736,
+              "y": 5.3097,
+              "rotation": 180,
+              "team": "B",
+              "color": "ALTERNATE",
+              "description": "Special Skater 2",
+              "pattern": ""
+            },
+            {
+              "id": 8,
+              "x": -2.2284,
+              "y": 7.6391,
+              "rotation": 269.8539493696673,
+              "team": "B"
+            },
+            {
+              "id": 9,
+              "x": -1.1937,
+              "y": 7.0004,
+              "rotation": 180,
+              "team": "B",
+              "isPivot": true
+            },
+            {
+              "id": 10,
+              "x": -3.4767,
+              "y": 6.9016,
+              "rotation": 0,
+              "team": "B",
+              "isJammer": true
+            }
+          ],
+          "refs": [],
+          "description": "<ul>\n<li>Bulletpoint</li>\n<li>Bulletpoint</li>\n</ul>\n",
+          "title": "Phase 2"
+        },
+        {
+          "id": 2,
+          "type": "DESCRIPTION",
+          "empty": false,
+          "skaters": [
+            {
+              "id": 1,
+              "x": -0.1732,
+              "y": 4.772,
+              "rotation": 180,
+              "team": "A",
+              "color": "ALTERNATE",
+              "description": "Special Skater 1",
+              "pattern": ""
+            },
+            {
+              "id": 2,
+              "x": -2.8683,
+              "y": 6.9079,
+              "rotation": 335.9194446173931,
+              "team": "A"
+            },
+            {
+              "id": 3,
+              "x": -0.3679,
+              "y": 5.6713,
+              "rotation": 180.6573927107817,
+              "team": "A"
+            },
+            {
+              "id": 4,
+              "x": -2.2242,
+              "y": 4.5873,
+              "rotation": 34.39815177124905,
+              "team": "A",
+              "isPivot": true
+            },
+            {
+              "id": 5,
+              "x": -1.1748,
+              "y": 5.2994,
+              "rotation": 0,
+              "team": "A",
+              "isJammer": true
+            },
+            {
+              "id": 6,
+              "x": -2.3191,
+              "y": 6.5228,
+              "rotation": 86.36783764470876,
+              "team": "B"
+            },
+            {
+              "id": 7,
+              "x": -1.8138,
+              "y": 5.0978,
+              "rotation": 180,
+              "team": "B",
+              "color": "ALTERNATE",
+              "description": "Special Skater 2",
+              "pattern": ""
+            },
+            {
+              "id": 8,
+              "x": -2.2234,
+              "y": 7.6617,
+              "rotation": 269.8539493696673,
+              "team": "B"
+            },
+            {
+              "id": 9,
+              "x": -1.0686,
+              "y": 7.1452,
+              "rotation": 180,
+              "team": "B",
+              "isPivot": true
+            },
+            {
+              "id": 10,
+              "x": -1.4604,
+              "y": 6.6203,
+              "rotation": 0,
+              "team": "B",
+              "isJammer": true
+            }
+          ],
+          "refs": [],
+          "description": "<ul>\n<li>Bulletpoint</li>\n<li>Bulletpoint</li>\n</ul>\n",
+          "title": "Phase 3"
+        }
+      ],
+      "description": "<ul>\n<li>Bulletpoint</li>\n<li>Bulletpoint</li>\n<li>Bulletpoint</li>\n</ul>\n"
+    },
+    {
+      "id": 0,
+      "title": "Sequence 2 Title",
+      "sequence": [
+        {
+          "id": 0,
+          "type": "DESCRIPTION",
+          "empty": false,
+          "skaters": [
+            {
+              "id": 1,
+              "x": -1.7911,
+              "y": 4.6372,
+              "rotation": 180,
+              "team": "A",
+              "color": "ALTERNATE",
+              "description": "Special Skater 1",
+              "pattern": ""
+            },
+            {
+              "id": 2,
+              "x": -3.0229,
+              "y": 7.3393,
+              "rotation": 335.9194446173931,
+              "team": "A"
+            },
+            {
+              "id": 3,
+              "x": -0.6375,
+              "y": 5.4787,
+              "rotation": 180.6573927107817,
+              "team": "A"
+            },
+            {
+              "id": 4,
+              "x": -1.8412,
+              "y": 7.7456,
+              "rotation": -83.26151402753142,
+              "team": "A",
+              "isPivot": true,
+              "color": "ORIGINAL",
+              "description": "",
+              "pattern": ""
+            },
+            {
+              "id": 5,
+              "x": -4.3143,
+              "y": 4.3556,
+              "rotation": 0,
+              "team": "A",
+              "isJammer": true
+            },
+            {
+              "id": 6,
+              "x": -2.8312,
+              "y": 5.1527,
+              "rotation": 86.36783764470876,
+              "team": "B"
+            },
+            {
+              "id": 7,
+              "x": -1.8328,
+              "y": 5.5345,
+              "rotation": 180,
+              "team": "B",
+              "color": "ALTERNATE",
+              "description": "Special Skater 2",
+              "pattern": ""
+            },
+            {
+              "id": 8,
+              "x": -2.9616,
+              "y": 6.2261,
+              "rotation": 269.8539493696673,
+              "team": "B"
+            },
+            {
+              "id": 9,
+              "x": -1.8994,
+              "y": 6.6612,
+              "rotation": 180,
+              "team": "B",
+              "isPivot": true
+            },
+            {
+              "id": 10,
+              "x": -4.2852,
+              "y": 6.3516,
+              "rotation": 0,
+              "team": "B",
+              "isJammer": true
+            }
+          ],
+          "refs": [],
+          "description": "<ul>\n<li>Bulletpoint</li>\n<li>Bulletpoint</li>\n</ul>\n",
+          "title": "Phase 1"
+        },
+        {
+          "id": 1,
+          "type": "DESCRIPTION",
+          "empty": false,
+          "skaters": [
+            {
+              "id": 1,
+              "x": -1.7911,
+              "y": 4.6372,
+              "rotation": 180,
+              "team": "A",
+              "color": "ALTERNATE",
+              "description": "Special Skater 1",
+              "pattern": ""
+            },
+            {
+              "id": 2,
+              "x": -2.811,
+              "y": 7.2623,
+              "rotation": 335.9194446173931,
+              "team": "A"
+            },
+            {
+              "id": 3,
+              "x": -0.8879,
+              "y": 6.6343,
+              "rotation": 180.6573927107817,
+              "team": "A"
+            },
+            {
+              "id": 4,
+              "x": -1.8412,
+              "y": 7.033,
+              "rotation": -83.26151402753142,
+              "team": "A",
+              "isPivot": true,
+              "color": "ORIGINAL",
+              "description": "",
+              "pattern": ""
+            },
+            {
+              "id": 5,
+              "x": -3.5439,
+              "y": 5.1453,
+              "rotation": 0,
+              "team": "A",
+              "isJammer": true
+            },
+            {
+              "id": 6,
+              "x": -3.0045,
+              "y": 4.4208,
+              "rotation": 86.36783764470876,
+              "team": "B"
+            },
+            {
+              "id": 7,
+              "x": -1.8328,
+              "y": 5.5345,
+              "rotation": 180,
+              "team": "B",
+              "color": "ALTERNATE",
+              "description": "Special Skater 2",
+              "pattern": ""
+            },
+            {
+              "id": 8,
+              "x": -2.8342,
+              "y": 5.5099,
+              "rotation": 269.8539493696673,
+              "team": "B"
+            },
+            {
+              "id": 9,
+              "x": -1.8994,
+              "y": 6.1989,
+              "rotation": 180,
+              "team": "B",
+              "isPivot": true
+            },
+            {
+              "id": 10,
+              "x": -3.014,
+              "y": 6.5249,
+              "rotation": 0,
+              "team": "B",
+              "isJammer": true
+            }
+          ],
+          "refs": [],
+          "description": "<ul>\n<li>Bulletpoint</li>\n<li>Bulletpoint</li>\n</ul>\n",
+          "title": "Phase 2"
+        },
+        {
+          "id": 2,
+          "type": "DESCRIPTION",
+          "empty": false,
+          "skaters": [
+            {
+              "id": 1,
+              "x": -1.2518,
+              "y": 5.1572,
+              "rotation": 180,
+              "team": "A",
+              "color": "ALTERNATE",
+              "description": "Special Skater 1",
+              "pattern": ""
+            },
+            {
+              "id": 2,
+              "x": -1.7099,
+              "y": 7.8209,
+              "rotation": 335.9194446173931,
+              "team": "A"
+            },
+            {
+              "id": 3,
+              "x": -1.3628,
+              "y": 6.5787,
+              "rotation": 180.6573927107817,
+              "team": "A"
+            },
+            {
+              "id": 4,
+              "x": -1.1758,
+              "y": 7.2329,
+              "rotation": -83.26151402753142,
+              "team": "A",
+              "isPivot": true,
+              "color": "ORIGINAL",
+              "description": "",
+              "pattern": ""
+            },
+            {
+              "id": 5,
+              "x": 2.0417,
+              "y": 5.049,
+              "rotation": 0,
+              "team": "A",
+              "isJammer": true
+            },
+            {
+              "id": 6,
+              "x": -2.8119,
+              "y": 5.6727,
+              "rotation": 86.36783764470876,
+              "team": "B"
+            },
+            {
+              "id": 7,
+              "x": -1.8055,
+              "y": 5.6584,
+              "rotation": 180,
+              "team": "B",
+              "color": "ALTERNATE",
+              "description": "Special Skater 2",
+              "pattern": ""
+            },
+            {
+              "id": 8,
+              "x": -2.2781,
+              "y": 5.205,
+              "rotation": 269.8539493696673,
+              "team": "B"
+            },
+            {
+              "id": 9,
+              "x": -1.9536,
+              "y": 6.292,
+              "rotation": 180,
+              "team": "B",
+              "isPivot": true
+            },
+            {
+              "id": 10,
+              "x": -1.8289,
+              "y": 7.1759,
+              "rotation": 0,
+              "team": "B",
+              "isJammer": true
+            }
+          ],
+          "refs": [],
+          "description": "<ul>\n<li>Bulletpoint</li>\n<li>Bulletpoint</li>\n</ul>\n",
+          "title": "Phase 3"
+        }
+      ],
+      "description": "<ul>\n<li style=\"margin-left:1.5em;\"><span style=\"color: rgb(0,0,0);font-size: medium;font-family: Roboto, sans-serif;\">Bulletpoint</span></li>\n<li style=\"margin-left:1.5em;\"><span style=\"color: rgb(0,0,0);font-size: medium;font-family: Roboto, sans-serif;\">Bulletpoint</span></li>\n</ul>\n"
+    }
+  ],
+  "version": "0.1.0",
+  "type": "LIBRARY"
+}
