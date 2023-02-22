@@ -1,18 +1,14 @@
 .menu {
-  position: fixed;
-  top: 0.8rem;
-  left: 0.8rem;
-  z-index: 2;
-  width: 100%;
-  max-width: calc(100vw - 1.6rem);
+  padding: 0.25em;
   text-align: left;
-
-  @media (min-width: 768px) {
-    max-width: 90vw;
-  }
+  border-bottom: 1px solid #ddd;
 
   @media (max-width: 374.9px) {
-    font-size: 11px;
+    &,
+    * {
+      font-size: 11px;
+      line-height: 1;
+    }
   }
 
   button,
@@ -38,8 +34,8 @@ ul.menuList {
   list-style-type: none;
 
   position: absolute;
-
-  margin-top: 0.5rem;
+  top: 2.25rem;
+  left: 0;
 
   z-index: 1;
   color: var(--body-color);
@@ -53,14 +49,17 @@ ul.menuList {
 
   width: max-content;
 
-  transform: translateX(-0.8rem) translateX(-100%);
+  transform: translateX(calc(-100% - 10px));
+
+  max-height: calc(100vh - 2.25rem);
+  overflow: auto;
 
   .menuClosed & {
     transition: all 0.2s ease-in-out;
   }
 
   .menuOpen & {
-    transform: translateX(-0.8rem) translateX(0%);
+    transform: translateX(0%);
     transition: all 0.2s ease-in-out;
   }
 

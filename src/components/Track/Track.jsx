@@ -1,7 +1,6 @@
 import { useSelector } from "react-redux";
 import TrackAnimating from "./TrackAnimating";
 import TrackStatic from "./TrackStatic";
-import TrackOverlay from "./TrackOverlay";
 import SkaterAnnotations from "./SkaterAnnotations";
 
 import styles from "./Track.module.scss";
@@ -21,7 +20,6 @@ function Track() {
   return (
     <div className={[styles.track, "js-track"].join(" ")}>
       {trackIsAnimating ? <TrackAnimating /> : <TrackStatic />}
-      <TrackOverlay />
       <Legend />
       <SkaterAnnotations />
     </div>

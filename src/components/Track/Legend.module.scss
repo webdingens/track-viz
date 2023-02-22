@@ -14,28 +14,62 @@
     font-size: min(16px, 2.3cqw);
   }
 
+  transform: scale(100vw / 200px) translate(-50%, -50%);
+
   h2 {
     font-size: calc(1em * 14 / 16);
     margin: 0;
     margin-bottom: 0.5em;
   }
 
-  transform: scale(100vw / 200px) translate(-50%, -50%);
+  button {
+    position: absolute;
+    top: 0.25em;
+    right: 0.25em;
+    padding: 0;
+    border: none;
+    background: none;
+    pointer-events: all;
+    svg {
+      width: 1em;
+      height: 1em;
+    }
+  }
 }
 
 .legendCorner {
   transform: none;
   top: auto;
-  bottom: 0;
+  bottom: 1px;
   left: 0;
   background: #fff;
-  padding: 1em;
-  font-size: 14px;
+  padding: 0.5em;
+  font-size: 11px;
+  line-height: 1;
 
   box-shadow: 2px -2px 10px 0 rgba(0 0 0 / 0.3);
 
+  @media (min-width: 375px) {
+    font-size: 14px;
+  }
+
   @media (min-width: 768px) {
     font-size: 16px;
+    padding: 1em;
+  }
+}
+
+.legendCollapsed {
+  box-shadow: none;
+  > .collapsible {
+    display: none;
+  }
+  button {
+    position: static;
+    border: 1px solid #000;
+    width: 1.75em;
+    height: 1.75em;
+    border-radius: 50%;
   }
 }
 

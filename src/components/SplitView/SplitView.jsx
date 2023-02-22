@@ -11,6 +11,7 @@ import {
 } from "../../app/reducers/settingsGeneralSlice";
 
 import styles from "./SplitView.module.scss";
+import TrackOverlay from "../Track/TrackOverlay";
 
 const Library = React.lazy(() => import("../Library/Library"));
 const Track3D = React.lazy(() => import("../Track3D/Track3D"));
@@ -45,6 +46,7 @@ const SplitView = () => {
         {settings.trackEditorVisible && (
           <div className={styles.column}>
             <Track />
+            <TrackOverlay />
           </div>
         )}
 

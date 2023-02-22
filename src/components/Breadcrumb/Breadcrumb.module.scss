@@ -5,6 +5,7 @@
 .controls {
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: 0.5em;
   width: 100%;
 
@@ -36,12 +37,22 @@
       border-right: 1px solid #000;
     }
   }
+
+  @media (min-width: 800px) {
+    flex-direction: row;
+    gap: 2em;
+    > * {
+      width: max-content;
+      height: 1.8em;
+      white-space: nowrap;
+    }
+  }
 }
 
 .sequenceTitle {
   position: absolute;
   top: 100%;
-  margin: 0.25rem 0 0 0.75rem;
+  margin: 0.25em 0 0 0.75em;
   left: 0;
   font-style: italic;
 
@@ -90,12 +101,12 @@
   transform: translate(-50%, 0);
 
   padding: 1em;
-  font-size: 0.85rem;
+  font-size: 0.85em;
 
   h3 {
     margin-top: 0;
     margin-bottom: 0.5em;
-    font-size: 1rem;
+    font-size: 1em;
   }
 
   ul {

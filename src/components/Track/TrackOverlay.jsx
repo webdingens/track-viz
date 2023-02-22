@@ -98,7 +98,10 @@ function TrackOverlay() {
             <button className={buttonStyles.menuButtonLeft} onClick={nextView}>
               <FiChevronLeft />
             </button>
-            <span>View: {VIEW_LABELS[currentView]}</span>
+            <span>
+              <span className="hidden--xs">View: </span>
+              {VIEW_LABELS[currentView]}
+            </span>
             <button className={buttonStyles.menuButtonRight} onClick={prevView}>
               <FiChevronRight />
             </button>
@@ -109,7 +112,7 @@ function TrackOverlay() {
             className={buttonStyles.menuButton}
             onClick={() => dispatch(resetTrack())}
           >
-            Reset Track
+            Reset<span className="hidden--xs"> Track</span>
           </button>
         </li>
       </ul>

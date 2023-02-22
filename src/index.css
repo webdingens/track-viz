@@ -42,3 +42,15 @@ code {
 .js-focus-visible :focus:not(.focus-visible) {
   outline: none;
 }
+
+@media (max-width: 374.9px) {
+  .hidden--xs {
+    display: none !important;
+  }
+}
+
+@media (min-width: 375px) and (max-width: 500px) {
+  .hidden--sm {
+    display: none !important;
+  }
+}

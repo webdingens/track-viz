@@ -6,6 +6,7 @@
   flex-direction: column;
   justify-content: center;
   container: sidebar / inline-size;
+  overflow: hidden;
 
   > svg {
     position: absolute;

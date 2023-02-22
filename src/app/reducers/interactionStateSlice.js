@@ -15,6 +15,7 @@ export const defaultInteractionState = {
   libraryInEditMode: false,
   libraryModalShown: false,
   breadcrumbShowDescription: BREADCRUMB_SHOW_DESCRIPTION.SEQUENCE,
+  legendCollapsed: false,
 };
 
 let initialState = cleanupSlice(
@@ -57,6 +58,9 @@ export const interactionStateSlice = createSlice({
     setBreadcrumbShowDescription: (state, action) => {
       state.breadcrumbShowDescription = action.payload;
     },
+    setLegendCollapsed: (state, action) => {
+      state.legendCollapsed = action.payload;
+    },
     reset: (state) => {
       for (let key in state) {
         delete state[key];
@@ -74,6 +78,7 @@ export const {
   setLibraryInEditMode,
   setLibraryModalShown,
   setBreadcrumbShowDescription,
+  setLegendCollapsed,
   reset,
 } = interactionStateSlice.actions;
 
@@ -92,5 +97,7 @@ export const selectLibraryModalShown = (state) =>
   state.interactionState.libraryModalShown;
 export const selectBreadcrumbShowDescription = (state) =>
   state.interactionState.breadcrumbShowDescription;
+export const selectLegendCollapsed = (state) =>
+  state.interactionState.legendCollapsed;
 
 export default interactionStateSlice.reducer;

@@ -242,7 +242,7 @@ function BreadcrumbInViewMode() {
                     <FiChevronRight />
                   </button>
                 </div>
-                <div className={buttonStyles.menuButtonHideOnMobile}>
+                <div className="hidden--xs hidden--sm">
                   {layoutMode !== LAYOUT_MODES.LAYOUT_3D && (
                     <PlaybackControls sequence={selectedSequence} />
                   )}
@@ -267,7 +267,7 @@ function BreadcrumbInViewMode() {
                     )}
                   </button>
                   <select
-                    className={buttonStyles.menuButtonHideOnMobile}
+                    className="hidden--xs hidden--sm"
                     title="Select Situation"
                     aria-label="Select Situation"
                     value={selectedSituation?.id}
