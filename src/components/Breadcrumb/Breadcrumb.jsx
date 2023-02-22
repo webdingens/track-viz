@@ -204,18 +204,20 @@ function BreadcrumbInViewMode() {
                       <FiInfo />
                     )}
                   </button>
-                  <select
-                    title="Select Sequence"
-                    aria-label="Select Sequence"
-                    onChange={onChangeSelectSequence}
-                    value={selectedSequence?.id}
-                  >
-                    {library.sequences.map((sequence) => (
-                      <option key={sequence.id} value={sequence.id}>
-                        {sequence.title}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="select-wrapper">
+                    <select
+                      title="Select Sequence"
+                      aria-label="Select Sequence"
+                      onChange={onChangeSelectSequence}
+                      value={selectedSequence?.id}
+                    >
+                      {library.sequences.map((sequence) => (
+                        <option key={sequence.id} value={sequence.id}>
+                          {sequence.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   <button
                     type="button"
                     disabled={selectedSequenceIndex === 0}
@@ -266,19 +268,21 @@ function BreadcrumbInViewMode() {
                       <FiInfo />
                     )}
                   </button>
-                  <select
-                    className="hidden--xs hidden--sm"
-                    title="Select Situation"
-                    aria-label="Select Situation"
-                    value={selectedSituation?.id}
-                    onChange={onChangeSelectSituation}
-                  >
-                    {selectedSequence.sequence.map((situation) => (
-                      <option key={situation.id} value={situation.id}>
-                        {situation.title}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="select-wrapper hidden--xs hidden--sm">
+                    <select
+                      className=""
+                      title="Select Situation"
+                      aria-label="Select Situation"
+                      value={selectedSituation?.id}
+                      onChange={onChangeSelectSituation}
+                    >
+                      {selectedSequence.sequence.map((situation) => (
+                        <option key={situation.id} value={situation.id}>
+                          {situation.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   <button
                     type="button"
                     disabled={selectedSituationIndex === 0}

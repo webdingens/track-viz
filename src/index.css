@@ -35,7 +35,37 @@ code {
     monospace;
 }
 
-* {
+select {
+  appearance: none;
+  background-color: transparent;
+  border: none;
+  padding: 0 1em 0 0;
+  margin: 0;
+  width: 100%;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: inherit;
+  line-height: inherit;
+  position: relative;
+}
+
+.select-wrapper::after {
+  content: '';
+  display: block;
+  position: absolute;
+  right: 7px;
+  top: 0;
+  transform: translateY(.75em);
+  width: 0;
+  height: 0;
+  border-top: 5px solid currentColor;
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
+}
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 

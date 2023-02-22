@@ -21,7 +21,6 @@
   }
 
   select {
-    appearance: none;
     border: none;
     width: 150px;
     width: min(150px, calc(100vw - 210px));
@@ -29,6 +28,7 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    min-height: 100%;
 
     @media (max-width: 767.9px) {
       max-width: 120px;
