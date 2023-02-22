@@ -46,6 +46,9 @@ select {
   font-size: inherit;
   cursor: inherit;
   line-height: inherit;
+}
+
+.select-wrapper {
   position: relative;
 }
 

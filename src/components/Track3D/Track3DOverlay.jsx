@@ -57,17 +57,19 @@ const Track3DOverlay = (props) => {
         </li>
         <li>
           <p className={styles.menuSelectTitle}>Skater Model</p>
-          <select
-            className={styles.menuSelect}
-            onChange={(evt) => props.setUseModelType(evt.currentTarget.value)}
-            value={props.useModelType}
-          >
-            {Object.keys(MODEL_TYPES).map((key, idx) => (
-              <option key={idx} value={MODEL_TYPES[key]}>
-                {key}
-              </option>
-            ))}
-          </select>
+          <div className="select-wrapper">
+            <select
+              className={styles.menuSelect}
+              onChange={(evt) => props.setUseModelType(evt.currentTarget.value)}
+              value={props.useModelType}
+            >
+              {Object.keys(MODEL_TYPES).map((key, idx) => (
+                <option key={idx} value={MODEL_TYPES[key]}>
+                  {key}
+                </option>
+              ))}
+            </select>
+          </div>
         </li>
         <li>
           <label>
@@ -87,11 +89,12 @@ const Track3DOverlay = (props) => {
             />
           </label>
         </li>
+        {props.touchEnabledDevice && props.controlMode === CONTROL_MODES.MAP ? (
+          <li>
+            <Track3DMapControlButtons />
+          </li>
+        ) : null}
       </ul>
-
-      {props.touchEnabledDevice && props.controlMode === CONTROL_MODES.MAP ? (
-        <Track3DMapControlButtons />
-      ) : null}
     </div>
   );
 };
