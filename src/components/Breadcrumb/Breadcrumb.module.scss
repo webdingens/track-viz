@@ -21,6 +21,7 @@
   }
 
   select {
+    appearance: none;
     border: none;
     width: 150px;
     width: min(150px, calc(100vw - 210px));
