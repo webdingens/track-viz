@@ -566,7 +566,7 @@
           "title": "Phase 3"
         }
       ],
-      "description": "<ul>\n<li style=\"margin-left:1.5em;\"><span style=\"color: rgb(0,0,0);font-size: medium;font-family: Roboto, sans-serif;\">Bulletpoint</span></li>\n<li style=\"margin-left:1.5em;\"><span style=\"color: rgb(0,0,0);font-size: medium;font-family: Roboto, sans-serif;\">Bulletpoint</span></li>\n</ul>\n"
+      "description": "<ul>\n<li>Bulletpoint</li>\n<li>Bulletpoint</li>\n</ul>\n"
     }
   ],
   "version": "0.1.0",
