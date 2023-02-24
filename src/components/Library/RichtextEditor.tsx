@@ -1,16 +1,28 @@
-import { PropsWithRef, useMemo, useState, useEffect } from "react";
-import {
-  RawDraftContentState,
-  ContentState,
-  convertToRaw,
-  convertFromRaw,
-  convertFromHTML,
-} from "draft-js";
-import { Editor } from "react-draft-wysiwyg";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import draftToHtml from "draftjs-to-html";
+import { PropsWithRef, useMemo } from "react";
 
-import styles from "./RichtextEditor.module.scss";
+import { Editor as TinyMCEEditor } from "@tinymce/tinymce-react";
+
+// TinyMCE so the global var exists
+import "tinymce/tinymce";
+
+// Theme
+import "tinymce/themes/silver";
+// Toolbar icons
+import "tinymce/icons/default";
+// Editor styles
+import "tinymce/skins/ui/oxide/skin.min.css";
+
+// importing the plugin js.
+import "tinymce/plugins/autolink";
+import "tinymce/plugins/link";
+import "tinymce/plugins/lists";
+import "tinymce/plugins/anchor";
+
+import "tinymce/models/dom";
+
+// Content styles, including inline UI like fake cursors
+import contentCss from "tinymce/skins/content/default/content.min.css?raw";
+import contentUiCss from "tinymce/skins/ui/oxide/content.min.css?raw";
 
 type RichtextEditorProps = PropsWithRef<{
   content: string;
@@ -23,60 +35,22 @@ function RichtextEditor({
   onUpdate,
   ariaDescribedBy,
 }: RichtextEditorProps) {
-  const descriptionInitialContentState = useMemo(() => {
-    const blocksFromHTML = convertFromHTML(content);
-    return ContentState.createFromBlockArray(
-      blocksFromHTML.contentBlocks,
-      blocksFromHTML.entityMap
-    );
-  }, [content]);
-
-  const [contentState, setContentState] = useState(
-    descriptionInitialContentState
-  );
-
-  const onContentStateChange = (contentState: RawDraftContentState) => {
-    setContentState(convertFromRaw(contentState));
-  };
-
-  useEffect(() => {
-    if (!onUpdate) return;
-    const rawContentState = convertToRaw(contentState);
-    const markup = draftToHtml(rawContentState);
-    onUpdate(markup);
-  }, [contentState]);
-
+  const initialValue = useMemo(() => content, []);
   return (
-    <Editor
-      initialContentState={convertToRaw(contentState)}
-      toolbarClassName="toolbarClassName"
-      wrapperClassName={styles.richtextEditor}
-      editorClassName={styles.editorContent}
-      onContentStateChange={onContentStateChange}
-      toolbarOnFocus={false}
-      ariaDescribedBy={ariaDescribedBy}
-      toolbar={{
-        options: [
-          "inline",
-          "blockType",
-          "list",
-          "link",
-          "emoji",
-          "remove",
-          "history",
+    <TinyMCEEditor
+      initialValue={initialValue}
+      onEditorChange={(newValue, editor) => {
+        if (onUpdate) onUpdate(editor.getContent());
+      }}
+      init={{
+        menubar: false,
+        plugins: ["autolink", "lists", "link", "anchor"],
+        toolbar: [
+          "bold italic underline link removeformat | undo redo | bullist numlist",
         ],
-        inline: {
-          inDropdown: false,
-          options: ["bold", "italic", "underline"],
-        },
-        blockType: {
-          inDropdown: true,
-          options: ["Normal", "H1", "H2", "H3", "H4", "H5", "H6", "Blockquote"],
-        },
-        list: {
-          inDropdown: false,
-          options: ["unordered", "ordered", "indent", "outdent"],
-        },
+        skin: false,
+        content_css: false,
+        content_style: [contentCss, contentUiCss].join("\n"),
       }}
     />
   );

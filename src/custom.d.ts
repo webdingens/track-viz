@@ -5,3 +5,8 @@ declare module "*.module.scss" {
 
 declare module "react-svg-textures";
 declare module "textures";
+
+declare module "*?raw" {
+  const defaultExportValue: string | null;
+  export default defaultExportValue;
+}
