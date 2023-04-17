@@ -52,5 +52,6 @@
     "vite-bundle-visualizer": "^0.4.2",
     "vite-plugin-mkcert": "^1.11.0",
     "vite-plugin-svgr": "^2.4.0"
-  }
+  },
+  "license": "UNLICENSED"
 }
