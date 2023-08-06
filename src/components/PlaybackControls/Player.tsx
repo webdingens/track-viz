@@ -4,15 +4,11 @@ import _ from "lodash";
 import gsap from "gsap";
 
 import {
-  getRelativeVPosition,
-  setPositionFromVAndDist,
   getClosestNextPivotLineDist,
   getClosestNextAngle,
-  getSkatersWDPPivotLineDistance,
-  getSkatersWDPInBounds,
-  PACK_MEASURING_METHODS,
-  getSkatersWDPInPlayPackSkater,
-} from "../../utils/packFunctions";
+  getRelativeVPosition,
+  setPositionFromVAndDist,
+} from "../../utils/packFunctionsMisc";
 import {
   selectIsPlaying,
   setIsPlaying as _setIsPlaying,
@@ -24,12 +20,11 @@ import {
 } from "../../app/reducers/animatingTrackSlice";
 import {
   Sequence,
-  SkaterDataType,
-  SkaterType,
   SkaterWithPivotLineDist,
   TrackData,
 } from "../../types/LibraryData";
 import { selectGeneralSettings } from "../../app/reducers/settingsGeneralSlice";
+import addDerivedPropertiesToSkaters from "../../utils/addDerivedPropertiesToSkater";
 
 const PLAYBACK_TYPES = {
   SIMPLE: "SIMPLE",
@@ -87,7 +82,8 @@ function Player({ sequence }: PlayerProps) {
       );
 
       startingTrack.skaters = addDerivedPropertiesToSkaters(
-        startingTrack.skaters
+        startingTrack.skaters,
+        settings.packMeasuringMethod
       );
       animatingTrack.current = startingTrack;
       // store the animating track for <TrackAnimating> component
@@ -117,23 +113,6 @@ function Player({ sequence }: PlayerProps) {
     };
   }, []);
 
-  function addDerivedPropertiesToSkaters(
-    skaters: SkaterDataType[]
-  ): SkaterType[] {
-    let ret = getSkatersWDPInBounds(skaters);
-    ret = getSkatersWDPPivotLineDistance(ret);
-    if (settings.packMeasuringMethod === PACK_MEASURING_METHODS.SECTOR) {
-      ret = getSkatersWDPInPlayPackSkater(ret, {
-        method: PACK_MEASURING_METHODS.SECTOR,
-      });
-    } else {
-      ret = getSkatersWDPInPlayPackSkater(ret, {
-        method: PACK_MEASURING_METHODS.RECTANGLE,
-      });
-    }
-    return ret;
-  }
-
   function animateSequence() {
     if (animationContext.current) animationContext.current.kill();
 
@@ -155,7 +134,10 @@ function Player({ sequence }: PlayerProps) {
       onUpdate: () => {
         if (animatingTrack.current) {
           let track = purgeTrack(animatingTrack.current);
-          track.skaters = addDerivedPropertiesToSkaters(track.skaters);
+          track.skaters = addDerivedPropertiesToSkaters(
+            track.skaters,
+            settings.packMeasuringMethod
+          );
           setAnimatingTrack(track);
         }
       },
@@ -253,7 +235,10 @@ function Player({ sequence }: PlayerProps) {
         let track = purgeTrack(
           getTrackWithUpdatedPosition(animatingTrack.current)
         );
-        track.skaters = addDerivedPropertiesToSkaters(track.skaters);
+        track.skaters = addDerivedPropertiesToSkaters(
+          track.skaters,
+          settings.packMeasuringMethod
+        );
         setAnimatingTrack(track);
       },
     });
@@ -266,7 +251,10 @@ function Player({ sequence }: PlayerProps) {
     // set initial state
     if (tracks.length && !tracks[0].empty) {
       let track = _.cloneDeep(tracks[0]);
-      track.skaters = addDerivedPropertiesToSkaters(track.skaters);
+      track.skaters = addDerivedPropertiesToSkaters(
+        track.skaters,
+        settings.packMeasuringMethod
+      );
       track = getTrackWithRelativeVPositions(track);
       for (let j = 0; j < track.skaters.length; j++) {
         const skaterNow = track.skaters[j] as SkaterWithPivotLineDist;
@@ -279,7 +267,10 @@ function Player({ sequence }: PlayerProps) {
       prevTrackEnd = startDelay;
       prevTrackIdx = 0;
       prevTrack = track;
-      prevTrack.skaters = addDerivedPropertiesToSkaters(prevTrack.skaters);
+      prevTrack.skaters = addDerivedPropertiesToSkaters(
+        prevTrack.skaters,
+        settings.packMeasuringMethod
+      );
     }
 
     for (let i = 1; i < tracks.length; i++) {
@@ -291,7 +282,10 @@ function Player({ sequence }: PlayerProps) {
       let track = _.cloneDeep(tracks[i]);
       if (track.empty) continue;
 
-      track.skaters = addDerivedPropertiesToSkaters(track.skaters);
+      track.skaters = addDerivedPropertiesToSkaters(
+        track.skaters,
+        settings.packMeasuringMethod
+      );
       track = getTrackWithRelativeVPositions(track);
 
       let sumDistance = 0;

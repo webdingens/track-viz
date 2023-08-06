@@ -99,7 +99,7 @@ function TrackOverlay() {
               <FiChevronLeft />
             </button>
             <span>
-              <span className="hidden--xs">View: </span>
+              <span className="hidden--xs">View:</span>{" "}
               {VIEW_LABELS[currentView]}
             </span>
             <button className={buttonStyles.menuButtonRight} onClick={prevView}>

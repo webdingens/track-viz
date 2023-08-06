@@ -17,7 +17,7 @@ import {
   GAMEPAD_THRESHOLD_STEP,
 } from "../../app/reducers/settingsTrack3DSlice";
 
-import { PACK_MEASURING_METHODS } from "../../utils/packFunctions";
+import { PACK_MEASURING_METHODS } from "roller-derby-track-utils";
 
 import { GrFormClose } from "react-icons/gr";
 

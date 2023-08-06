@@ -5,7 +5,7 @@ import {
   cleanupSlice,
   loadSettingsFromQueryString,
 } from "../storePersistence";
-import { PACK_MEASURING_METHODS } from "../../utils/packFunctions";
+import { PACK_MEASURING_METHODS } from "roller-derby-track-utils";
 
 export const LAYOUT_MODES = {
   LAYOUT_TRACK: "LAYOUT_TRACK",

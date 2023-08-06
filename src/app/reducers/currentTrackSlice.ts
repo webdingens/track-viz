@@ -7,7 +7,7 @@ import {
   getSkatersWDPInPlayPackSkater,
   getSkatersWDPPivotLineDistance,
   PACK_MEASURING_METHODS,
-} from "../../utils/packFunctions";
+} from "roller-derby-track-utils";
 import { TrackData } from "../../types/LibraryData";
 
 export const defaultTrack: TrackData = {

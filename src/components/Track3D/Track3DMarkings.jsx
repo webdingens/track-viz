@@ -190,14 +190,14 @@ class Track3DMarkings extends React.PureComponent {
     );
 
     // Ticks
-    [0, 1, 2, 3].forEach((el, idx) => {
+    [0, 1, 2, 3].forEach((el) => {
       addLineShape(
         new THREE.Vector2(-5.33 + el * TICK_DISTANCE, 5.41 + TICK_WIDTH / 2),
         new THREE.Vector2(-5.33 + el * TICK_DISTANCE, 5.41 - TICK_WIDTH / 2)
       );
     });
 
-    [1, 2, 3, 4, 5].forEach((el, idx) => {
+    [1, 2, 3, 4, 5].forEach((el) => {
       var p1 = [5.33, 5.41 - TICK_WIDTH / 2];
       var p2 = [5.33, 5.41 + TICK_WIDTH / 2];
       var cR = [5.33, 0];
@@ -225,7 +225,7 @@ class Track3DMarkings extends React.PureComponent {
       );
     });
 
-    [1, 2, 3, 4, 5].forEach((el, idx) => {
+    [1, 2, 3, 4, 5].forEach((el) => {
       var p1 = [-5.33, -5.41 - TICK_WIDTH / 2];
       var p2 = [-5.33, -5.41 + TICK_WIDTH / 2];
       var cR = [-5.33, 0];

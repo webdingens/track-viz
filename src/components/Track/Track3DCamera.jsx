@@ -1,6 +1,5 @@
-import React from "react";
 import { useSelector } from "react-redux";
-import * as THREE from "three";
+import { Euler } from "three/src/math/Euler";
 
 import { selectTrack3DCamera } from "../../app/reducers/settingsTrack3DSlice";
 
@@ -14,7 +13,7 @@ function Track3DCamera() {
   const layout = useSelector(selectLayoutMode);
   const camera = useSelector(selectTrack3DCamera);
   if (layout !== LAYOUT_MODES.LAYOUT_TRACK_3D) return null;
-  let euler = new THREE.Euler().fromArray(camera.rotation);
+  let euler = new Euler().fromArray(camera.rotation);
   euler.reorder("YXZ");
   const transform = `translate(${camera.position[0]}, ${
     camera.position[2]

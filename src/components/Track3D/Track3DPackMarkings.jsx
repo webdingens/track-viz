@@ -6,16 +6,17 @@ import { selectCurrentSkatersWDPPivotLineDistance } from "../../app/reducers/cur
 import { selectGeneralSettings } from "../../app/reducers/settingsGeneralSlice";
 
 import {
-  computePartialTrackShape,
-  getEngagementZoneIntersectionsRectangle,
   getPack,
-  getPackIntersectionsRectangle,
   getSortedOutermostSkaters,
   getSortedPackBoundaries,
   getTwoOutermostSkatersInBothDirection,
   ENGAGEMENT_ZONE_DISTANCE_TO_PACK,
   PACK_MEASURING_METHODS,
-} from "../../utils/packFunctions";
+  getEngagementZoneIntersectionsRectangle,
+  getPackIntersectionsRectangle,
+} from "roller-derby-track-utils";
+
+import { computePartialTrackShape3D } from "roller-derby-track-utils/src/packDrawing3D";
 
 class Track3DMarkings extends React.PureComponent {
   addShapes() {
@@ -29,10 +30,9 @@ class Track3DMarkings extends React.PureComponent {
     // create the pack shape and add to scene
     let packBounds = getSortedPackBoundaries(getPack(this.props.storeSkaters));
     if (!packBounds) return;
-    this.packShape = computePartialTrackShape({
+    this.packShape = computePartialTrackShape3D({
       p1: packBounds[0],
       p2: packBounds[1],
-      trackIs2D: false,
       options3D: {
         // curveSegments: 200,
         color: 0xffa489,
@@ -52,10 +52,9 @@ class Track3DMarkings extends React.PureComponent {
       packBounds[0] - ENGAGEMENT_ZONE_DISTANCE_TO_PACK,
       packBounds[1] + ENGAGEMENT_ZONE_DISTANCE_TO_PACK,
     ];
-    this.engagementZoneShape = computePartialTrackShape({
+    this.engagementZoneShape = computePartialTrackShape3D({
       p1: engagementZoneBounds[0],
       p2: engagementZoneBounds[1],
-      trackIs2D: false,
       options3D: {
         // curveSegments: 200,
         color: 0xffa489,
@@ -87,10 +86,9 @@ class Track3DMarkings extends React.PureComponent {
     packBounds = _packIntersectionsRectangle
       ? [_packIntersectionsRectangle.back, _packIntersectionsRectangle.front]
       : null;
-    this.packShape = computePartialTrackShape({
+    this.packShape = computePartialTrackShape3D({
       p1: packBounds[0],
       p2: packBounds[1],
-      trackIs2D: false,
       options3D: {
         // curveSegments: 200,
         color: 0xffa489,
@@ -125,10 +123,9 @@ class Track3DMarkings extends React.PureComponent {
           ),
         ]
       : null;
-    this.engagementZoneShape = computePartialTrackShape({
+    this.engagementZoneShape = computePartialTrackShape3D({
       p1: engagementZoneBounds[0],
       p2: engagementZoneBounds[1],
-      trackIs2D: false,
       options3D: {
         // curveSegments: 200,
         color: 0xffa489,

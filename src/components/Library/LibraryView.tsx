@@ -10,26 +10,17 @@ import {
 } from "react-accessible-accordion";
 import { FiPlus, FiMinus } from "react-icons/fi";
 
-import {
-  Situation as SituationType,
-  SkaterDataType,
-  SkaterType,
-} from "../../types/LibraryData";
+import { Situation as SituationType } from "../../types/LibraryData";
 import RichtextView from "./RichtextView";
 import TrackGeometry from "../Track/TrackGeometry";
 import { setCurrentTrack } from "../../app/reducers/currentTrackSlice";
 import { selectLibrary } from "../../app/reducers/currentLibrarySlice";
 import { selectGeneralSettings } from "../../app/reducers/settingsGeneralSlice";
-import {
-  getSkatersWDPInBounds,
-  getSkatersWDPInPlayPackSkater,
-  getSkatersWDPPivotLineDistance,
-  PACK_MEASURING_METHODS,
-} from "../../utils/packFunctions";
 import styles from "./LibraryView.module.scss";
 import buttonStyles from "../../styles/Buttons.module.scss";
 import "./AccordionStyles.module.scss";
 import CirclePreview from "../Skater/CirclePreview";
+import addDerivedPropertiesToSkaters from "../../utils/addDerivedPropertiesToSkater";
 
 function LibraryView() {
   const dispatch = useDispatch();
@@ -43,26 +34,6 @@ function LibraryView() {
         refs: situation.refs,
       })
     );
-  };
-
-  /**
-   * Adding inBounds, pivotLineDist for pack computations. Imported skaters are missing these.
-   */
-  const addDerivedPropertiesToSkaters = (
-    skaters: SkaterDataType[]
-  ): SkaterType[] => {
-    let ret = getSkatersWDPInBounds(skaters);
-    ret = getSkatersWDPPivotLineDistance(ret);
-    if (settings.packMeasuringMethod === PACK_MEASURING_METHODS.SECTOR) {
-      ret = getSkatersWDPInPlayPackSkater(ret, {
-        method: PACK_MEASURING_METHODS.SECTOR,
-      });
-    } else {
-      ret = getSkatersWDPInPlayPackSkater(ret, {
-        method: PACK_MEASURING_METHODS.RECTANGLE,
-      });
-    }
-    return ret;
   };
 
   return (
@@ -139,7 +110,8 @@ function LibraryView() {
                                   <>
                                     <TrackGeometry
                                       skaters={addDerivedPropertiesToSkaters(
-                                        situation.skaters
+                                        situation.skaters,
+                                        settings.packMeasuringMethod
                                       )}
                                       interactive={false}
                                       style={{ maxHeight: "200px" }}

@@ -5,11 +5,8 @@ import classNames from "classnames";
 import { selectGeneralSettings } from "../../app/reducers/settingsGeneralSlice";
 
 import {
-  computePartialTrackShape,
   getDistanceOfTwoSkaters,
-  getEngagementZoneIntersectionsRectangle,
   getPack,
-  getPackIntersectionsRectangle,
   getPivotLineDistance,
   getPointOnParallelLineOfLastSkaterRectangle,
   getSortedOutermostSkaters,
@@ -18,11 +15,16 @@ import {
   ENGAGEMENT_ZONE_DISTANCE_TO_PACK,
   PACK_MEASURING_METHODS,
   MEASUREMENT_LENGTH,
-} from "../../utils/packFunctions";
+} from "roller-derby-track-utils";
+import { computePartialTrackShape2D } from "roller-derby-track-utils/src/packDrawing2D";
 
 import styles from "./TrackPackMarkings.module.scss";
 
 import Paths from "../Textures/Paths";
+import {
+  getEngagementZoneIntersectionsRectangle,
+  getPackIntersectionsRectangle,
+} from "roller-derby-track-utils";
 
 const PartialTrackShapeSector = ({ bounds, overlay, engagementZone, pack }) => {
   if (!bounds) return null;
@@ -45,10 +47,9 @@ const PartialTrackShapeSector = ({ bounds, overlay, engagementZone, pack }) => {
         />
       )}
       <path
-        d={computePartialTrackShape({
+        d={computePartialTrackShape2D({
           p1: bounds[0],
           p2: bounds[1],
-          trackIs2D: true,
         })}
       />
     </g>
@@ -98,10 +99,9 @@ const PartialTrackShapeRectangle = ({
         )}
 
         <path
-          d={computePartialTrackShape({
+          d={computePartialTrackShape2D({
             p1: bounds[0],
             p2: bounds[1],
-            trackIs2D: true,
             method: PACK_MEASURING_METHODS.RECTANGLE,
           })}
         />

@@ -1,7 +1,6 @@
 import {
   ChangeEvent,
   PropsWithoutRef,
-  useCallback,
   useEffect,
   useId,
   useMemo,
@@ -9,27 +8,18 @@ import {
   useState,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Situation as SituationType,
-  SITUATION_TYPES,
-  SkaterType,
-} from "../../types/LibraryData";
+import { Situation as SituationType } from "../../types/LibraryData";
 import TrackGeometry from "../Track/TrackGeometry";
 import RichtextEditor from "./RichtextEditor";
 import {
   setCurrentTrack,
   selectCurrentTrack,
 } from "../../app/reducers/currentTrackSlice";
-import {
-  getSkatersWDPInBounds,
-  getSkatersWDPInPlayPackSkater,
-  getSkatersWDPPivotLineDistance,
-  PACK_MEASURING_METHODS,
-} from "../../utils/packFunctions";
 import { selectGeneralSettings } from "../../app/reducers/settingsGeneralSlice";
 import styles from "./Situation.module.scss";
 import buttonStyles from "../../styles/Buttons.module.scss";
 import classNames from "classnames";
+import addDerivedPropertiesToSkaters from "../../utils/addDerivedPropertiesToSkater";
 
 type SituationProps = PropsWithoutRef<{
   data: SituationType;
@@ -99,26 +89,9 @@ function Situation({ data, idPrefix, onUpdate }: SituationProps) {
     if (onUpdate) onUpdate(currentSituation);
   }, [currentSituation]);
 
-  /**
-   * Adding inBounds, pivotLineDist for pack computations. Imported skaters are missing these.
-   */
-  const addDerivedPropertiesToSkaters = (skaters: SkaterType[]) => {
-    let ret = getSkatersWDPInBounds(skaters);
-    ret = getSkatersWDPPivotLineDistance(ret);
-    if (settings.packMeasuringMethod === PACK_MEASURING_METHODS.SECTOR) {
-      ret = getSkatersWDPInPlayPackSkater(ret, {
-        method: PACK_MEASURING_METHODS.SECTOR,
-      });
-    } else {
-      ret = getSkatersWDPInPlayPackSkater(ret, {
-        method: PACK_MEASURING_METHODS.RECTANGLE,
-      });
-    }
-    return ret;
-  };
-
   const skatersWDP = useMemo(
-    () => addDerivedPropertiesToSkaters(data.skaters),
+    () =>
+      addDerivedPropertiesToSkaters(data.skaters, settings.packMeasuringMethod),
     [data.skaters]
   );
 
