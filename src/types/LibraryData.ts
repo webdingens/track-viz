@@ -1,3 +1,6 @@
+import { Position, Rotation, SkaterDataType } from "roller-derby-track-utils";
+import { SKATER_ANNOTATION_COLORS } from "../utils/colors";
+
 export type LibraryFileData = {
   loadedAt?: number;
   editedAt?: number;
@@ -71,23 +74,6 @@ export type Annotation =
       text: string;
     };
 
-export type Position = {
-  x: number;
-  y: number;
-};
-
-export type Rotation = {
-  rotation: number;
-};
-
-export type SkaterDataType = {
-  id: number;
-  team: "A" | "B";
-  isPivot?: boolean;
-  isJammer?: boolean;
-} & Position &
-  Rotation;
-
 export type SkaterStateType = {
   hasFocus?: boolean;
 };
@@ -110,7 +96,6 @@ export const SKATER_ANNOTATION_PATTERNS = {
   HEXAGONS: "hexagons",
 } as const;
 
-import { SKATER_ANNOTATION_COLORS } from "../utils/colors";
 export type SkaterAnnotationType = {
   color?: typeof SKATER_ANNOTATION_COLORS;
   description?: string;
@@ -126,7 +111,3 @@ export type SkaterType = SkaterDataType &
   SkaterInferredDataType &
   SkaterLibraryDataType &
   SkaterAnnotationType;
-
-export type SkaterWithPivotLineDist = SkaterType & {
-  pivotLineDist: number;
-};

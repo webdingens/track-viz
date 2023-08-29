@@ -18,11 +18,7 @@ import {
   setAnimatingTrack as _setAnimatingTrack,
   AnimationStateType,
 } from "../../app/reducers/animatingTrackSlice";
-import {
-  Sequence,
-  SkaterWithPivotLineDist,
-  TrackData,
-} from "../../types/LibraryData";
+import { Sequence, TrackData } from "../../types/LibraryData";
 import { selectGeneralSettings } from "../../app/reducers/settingsGeneralSlice";
 import addDerivedPropertiesToSkaters from "../../utils/addDerivedPropertiesToSkater";
 
@@ -257,7 +253,7 @@ function Player({ sequence }: PlayerProps) {
       );
       track = getTrackWithRelativeVPositions(track);
       for (let j = 0; j < track.skaters.length; j++) {
-        const skaterNow = track.skaters[j] as SkaterWithPivotLineDist;
+        const skaterNow = track.skaters[j];
         tl.set(animatingTrack.current.skaters[j], {
           rotation: skaterNow.rotation,
           pivotLineDist: skaterNow.pivotLineDist,
@@ -307,8 +303,8 @@ function Player({ sequence }: PlayerProps) {
       const stepDuration = Math.max(1, sumDistance / movementSpeed);
 
       for (let j = 0; j < track.skaters.length; j++) {
-        const skaterNow = track.skaters[j] as SkaterWithPivotLineDist;
-        const skaterPrev = prevTrack.skaters[j] as SkaterWithPivotLineDist;
+        const skaterNow = track.skaters[j];
+        const skaterPrev = prevTrack.skaters[j];
 
         if (
           typeof skaterNow.pivotLineDist === "undefined" ||

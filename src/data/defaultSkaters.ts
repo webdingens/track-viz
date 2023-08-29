@@ -1,4 +1,4 @@
-import { SkaterDataType } from "../types/LibraryData";
+import { SkaterDataType } from "roller-derby-track-utils";
 
 const defaultSkaters: SkaterDataType[] = [
   {
